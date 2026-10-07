@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+  </defs>
+
+  <!-- Deep Slate/Navy Background Squircle -->
+  <rect x="4" y="4" width="112" height="112" rx="26" fill="#0f172a" stroke="#1e293b" stroke-width="2" />
+
+  <!-- Single Continuous Flow: The Jogja Heritage Arch & Roof -->
+  <!-- Outer Archway representing Protection & Destination -->
+  <path d="M 28 92 L 28 62 C 28 44 42 30 60 30 C 78 30 92 44 92 62 L 92 92" 
+        fill="none" 
+        stroke="url(#goldAccent)" 
+        stroke-width="7" 
+        stroke-linecap="round" />
+
+  <!-- Iconic Joglo Crown Peak -->
+  <path d="M 44 38 L 60 20 L 76 38" 
+        fill="none" 
+        stroke="#ffffff" 
+        stroke-width="6" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <!-- Inner Keyhole / Doorway representing 'Stay' & Room Access -->
+  <circle cx="60" cy="58" r="8" fill="#ffffff" />
+  <path d="M 54 62 L 51 86 L 69 86 L 66 62 Z" fill="#ffffff" />
+
+  <!-- Golden Heart of Jogja Accent Dot -->
+  <circle cx="60" cy="58" r="4" fill="#d97706" />
+</svg>

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Pemilik Akomodasi (Owner Hub) — StayJogja</title>
+  <link rel="icon" type="image/svg+xml" href="/images/logo-stayjogja.png">
+  
+  <!-- Google Fonts: DM Sans & Lora -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              600: '#1e3a8a',
+              700: '#172554',
+              900: '#0f172a'
+            },
+            accent: {
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            }
+          },
+          fontFamily: {
+            sans: ['"DM Sans"', 'sans-serif'],
+            display: ['"Lora"', 'Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col font-sans antialiased">
+
+  <!-- ================= OWNER HEADER ================= -->
+  <header class="glass-nav sticky top-0 z-30 shadow-subtle">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/owner" class="flex items-center gap-2.5">
+          <img src="/images/logo-stayjogja.png" alt="StayJogja Logo" class="w-10 h-10 rounded-2xl shadow-sm border border-amber-500/40">
+          <div class="flex items-center">
+            <span class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-none">Stay<span class="text-amber-600">Jogja</span> <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full ml-1">Partner Hub</span></span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Owner Info & CTA -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <!-- Scan QR Button -->
+        <button type="button" onclick="openOwnerQrScannerModal()" class="px-3 sm:px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition flex items-center gap-1.5 cursor-pointer" title="Buka Kamera untuk Scan QR Tamu">
+          <i class="fa-solid fa-camera"></i>
+          <span class="hidden sm:inline">Scan QR Tamu</span>
+        </button>
+
+        <!-- Bell Notification Icon -->
+        <button type="button" onclick="openOwnerNotificationModal()" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white hover:bg-amber-50 text-slate-700 hover:text-amber-700 flex items-center justify-center transition cursor-pointer border border-slate-200 shadow-xs" title="Notifikasi Hotel & Penghapusan">
+          <i class="fa-solid fa-bell text-sm"></i>
+          <span id="bell-unread-dot" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-white hidden animate-pulse"></span>
+        </button>
+
+        <a href="/tera" onclick="sessionStorage.removeItem('stayjogja_partnership_agreed')" class="px-4 py-2 btn-gold text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
+          <i class="fa-solid fa-hotel"></i>
+          <span class="hidden sm:inline">Daftarkan Properti</span>
+        </a>
+
+        <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
+          <div class="w-9 h-9 rounded-full bg-slate-900 text-amber-400 font-bold flex items-center justify-center text-xs border border-amber-500/30">
+            IK
+          </div>
+          <div class="hidden sm:block text-xs text-left">
+            <span id="owner-header-name" class="font-bold text-slate-900 block">Ibu Kartika</span>
+            <span class="text-[10px] text-slate-400">Pemilik Mitra StayJogja</span>
+          </div>
+          <button onclick="openGlobalEditProfileModal(event)" class="px-2.5 py-1.5 text-xs text-slate-500 hover:text-amber-600 rounded-lg hover:bg-slate-100 transition flex items-center gap-1 cursor-pointer" title="Edit Profil">
+            <i class="fa-solid fa-user-pen"></i>
+            <span class="hidden md:inline">Edit Profil</span>
+          </button>
+          <button onclick="handleOwnerLogout()" class="px-2.5 py-1.5 text-xs text-slate-500 hover:text-red-600 rounded-lg hover:bg-slate-100 transition flex items-center gap-1 cursor-pointer" title="Keluar">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span class="hidden md:inline">Keluar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= OWNER MAIN DASHBOARD ================= -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+    
+    <!-- Welcome & Stats Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800">
+      <div class="relative z-10 max-w-3xl">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 inline-block mb-2">
+          Dashboard Operasional Mitra Pemilik
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight font-display">Sugeng Rawuh, Ibu Kartika!</h1>
+        <p class="text-slate-300 text-xs sm:text-sm mt-1 font-light leading-relaxed">
+          Kelola reservasi tamu yang sudah melakukan pembayaran, setujui (ACC) pemesanan agar invoice resmi terbit secara otomatis, dan sesuaikan ketersediaan serta harga kamar akomodasi Anda di Yogyakarta.
+        </p>
+      </div>
+      <div class="absolute -right-10 -bottom-10 opacity-10 text-amber-400 text-9xl pointer-events-none">
+        <i class="fa-solid fa-hotel"></i>
+      </div>
+    </div>
+
+    <!-- 4 KPI Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-card flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Menunggu ACC</span>
+          <div id="kpi-pending-acc" class="text-2xl sm:text-3xl font-black text-amber-700 mt-1 font-display">0</div>
+          <span class="text-[11px] text-slate-500">Perlu persetujuan Anda</span>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-card flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Terkonfirmasi</span>
+          <div id="kpi-confirmed" class="text-2xl sm:text-3xl font-black text-emerald-700 mt-1 font-display">0</div>
+          <span class="text-[11px] text-slate-500">Reservasi valid & aktif</span>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-card flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Total Kamar/Unit</span>
+          <div id="kpi-total-units" class="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-display">0</div>
+          <span class="text-[11px] text-slate-500" id="kpi-total-units-sub">Terdaftar di sistem</span>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-door-open"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-card flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Total Omzet</span>
+          <div id="kpi-revenue" class="text-xl sm:text-2xl font-black text-amber-700 mt-1 font-display">Rp 0</div>
+          <span class="text-[11px] text-slate-500">Dari pesanan terkonfirmasi</span>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-wallet"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Navigation Tabs for Owner Content -->
+    <div class="flex border-b border-slate-200 gap-4 sm:gap-6 text-sm font-bold overflow-x-auto scrollbar-none">
+      <button onclick="switchOwnerTab('acc')" id="tab-btn-acc" class="pb-3 text-amber-700 border-b-2 border-amber-600 transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+        <i class="fa-solid fa-inbox text-amber-600"></i> Antrean ACC
+        <span id="tab-badge-acc" class="px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-800">0</span>
+      </button>
+      <button onclick="switchOwnerTab('checkin')" id="tab-btn-checkin" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+        <i class="fa-solid fa-key text-emerald-600"></i> Check-In Tamu
+        <span id="tab-badge-checkin" class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-800 hidden">0</span>
+      </button>
+      <button onclick="switchOwnerTab('rooms')" id="tab-btn-rooms" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+        <i class="fa-solid fa-bed"></i> Kamar & Tarif
+      </button>
+      <button onclick="switchOwnerTab('properties')" id="tab-btn-properties" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+        <i class="fa-solid fa-list-check"></i> Properti Saya
+      </button>
+      <button onclick="switchOwnerTab('finance')" id="tab-btn-finance" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+        <i class="fa-solid fa-file-invoice-dollar text-amber-500"></i> Komisi
+      </button>
+    </div>
+
+    <!-- TAB 1: ANTREAN RESERVASI MASUK (ACC / TOLAK) -->
+    <div id="owner-section-acc" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 font-display">Daftar Reservasi Masuk yang Telah Dibayar Tamu</h2>
+          <p class="text-xs text-slate-500">Tamu sudah menyelesaikan pembayaran sandbox. Klik tombol "ACC Reservasi" untuk menyetujui pemesanan.</p>
+        </div>
+        <button onclick="loadOwnerData()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-arrows-rotate"></i> Refresh Data
+        </button>
+      </div>
+
+      <div id="pending-reservations-table">
+        <div id="owner-reservations-container" class="space-y-3">
+          <!-- Rendered via owner.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CHECK-IN TAMU -->
+    <div id="owner-section-checkin" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 font-display">Manajemen Check-In Tamu</h2>
+          <p class="text-xs text-slate-500">Daftar reservasi siap check-in dan yang sudah check-in. Scan QR tamu untuk verifikasi instan.</p>
+        </div>
+        <div class="flex items-center flex-wrap gap-2">
+          <button onclick="openOwnerQrScannerModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-camera"></i>
+            <span>Buka Kamera Scan QR</span>
+          </button>
+          <a href="/checkin" target="_blank" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-desktop text-[11px]"></i>
+            <span class="hidden sm:inline">Portal Resepsionis</span>
+          </a>
+          <button onclick="loadCheckinList()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-arrows-rotate"></i> Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Info Card: Cara Kerja QR -->
+      <div class="p-4 bg-blue-50 border border-blue-200 rounded-2xl flex items-start gap-3 text-xs text-blue-900">
+        <i class="fa-solid fa-circle-info text-blue-500 text-base mt-0.5 shrink-0"></i>
+        <div class="space-y-1">
+          <p class="font-bold">Cara Kerja Verifikasi QR Check-In:</p>
+          <ol class="list-decimal pl-4 space-y-0.5 text-blue-800">
+            <li>Tamu menunjukkan PDF invoice yang berisi QR Code.</li>
+            <li>Resepsionis arahkan kamera HP ke QR — browser langsung buka <code class="bg-blue-100 px-1 rounded">/checkin/KODE</code>.</li>
+            <li>Sistem memverifikasi booking <strong>dan sekaligus check-in otomatis</strong> dalam satu scan.</li>
+            <li>Status diperbarui real-time; resepsionis klik tombol <strong>Cetak Data Tamu</strong> untuk arsip front desk.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Tabel booking siap/sudah checkin -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-semibold text-[10px] border-b border-slate-200 tracking-wider">
+              <tr>
+                <th class="p-4">Tamu & Kode Booking</th>
+                <th class="p-4">Akomodasi & Kamar</th>
+                <th class="p-4">Check-In / Check-Out</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="owner-checkin-table" class="divide-y divide-slate-100">
+              <tr><td colspan="5" class="p-8 text-center text-slate-400">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: MANAJEMEN KAMAR & TARIF (EDIT HARGA & STOK) -->
+    <div id="owner-section-rooms" class="hidden space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-slate-900 font-display">Pengaturan Harga Sewa & Stok Kamar</h2>
+        <p class="text-xs text-slate-500">Ubah harga per malam atau stok ketersediaan kamar secara langsung.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-semibold text-[11px] border-b border-slate-200">
+              <tr>
+                <th class="p-4">Nama Tipe Kamar / Unit</th>
+                <th class="p-4">Properti</th>
+                <th class="p-4">Kapasitas</th>
+                <th class="p-4">Harga / Malam (Rp)</th>
+                <th class="p-4">Stok Tersedia</th>
+                <th class="p-4 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="owner-rooms-table" class="divide-y divide-slate-200">
+              <!-- Rendered via owner.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: PROPERTI SAYA -->
+    <div id="owner-section-properties" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 font-display">Properti Terdaftar di Bawah Akun Anda</h2>
+          <p class="text-xs text-slate-500">Pantau status tayang, edit data akomodasi, atau tinjau status penghapusan hotel.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="openStatusHotelModal('approval')" class="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-2xs">
+            <i class="fa-solid fa-list-check"></i>
+            <span>Ringkasan Status</span>
+          </button>
+          <a href="/tera" onclick="sessionStorage.removeItem('stayjogja_partnership_agreed')" class="px-4 py-2 btn-gold text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-hotel"></i>
+            <span>+ Daftarkan Properti</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Filter Pills for Status -->
+      <div class="flex flex-wrap items-center gap-2 pt-1 pb-1">
+        <button type="button" onclick="filterOwnerProperties('all')" id="prop-filter-btn-all" class="px-3 py-1.5 rounded-xl text-xs font-bold btn-gold text-white transition shadow-sm flex items-center gap-1.5">
+          <span>Semua</span>
+          <span id="count-filter-all" class="px-1.5 py-0.2 rounded-full bg-white/30 text-[10px]">0</span>
+        </button>
+        <button type="button" onclick="filterOwnerProperties('approved')" id="prop-filter-btn-approved" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-check text-emerald-600"></i>
+          <span>Tayang di Katalog</span>
+          <span id="count-filter-approved" class="px-1.5 py-0.2 rounded-full bg-slate-100 text-[10px]">0</span>
+        </button>
+        <button type="button" onclick="filterOwnerProperties('pending')" id="prop-filter-btn-pending" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-hourglass-half text-amber-500"></i>
+          <span>Menunggu Approval Admin</span>
+          <span id="count-filter-pending" class="px-1.5 py-0.2 rounded-full bg-slate-100 text-[10px]">0</span>
+        </button>
+        <button type="button" onclick="filterOwnerProperties('deletion')" id="prop-filter-btn-deletion" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-clock-rotate-left text-red-500"></i>
+          <span>Pengajuan Hapus Ditinjau Admin</span>
+          <span id="count-filter-deletion" class="px-1.5 py-0.2 rounded-full bg-slate-100 text-[10px]">0</span>
+        </button>
+        <button type="button" onclick="filterOwnerProperties('rejected')" id="prop-filter-btn-rejected" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-xmark text-slate-400"></i>
+          <span>Ditolak Admin</span>
+          <span id="count-filter-rejected" class="px-1.5 py-0.2 rounded-full bg-slate-100 text-[10px]">0</span>
+        </button>
+      </div>
+
+      <div id="owner-properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered via owner.js -->
+      </div>
+    </div>
+
+    <!-- TAB 4: TAGIHAN KOMISI -->
+    <div id="owner-section-finance" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 font-display">Tagihan Komisi (5%) Platform</h2>
+          <p class="text-xs text-slate-500">Bayar tagihan komisi 5% kepada Admin StayJogja atas reservasi yang telah berhasil dibayar lunas oleh Tamu.</p>
+        </div>
+        <button onclick="loadOwnerFinance()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition shadow-2xs flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-arrows-rotate"></i> Cek Tagihan
+        </button>
+      </div>
+      
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-semibold text-[10px] border-b border-slate-200 tracking-wider">
+              <tr>
+                <th class="p-4">Reservasi</th>
+                <th class="p-4">Total Pembayaran Tamu (100%)</th>
+                <th class="p-4">Tagihan Komisi (5%)</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="owner-finance-table" class="divide-y divide-slate-100">
+              <!-- Rendered via owner.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= MODAL: INVOICE TAGIHAN KOMISI ================= -->
+  <div id="owner-invoice-modal" class="fixed inset-0 z-[60] bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-6 sm:p-8 space-y-6 animate-fade-in-up">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg font-bold">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900 font-display">Pratinjau Tagihan Komisi StayJogja</h3>
+            <p class="text-xs text-slate-500">Cek rincian bagi hasil sebelum melakukan pembayaran komisi</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="closeOwnerInvoiceModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer">
+            <i class="fa-solid fa-xmark"></i> Tutup
+          </button>
+        </div>
+      </div>
+
+      <!-- Invoice Document -->
+      <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 text-slate-800 space-y-6 font-sans">
+        <!-- Letterhead -->
+        <div class="flex items-center justify-between border-b-2 border-slate-800 pb-4">
+          <div>
+            <h1 class="text-xl font-extrabold text-slate-900 tracking-tight font-display">STAYJOGJA PLATFORM</h1>
+            <p class="text-xs font-semibold text-slate-600">Sistem Informasi Manajemen & Akomodasi Pariwisata D.I. Yogyakarta</p>
+            <p class="text-[11px] text-slate-500">Jl. Malioboro No. 45, Danurejan, Kota Yogyakarta | Email: finance@stayjogja.id</p>
+          </div>
+          <div class="text-right">
+            <span class="inline-block px-3 py-1 rounded bg-amber-100 text-amber-800 text-xs font-bold uppercase border border-amber-300">
+              INVOICE TAGIHAN KOMISI
+            </span>
+            <p class="text-[11px] text-slate-500 mt-1" id="inv-date">Tanggal: -</p>
+            <p class="text-[11px] text-slate-500" id="inv-ref">Ref: INV-FIN-2026</p>
+          </div>
+        </div>
+
+        <!-- Summary Statistics Table -->
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">1. Ringkasan Bagi Hasil Transaksi</h2>
+          <table class="w-full text-xs border border-slate-200 text-left">
+            <tbody class="divide-y divide-slate-200">
+              <tr>
+                <td class="p-3 bg-slate-50 font-semibold w-1/2">Total Pembayaran Tamu ke Pemilik (100%):</td>
+                <td class="p-3 font-bold text-emerald-700 text-sm" id="inv-gross">Rp 0</td>
+              </tr>
+              <tr>
+                <td class="p-3 bg-slate-50 font-semibold">Komisi Platform StayJogja (5%):</td>
+                <td class="p-3 font-bold text-amber-700 text-sm" id="inv-fee">Rp 0</td>
+              </tr>
+              <tr>
+                <td class="p-3 bg-slate-50 font-semibold">Hak Bersih Akhir Pemilik (95%):</td>
+                <td class="p-3 font-bold text-slate-900 text-sm" id="inv-net">Rp 0</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-[10px] text-slate-400 mt-2 italic">* Total pembayaran 100% telah Anda terima langsung dari Tamu. Anda hanya perlu membayarkan komisi 5% ke pihak StayJogja.</p>
+        </div>
+
+        <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
+          <button id="inv-pay-btn" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-money-bill-transfer"></i> Bayar Sekarang
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="edit-property-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center text-slate-900 text-sm font-bold">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm sm:text-base font-display">Edit Data Akomodasi StayJogja</h3>
+            <p class="text-[11px] text-slate-400">Perbarui profil properti, kawasan, fasilitas, foto, hingga varian kamar</p>
+          </div>
+        </div>
+        <button onclick="closeEditPropertyModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="edit-property-form" onsubmit="handleEditPropertySubmit(event)" class="p-6 space-y-5 overflow-y-auto flex-1 text-xs">
+        <input type="hidden" id="edit-prop-id">
+
+        <div class="space-y-3 pb-4 border-b border-slate-200">
+          <h4 class="font-bold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-info text-amber-600"></i> Informasi Umum Akomodasi
+          </h4>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nama Resmi Properti <span class="text-red-500">*</span></label>
+            <input type="text" id="edit-prop-name" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Tipe Akomodasi</label>
+              <select id="edit-prop-type" onchange="toggleEditStarsInput()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500">
+                <option value="hotel">Hotel</option>
+                <option value="homestay">Homestay</option>
+                <option value="apartemen">Apartemen</option>
+                <option value="villa">Villa / Resort</option>
+              </select>
+            </div>
+            <div id="edit-stars-container">
+              <label class="block font-bold text-slate-700 mb-1">Klasifikasi Bintang</label>
+              <select id="edit-prop-stars" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500">
+                <option value="5">Bintang 5 (★★★★★)</option>
+                <option value="4">Bintang 4 (★★★★☆)</option>
+                <option value="3">Bintang 3 (★★★☆☆)</option>
+                <option value="2">Bintang 2 (★★☆☆☆)</option>
+                <option value="1">Bintang 1 (★☆☆☆☆)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Kawasan / Wilayah Jogja</label>
+              <select id="edit-prop-area" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500">
+                <option value="Malioboro / Pusat Kota">Malioboro / Pusat Kota</option>
+                <option value="Kaliurang">Kaliurang / Lereng Merapi</option>
+                <option value="Prawirotaman / Selatan">Prawirotaman / Selatan</option>
+                <option value="Sleman / Sekitar UGM">Sleman / Sekitar UGM</option>
+                <option value="Seturan / Babarsari">Seturan / Babarsari</option>
+                <option value="Bantul / Selatan">Bantul / Selatan</option>
+                <option value="Kulon Progo / YIA">Kulon Progo / YIA</option>
+                <option value="Gunungkidul">Gunungkidul</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Kode Pos</label>
+              <input type="text" id="edit-prop-postal" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Alamat Lengkap</label>
+            <input type="text" id="edit-prop-address" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-map-location-dot text-red-600"></i>
+                <span>Tautan Google Maps Properti (Link Lokasi)</span>
+              </label>
+              <button type="button" onclick="testOwnerGmapsUrl()" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1 cursor-pointer">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                <span>Buka Link</span>
+              </button>
+            </div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <i class="fa-solid fa-link text-xs"></i>
+              </div>
+              <input type="url" id="edit-prop-gmaps" placeholder="https://maps.app.goo.gl/... atau https://maps.google.com/?q=..." class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3.5 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Tempel tautan Google Maps agar pengunjung dapat langsung membuka navigasi rute ke hotel Anda.</p>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Deskripsi Akomodasi</label>
+            <textarea id="edit-prop-desc" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-amber-500 leading-relaxed"></textarea>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Fasilitas Properti (Pisahkan dengan koma)</label>
+            <input type="text" id="edit-prop-facilities" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 shrink-0">
+          <button type="button" onclick="closeEditPropertyModal()" class="px-5 py-2.5 border border-slate-300 rounded-xl text-slate-700 font-bold hover:bg-slate-50 transition">
+            Batal
+          </button>
+          <button type="submit" id="btn-save-edit-prop" class="px-6 py-2.5 btn-gold font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Simpan Perubahan</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: AJUKAN HAPUS PROPERTI ================= -->
+  <div id="request-delete-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-center gap-3 text-red-600">
+        <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-base text-slate-900" id="modal-delete-title">Ajukan Penghapusan Properti</h3>
+          <p class="text-xs text-slate-500" id="modal-delete-subtitle">Sesuai kebijakan StayJogja, penghapusan akomodasi yang telah aktif memerlukan persetujuan Administrator.</p>
+        </div>
+      </div>
+
+      <input type="hidden" id="delete-prop-id">
+      <input type="hidden" id="delete-prop-status">
+
+      <div>
+        <label class="block font-bold text-slate-700 mb-1 text-xs">Alasan Penghapusan Properti <span class="text-red-500">*</span></label>
+        <textarea id="delete-prop-reason" rows="3" placeholder="Contoh: Renovasi total gedung, berhenti beroperasi, atau pembaruan kepemilikan..." required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-red-500"></textarea>
+      </div>
+
+      <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-800 space-y-1">
+        <p class="font-bold flex items-center gap-1">
+          <i class="fa-solid fa-circle-info"></i> Catatan Proses:
+        </p>
+        <p id="delete-modal-note">Permintaan Anda akan dikirim ke panel Admin StayJogja. Setelah disetujui, properti akan dihapus dari sistem.</p>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button type="button" onclick="closeRequestDeleteModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-50 transition">
+          Batal
+        </button>
+        <button type="button" onclick="submitDeleteRequest()" id="btn-submit-delete-req" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span id="btn-submit-delete-label">Kirim Permintaan Hapus</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: STATUS HOTEL & PENGHAPUSAN ================= -->
+  <div id="status-hotel-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center text-slate-900 text-base font-bold">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm sm:text-base font-display">Status Hotel & Pengajuan Penghapusan</h3>
+            <p class="text-[11px] text-slate-400">Pantau verifikasi admin untuk tayang di katalog publik dan status permohonan hapus</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeStatusHotelModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="px-6 pt-3 bg-slate-50 border-b border-slate-200 flex gap-4 text-xs font-bold shrink-0">
+        <button type="button" onclick="switchStatusModalTab('approval')" id="modal-tab-btn-approval" class="pb-2.5 text-amber-700 border-b-2 border-amber-600 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-circle-check text-emerald-600"></i>
+          <span>Status Persetujuan Tayang</span>
+          <span id="badge-modal-approval-count" class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black">0</span>
+        </button>
+        <button type="button" onclick="switchStatusModalTab('deletion')" id="modal-tab-btn-deletion" class="pb-2.5 text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-clock-rotate-left text-red-500"></i>
+          <span>Status Pengajuan Hapus</span>
+          <span id="badge-modal-deletion-count" class="px-2 py-0.5 rounded-full bg-red-100 text-red-800 text-[10px] font-black">0</span>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-4 flex-1">
+        <div id="status-modal-content-approval" class="space-y-3"></div>
+        <div id="status-modal-content-deletion" class="hidden space-y-3"></div>
+      </div>
+
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+        <span class="text-xs text-slate-500 flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-info text-blue-900"></i>
+          <span>Persetujuan & review diproses oleh Tim Administrator StayJogja.</span>
+        </span>
+        <button type="button" onclick="closeStatusHotelModal()" class="px-5 py-2 btn-navy rounded-xl text-xs font-bold transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: PUSAT NOTIFIKASI PEMILIK ================= -->
+  <div id="owner-notification-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-900 flex items-center justify-center text-lg font-bold">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base font-display">Notifikasi Status Hotel</h3>
+            <p class="text-[11px] text-slate-300">Pemberitahuan persetujuan hotel diterima dan status pengajuan penghapusan</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="markAllNotificationsAsRead()" class="px-2.5 py-1 text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-semibold transition flex items-center gap-1 border border-slate-700">
+            <i class="fa-solid fa-check-double"></i> Tandai Dibaca
+          </button>
+          <button type="button" onclick="closeOwnerNotificationModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="px-6 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div class="flex items-center gap-1.5 text-xs">
+          <button type="button" onclick="filterNotifications('all')" id="notif-tab-all" class="px-3 py-1 rounded-lg font-bold btn-gold text-white shadow-xs transition">
+            Semua
+          </button>
+          <button type="button" onclick="filterNotifications('approved')" id="notif-tab-approved" class="px-3 py-1 rounded-lg font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">
+            <i class="fa-solid fa-circle-check text-emerald-500"></i> Hotel Diterima
+          </button>
+          <button type="button" onclick="filterNotifications('deletion')" id="notif-tab-deletion" class="px-3 py-1 rounded-lg font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">
+            <i class="fa-solid fa-trash-can text-red-500"></i> Status Hapus
+          </button>
+        </div>
+        <span id="notif-unread-status-text" class="text-[11px] font-semibold text-slate-500">
+          0 belum dibaca
+        </span>
+      </div>
+
+      <div id="owner-notifications-list" class="p-6 overflow-y-auto space-y-3 flex-1 bg-slate-50/50"></div>
+
+      <div class="px-6 py-3 bg-white border-t border-slate-200 flex items-center justify-between shrink-0">
+        <span class="text-[11px] text-slate-400">Notifikasi otomatis terhubung dengan proses verifikasi admin StayJogja</span>
+        <button type="button" onclick="closeOwnerNotificationModal()" class="px-5 py-2 btn-navy rounded-xl text-xs font-bold transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: CAMERA SCANNER QR OWNER ================= -->
+  <div id="owner-qr-scanner-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm font-display tracking-tight">Scanner Kamera QR Tamu</h3>
+            <p class="text-[10px] text-slate-400">Verifikasi instan reservasi & proses check-in</p>
+          </div>
+        </div>
+        <button onclick="closeOwnerQrScannerModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Scanner Active View -->
+      <div id="owner-scanner-view" class="p-4 sm:p-5 space-y-4">
+        
+        <!-- Video Viewport -->
+        <div class="relative bg-black rounded-2xl overflow-hidden aspect-square flex items-center justify-center shadow-inner">
+          <div id="owner-qr-reader" class="w-full h-full"></div>
+          
+          <!-- Animated Laser Sweep -->
+          <div id="scanner-laser-line" class="pointer-events-none absolute inset-x-8 top-1/4 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_rgba(52,211,153,0.8)] scanner-laser-sweep hidden"></div>
+
+          <!-- Targeting Corner Box -->
+          <div class="pointer-events-none absolute inset-8 border-2 border-dashed border-emerald-400/60 rounded-2xl flex items-center justify-center">
+            <div class="text-[10px] font-bold text-emerald-300 bg-slate-950/75 px-3 py-1 rounded-full backdrop-blur-xs">
+              Posisikan QR di dalam kotak
+            </div>
+          </div>
+        </div>
+
+        <!-- Camera Status Message -->
+        <div id="scanner-status-msg" class="text-center text-xs text-slate-600 font-medium min-h-[20px]">
+          Menghubungkan ke kamera perangkat...
+        </div>
+
+        <!-- Controls: Flip Camera & Flash -->
+        <div class="flex items-center justify-center gap-2 pt-1 border-t border-slate-100">
+          <button type="button" onclick="switchOwnerScannerCamera()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-camera-rotate"></i>
+            <span>Ganti Kamera</span>
+          </button>
+          <button type="button" id="btn-toggle-torch" onclick="toggleOwnerScannerTorch()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer hidden">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Lampu Flash</span>
+          </button>
+        </div>
+
+        <!-- Manual Code Fallback -->
+        <div class="pt-2 border-t border-slate-100">
+          <p class="text-[11px] text-slate-400 mb-1.5 text-center">Atau ketik kode booking jika kamera terhalang:</p>
+          <form onsubmit="handleOwnerManualCodeScan(event)" class="flex gap-2">
+            <input type="text" id="owner-scanner-manual-code" placeholder="Contoh: SJ-C4CRZ" class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs uppercase font-bold focus:bg-white focus:outline-none focus:border-emerald-600">
+            <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer">
+              Verifikasi
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Scanned Result View (Shown on Successful Scan) -->
+      <div id="owner-scanner-result" class="p-5 hidden space-y-4">
+        <!-- Rendered dynamically via owner.js -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="/js/api.js"></script>
+  <script src="/js/html5-qrcode.min.js"></script>
+  <script src="/js/owner.js"></script>
+</body>
+</html>

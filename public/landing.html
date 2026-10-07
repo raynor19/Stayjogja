@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StayJogja — Kurasi Hotel, Homestay & Apartemen Istimewa Yogyakarta</title>
+  <meta name="description" content="Platform reservasi resmi hotel berbintang, homestay keluarga, dan apartemen di Daerah Istimewa Yogyakarta. Terverifikasi Dukcapil dengan panduan cerdas AI.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/images/logo-stayjogja.png">
+
+  <!-- Modern Fonts (Inter & Playfair Display for Editorial Apple Look) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400;1,600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            display: ['Playfair Display', 'Georgia', 'serif']
+          },
+          colors: {
+            brand: {
+              navy: '#0f172a',
+              gold: '#d97706',
+              amber: '#f59e0b',
+              cream: '#fafaf9'
+            }
+          },
+          boxShadow: {
+            'liquid': '0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 1px 3px 0 rgba(15, 23, 42, 0.03), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95)',
+            'liquid-active': '0 24px 48px -12px rgba(15, 23, 42, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 1)',
+            'apple': '0 20px 35px -10px rgba(15, 23, 42, 0.08), 0 2px 6px 0 rgba(15, 23, 42, 0.03)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Pro Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    /* ================= APPLE LIQUID GLASS SPEC ================= */
+    .liquid-glass-nav {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.65) 100%);
+      backdrop-filter: blur(28px) saturate(210%) contrast(104%);
+      -webkit-backdrop-filter: blur(28px) saturate(210%) contrast(104%);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 
+        0 20px 40px -15px rgba(15, 23, 42, 0.07),
+        0 1px 3px 0 rgba(15, 23, 42, 0.03),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 1px 0 rgba(0, 0, 0, 0.03);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .liquid-glass-nav.scrolled {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.88) 100%);
+      border-color: rgba(226, 232, 240, 0.9);
+      box-shadow: 
+        0 24px 48px -12px rgba(15, 23, 42, 0.12),
+        0 2px 6px 0 rgba(15, 23, 42, 0.04),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 1);
+    }
+
+    .liquid-glass-search {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 
+        0 25px 50px -12px rgba(15, 23, 42, 0.12),
+        0 4px 12px 0 rgba(15, 23, 42, 0.04),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 1);
+    }
+
+    /* Hero Editorial Typography */
+    .hero-editorial-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+    }
+    .hero-gradient-overlay {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, rgba(15, 23, 42, 0.2) 35%, rgba(15, 23, 42, 0.88) 100%);
+    }
+
+    /* Apple HIG Cards & Tactile Interactions */
+    .apple-card {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .apple-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.1);
+    }
+    .apple-card img {
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .apple-card:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Apple Tap Target Physics */
+    .tap-highlight {
+      transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tap-highlight:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden selection:bg-amber-200 selection:text-amber-950">
+
+  <!-- ================= FLOATING LIQUID GLASS NAVBAR (APPLE HIG SPEC) ================= -->
+  <nav id="landing-navbar" class="fixed top-4 sm:top-6 inset-x-0 z-50 max-w-6xl mx-auto px-4 sm:px-6 transition-all duration-300">
+    <div class="liquid-glass-nav rounded-full px-4 sm:px-6 py-2 flex items-center justify-between h-14">
+      
+      <!-- Brand Logo & Identity -->
+      <a href="/" class="flex items-center gap-2.5 group flex-shrink-0" title="StayJogja Beranda">
+        <img src="/images/logo-stayjogja.png" alt="StayJogja" class="w-8 h-8 rounded-xl object-contain shadow-xs group-hover:scale-105 transition-transform duration-200">
+        <div class="flex items-center">
+          <span class="text-lg font-black text-slate-900 tracking-tight font-display whitespace-nowrap">Stay<span class="text-amber-600">Jogja</span></span>
+          <span class="hidden xl:inline-block ml-2.5 text-[10px] uppercase font-bold tracking-widest text-slate-400 border-l border-slate-300/80 pl-2.5 whitespace-nowrap">Kota Istimewa</span>
+        </div>
+      </a>
+
+      <!-- Center Links (Desktop - Apple HIG Capsule Items) -->
+      <div class="hidden lg:flex items-center gap-1 xl:gap-2 text-[13px] font-medium text-slate-600">
+        <a href="#destinasi" class="px-3.5 py-1.5 rounded-full hover:bg-slate-900/5 hover:text-slate-900 transition-all duration-200 whitespace-nowrap">Destinasi</a>
+        <a href="#koleksi" class="px-3.5 py-1.5 rounded-full hover:bg-slate-900/5 hover:text-slate-900 transition-all duration-200 whitespace-nowrap">Koleksi</a>
+        <a href="#cara-kerja" class="px-3.5 py-1.5 rounded-full hover:bg-slate-900/5 hover:text-slate-900 transition-all duration-200 whitespace-nowrap">Cara Pesan</a>
+        <a href="#testimoni" class="px-3.5 py-1.5 rounded-full hover:bg-slate-900/5 hover:text-slate-900 transition-all duration-200 whitespace-nowrap">Testimoni</a>
+        <a href="/katalog" class="ml-1 px-3.5 py-1.5 rounded-full text-amber-900 bg-amber-500/10 hover:bg-amber-500/20 font-semibold transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap">
+          <span>Katalog</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </a>
+      </div>
+
+      <!-- Right Action / User Profile / Mobile Toggle -->
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+        <!-- AI Assistant Pill (Apple HIG) -->
+        <button onclick="toggleChatbot()" class="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold text-slate-800 bg-slate-100 hover:bg-slate-200/80 rounded-full border border-slate-200/60 transition-all duration-200 tap-highlight whitespace-nowrap" title="Tanya Asisten AI Liburan">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i>
+          <span>AI Assistant</span>
+        </button>
+
+        <!-- Auth Container -->
+        <div id="nav-auth-container" class="flex-shrink-0">
+          <a href="/login" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-full text-white bg-slate-900 hover:bg-amber-600 transition-all tap-highlight whitespace-nowrap shadow-xs">
+            <i class="fa-solid fa-right-to-bracket text-[11px]"></i>
+            <span>Masuk</span>
+          </a>
+        </div>
+
+        <!-- Mobile Menu Toggle Button (Apple HIG Tap Target) -->
+        <button id="landing-mobile-menu-btn" onclick="toggleLandingMobileMenu()" class="lg:hidden w-9 h-9 rounded-full bg-slate-100/90 hover:bg-slate-200/80 flex items-center justify-center text-slate-700 transition tap-highlight" aria-label="Buka Menu Navigasi">
+          <i id="landing-mobile-menu-icon" class="fa-solid fa-bars text-sm"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Dropdown Menu (Liquid Glass Card) -->
+    <div id="landing-mobile-menu" class="hidden lg:hidden mt-2 p-4 liquid-glass-nav rounded-2xl shadow-xl transition-all duration-300">
+      <div class="flex flex-col gap-1.5 text-sm font-medium text-slate-700">
+        <a href="#destinasi" onclick="closeLandingMobileMenu()" class="px-3.5 py-2.5 rounded-xl hover:bg-slate-100/70 transition flex items-center gap-3">
+          <i class="fa-solid fa-compass text-amber-600 w-5"></i>
+          <span>Destinasi Ikonik</span>
+        </a>
+        <a href="#koleksi" onclick="closeLandingMobileMenu()" class="px-3.5 py-2.5 rounded-xl hover:bg-slate-100/70 transition flex items-center gap-3">
+          <i class="fa-solid fa-hotel text-amber-600 w-5"></i>
+          <span>Koleksi Terfavorit</span>
+        </a>
+        <a href="#cara-kerja" onclick="closeLandingMobileMenu()" class="px-3.5 py-2.5 rounded-xl hover:bg-slate-100/70 transition flex items-center gap-3">
+          <i class="fa-solid fa-circle-question text-amber-600 w-5"></i>
+          <span>Cara Pesan</span>
+        </a>
+        <a href="#testimoni" onclick="closeLandingMobileMenu()" class="px-3.5 py-2.5 rounded-xl hover:bg-slate-100/70 transition flex items-center gap-3">
+          <i class="fa-solid fa-star text-amber-600 w-5"></i>
+          <span>Testimoni Tamu</span>
+        </a>
+        <a href="/katalog" class="px-3.5 py-2.5 rounded-xl bg-amber-50 text-amber-900 font-semibold hover:bg-amber-100 transition flex items-center justify-between">
+          <span class="flex items-center gap-3">
+            <i class="fa-solid fa-layer-group text-amber-600 w-5"></i>
+            <span>Buka Katalog Lengkap</span>
+          </span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+        <button onclick="closeLandingMobileMenu(); toggleChatbot()" class="sm:hidden mt-2 px-3 py-2.5 rounded-xl bg-amber-500/10 text-amber-900 font-semibold hover:bg-amber-500/20 transition flex items-center justify-center gap-2 border border-amber-300/60">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i>
+          <span>Tanya AI Assistant</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= HERO SECTION (APPLE EDITORIAL STYLE) ================= -->
+  <header class="relative min-h-[92vh] sm:min-h-screen flex items-end pb-20 sm:pb-28 pt-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    
+    <!-- Hero Background Image (Grounded Prambanan Landscape) -->
+    <div class="absolute inset-0 z-0">
+      <img src="/images/prambanan.jpg" alt="Keistimewaan Yogyakarta" class="w-full h-full object-cover object-center scale-100">
+      <div class="absolute inset-0 hero-gradient-overlay"></div>
+    </div>
+
+    <!-- Side Navigation Badges (Desktop Right) -->
+    <div class="hidden xl:flex flex-col gap-3 absolute right-8 top-1/2 -translate-y-1/2 z-10">
+      <a href="https://instagram.com" target="_blank" class="w-10 h-10 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 backdrop-blur-md flex items-center justify-center text-xs transition border border-white/20 tap-highlight" title="Instagram StayJogja">
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+      <a href="https://maps.google.com/?q=Yogyakarta" target="_blank" class="w-10 h-10 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 backdrop-blur-md flex items-center justify-center text-xs transition border border-white/20 tap-highlight" title="Peta Wisata Jogja">
+        <i class="fa-solid fa-location-dot"></i>
+      </a>
+      <a href="/katalog" class="w-10 h-10 rounded-full bg-white/15 hover:bg-white text-white hover:text-slate-900 backdrop-blur-md flex items-center justify-center text-xs transition border border-white/20 tap-highlight" title="Katalog Penginapan">
+        <i class="fa-solid fa-hotel"></i>
+      </a>
+    </div>
+
+    <!-- Hero Content Container -->
+    <div class="max-w-6xl mx-auto w-full relative z-10 space-y-8 sm:space-y-10">
+      
+      <!-- Eyebrow Pill -->
+      <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-white text-xs font-semibold tracking-wide">
+        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <span>Daerah Istimewa Yogyakarta</span>
+      </div>
+
+      <!-- Grand Editorial Title -->
+      <div class="max-w-4xl">
+        <h1 class="hero-editorial-title text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.08] drop-shadow-sm">
+          Pengalaman Menginap Otentik di <span class="italic font-normal font-serif text-amber-200">Yogyakarta</span>
+        </h1>
+      </div>
+
+      <!-- Hero Bottom Row: Narrative & CTAs -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pt-4 border-t border-white/20">
+        <p class="text-sm sm:text-base text-slate-200 font-light max-w-xl leading-relaxed drop-shadow-xs">
+          Dari ketenangan homestay berarsitektur Jawa di Kotagede hingga hotel bintang lima bernuansa keraton — nikmati reservasi terverifikasi, ketersediaan kamar real-time, dan panduan perjalanan cerdas AI.
+        </p>
+
+        <div class="flex items-center gap-3 shrink-0">
+          <a href="/katalog" class="px-6 py-3.5 rounded-full text-xs sm:text-sm font-semibold bg-white text-slate-900 hover:bg-amber-400 hover:text-slate-950 transition-all flex items-center gap-2.5 shadow-xl tap-highlight">
+            <span>Eksplorasi Katalog</span>
+            <div class="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px]">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </div>
+          </a>
+
+          <a href="#destinasi" class="px-5 py-3.5 rounded-full text-xs font-medium text-white/95 hover:text-white bg-white/15 hover:bg-white/25 border border-white/25 backdrop-blur-md transition-all flex items-center gap-2 tap-highlight">
+            <i class="fa-solid fa-compass"></i>
+            <span class="hidden sm:inline">Kawasan Ikonik</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= SEGMENTED FLOATING SEARCH BAR (APPLE HIG SPEC) ================= -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 relative z-30 -mt-10 sm:-mt-12">
+    <div class="liquid-glass-search rounded-3xl p-3 sm:p-4 shadow-2xl">
+      <form id="hero-search-form" onsubmit="handleHeroSearch(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
+        
+        <!-- Segment 1: Kawasan (4 cols) -->
+        <div class="lg:col-span-4 p-2 sm:px-3 rounded-2xl hover:bg-slate-100/60 transition">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+            <i class="fa-solid fa-location-dot text-amber-600"></i>
+            <span>Destinasi / Kawasan</span>
+          </label>
+          <select id="landing-search-area" class="w-full bg-transparent border-0 text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none cursor-pointer">
+            <option value="all">Semua Kawasan di Jogja</option>
+            <option value="Malioboro">Malioboro & Keraton</option>
+            <option value="Prawirotaman">Prawirotaman (Bohemian)</option>
+            <option value="Kaliurang">Kaliurang & Merapi</option>
+            <option value="Kotagede">Kotagede Heritage</option>
+            <option value="Palagan">Palagan & Sleman</option>
+          </select>
+        </div>
+
+        <div class="hidden lg:block w-[1px] h-8 bg-slate-200 mx-auto"></div>
+
+        <!-- Segment 2: Check-In (3 cols) -->
+        <div class="lg:col-span-3 p-2 sm:px-3 rounded-2xl hover:bg-slate-100/60 transition">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+            <i class="fa-solid fa-calendar-day text-blue-700"></i>
+            <span>Check-in</span>
+          </label>
+          <input type="date" id="landing-search-checkin" class="w-full bg-transparent border-0 text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none cursor-pointer">
+        </div>
+
+        <div class="hidden lg:block w-[1px] h-8 bg-slate-200 mx-auto"></div>
+
+        <!-- Segment 3: Check-Out (3 cols) -->
+        <div class="lg:col-span-3 p-2 sm:px-3 rounded-2xl hover:bg-slate-100/60 transition">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+            <i class="fa-solid fa-calendar-check text-emerald-700"></i>
+            <span>Check-out</span>
+          </label>
+          <input type="date" id="landing-search-checkout" class="w-full bg-transparent border-0 text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none cursor-pointer">
+        </div>
+
+        <!-- Segment 4: CTA Button (2 cols) -->
+        <div class="lg:col-span-2">
+          <button type="submit" class="w-full py-3.5 px-4 bg-slate-900 hover:bg-amber-600 text-white rounded-2xl text-xs font-semibold shadow-md transition-all flex items-center justify-center gap-2 tap-highlight cursor-pointer">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Cari</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 2: DESTINASI IKONIK (APPLE HIG CARDS) ================= -->
+  <section id="destinasi" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 space-y-10">
+    
+    <!-- Section Header Row -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div class="space-y-2 max-w-xl">
+        <span class="text-xs font-bold text-amber-700 uppercase tracking-widest block">Kawasan Pilihan</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-display">
+          Jelajahi Setiap Sudut Keistimewaan
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 font-light">
+          Pilih lokasi yang paling sesuai dengan ritme liburan Anda di Yogyakarta.
+        </p>
+      </div>
+
+      <a href="/katalog" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-amber-700 transition">
+        <span>Semua Kawasan</span>
+        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+      </a>
+    </div>
+
+    <!-- 4 Destination Cards Grid (Apple HIG 16px Radius) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Card 1: Malioboro -->
+      <a href="/katalog?area=Malioboro" class="apple-card bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-subtle block group">
+        <div class="h-56 overflow-hidden relative">
+          <img src="/images/tugu-jogja.jpg" alt="Kawasan Malioboro & Keraton" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+          <span class="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/90 text-slate-900 backdrop-blur-md shadow-xs">
+            12+ Penginapan
+          </span>
+          <div class="absolute bottom-3.5 left-3.5 right-3.5 text-white">
+            <h3 class="font-bold text-base font-display">Malioboro & Keraton</h3>
+            <p class="text-[11px] text-slate-200 font-light">Pusat Budaya & Belanja Khas</p>
+          </div>
+        </div>
+        <div class="p-3.5 flex items-center justify-between text-xs text-slate-600">
+          <span class="font-medium">Jelajahi Hotel</span>
+          <span class="text-amber-600 font-bold group-hover:translate-x-1 transition-transform">→</span>
+        </div>
+      </a>
+
+      <!-- Card 2: Prawirotaman -->
+      <a href="/katalog?area=Prawirotaman" class="apple-card bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-subtle block group">
+        <div class="h-56 overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80" alt="Kampung Turis Prawirotaman" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+          <span class="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/90 text-slate-900 backdrop-blur-md shadow-xs">
+            6+ Penginapan
+          </span>
+          <div class="absolute bottom-3.5 left-3.5 right-3.5 text-white">
+            <h3 class="font-bold text-base font-display">Prawirotaman</h3>
+            <p class="text-[11px] text-slate-200 font-light">Vibe Bohemian & Kafe Estetik</p>
+          </div>
+        </div>
+        <div class="p-3.5 flex items-center justify-between text-xs text-slate-600">
+          <span class="font-medium">Jelajahi Homestay</span>
+          <span class="text-amber-600 font-bold group-hover:translate-x-1 transition-transform">→</span>
+        </div>
+      </a>
+
+      <!-- Card 3: Kaliurang -->
+      <a href="/katalog?area=Kaliurang" class="apple-card bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-subtle block group">
+        <div class="h-56 overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80" alt="Kaliurang & Merapi" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+          <span class="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/90 text-slate-900 backdrop-blur-md shadow-xs">
+            4+ Resort Alam
+          </span>
+          <div class="absolute bottom-3.5 left-3.5 right-3.5 text-white">
+            <h3 class="font-bold text-base font-display">Kaliurang & Merapi</h3>
+            <p class="text-[11px] text-slate-200 font-light">Kesejukan Lereng Gunung</p>
+          </div>
+        </div>
+        <div class="p-3.5 flex items-center justify-between text-xs text-slate-600">
+          <span class="font-medium">Jelajahi Resort</span>
+          <span class="text-amber-600 font-bold group-hover:translate-x-1 transition-transform">→</span>
+        </div>
+      </a>
+
+      <!-- Card 4: Kotagede -->
+      <a href="/katalog?area=Kotagede" class="apple-card bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-subtle block group">
+        <div class="h-56 overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80" alt="Kotagede Heritage" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+          <span class="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/90 text-slate-900 backdrop-blur-md shadow-xs">
+            4+ Homestay Budaya
+          </span>
+          <div class="absolute bottom-3.5 left-3.5 right-3.5 text-white">
+            <h3 class="font-bold text-base font-display">Kotagede Heritage</h3>
+            <p class="text-[11px] text-slate-200 font-light">Arsitektur Klasik & Perak</p>
+          </div>
+        </div>
+        <div class="p-3.5 flex items-center justify-between text-xs text-slate-600">
+          <span class="font-medium">Jelajahi Heritage</span>
+          <span class="text-amber-600 font-bold group-hover:translate-x-1 transition-transform">→</span>
+        </div>
+      </a>
+
+    </div>
+
+  </section>
+
+  <!-- ================= SECTION 3: KOLEKSI PENGINAPAN TERFAVORIT ================= -->
+  <section id="koleksi" class="bg-slate-100/60 py-20 sm:py-28 border-y border-slate-200/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      
+      <!-- Section Header & Apple Segmented Control -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <span class="text-xs font-bold text-amber-700 uppercase tracking-widest block mb-1">Kurasi Terverifikasi</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-display">
+            Pilihan Penginapan Terfavorit
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1 max-w-lg font-light">
+            Akomodasi dengan standar kebersihan tinggi, lokasi strategis, dan konfirmasi instan.
+          </p>
+        </div>
+
+        <!-- Apple iOS Segmented Control -->
+        <div class="inline-flex p-1 bg-slate-200/80 rounded-full border border-slate-300/60 self-start md:self-auto" id="landing-filter-tabs">
+          <button onclick="filterLandingProperties('all', this)" class="landing-tab-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-900 shadow-xs transition-all cursor-pointer">
+            Semua
+          </button>
+          <button onclick="filterLandingProperties('hotel', this)" class="landing-tab-btn px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+            Hotel
+          </button>
+          <button onclick="filterLandingProperties('homestay', this)" class="landing-tab-btn px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+            Homestay
+          </button>
+          <button onclick="filterLandingProperties('apartemen', this)" class="landing-tab-btn px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+            Apartemen
+          </button>
+        </div>
+      </div>
+
+      <!-- Properties Grid Container (Populated via JS) -->
+      <div id="landing-properties-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        
+        <!-- Skeleton Loading Placeholders -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 space-y-4 shadow-xs">
+          <div class="h-48 rounded-xl skeleton-shimmer"></div>
+          <div class="space-y-2">
+            <div class="h-4 w-28 rounded-full skeleton-shimmer-amber"></div>
+            <div class="h-6 w-3/4 rounded-lg skeleton-shimmer"></div>
+            <div class="h-4 w-1/2 rounded skeleton-shimmer"></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 space-y-4 shadow-xs">
+          <div class="h-48 rounded-xl skeleton-shimmer"></div>
+          <div class="space-y-2">
+            <div class="h-4 w-28 rounded-full skeleton-shimmer-amber"></div>
+            <div class="h-6 w-3/4 rounded-lg skeleton-shimmer"></div>
+            <div class="h-4 w-1/2 rounded skeleton-shimmer"></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 space-y-4 shadow-xs">
+          <div class="h-48 rounded-xl skeleton-shimmer"></div>
+          <div class="space-y-2">
+            <div class="h-4 w-28 rounded-full skeleton-shimmer-amber"></div>
+            <div class="h-6 w-3/4 rounded-lg skeleton-shimmer"></div>
+            <div class="h-4 w-1/2 rounded skeleton-shimmer"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- View All Button -->
+      <div class="text-center pt-4">
+        <a href="/katalog" class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-white text-slate-800 hover:bg-slate-900 hover:text-white border border-slate-300/80 shadow-xs transition-all tap-highlight">
+          <span>Lihat Seluruh 26 Penginapan di Katalog</span>
+          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= SECTION 4: 3 LANGKAH MUDAH (APPLE HIG WORKFLOW) ================= -->
+  <section id="cara-kerja" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 space-y-14">
+    
+    <div class="text-center max-w-2xl mx-auto space-y-2">
+      <span class="text-xs font-bold text-amber-700 uppercase tracking-widest">Alur Praktis</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-display">
+        Reservasi Mudah & Pasti
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-500 font-light leading-relaxed">
+        Dari proses memilih kamar hingga tiba di penginapan, semua terintegrasi secara cepat.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+      
+      <!-- Step 1 -->
+      <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-subtle space-y-3 relative group">
+        <div class="text-2xl font-black text-slate-300 font-mono">01</div>
+        <h3 class="text-base font-bold text-slate-900 font-display">Pilih Tempat Singgah</h3>
+        <p class="text-xs text-slate-600 leading-relaxed font-light">
+          Jelajahi hotel bintang 1–5, homestay arsitektur Jawa, atau apartemen modern. Seluruh kamar terverifikasi ketersediaannya secara real-time.
+        </p>
+        <div class="pt-1 text-xs font-semibold text-amber-700 flex items-center gap-1.5">
+          <span>Katalog Terverifikasi</span>
+          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-subtle space-y-3 relative group">
+        <div class="text-2xl font-black text-slate-300 font-mono">02</div>
+        <h3 class="text-base font-bold text-slate-900 font-display">Rancang Itinerary Cerdas</h3>
+        <p class="text-xs text-slate-600 leading-relaxed font-light">
+          Asisten AI StayJogja merancang rencana liburan harian yang logis sesuai durasi malam Anda, langsung dari hotel ke destinasi budaya tanpa bolak-balik jalan.
+        </p>
+        <div class="pt-1 text-xs font-semibold text-slate-800 flex items-center gap-1.5">
+          <span>Rute AI Personal</span>
+          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-subtle space-y-3 relative group">
+        <div class="text-2xl font-black text-slate-300 font-mono">03</div>
+        <h3 class="text-base font-bold text-slate-900 font-display">QRIS Instan & Fast Check-In</h3>
+        <p class="text-xs text-slate-600 leading-relaxed font-light">
+          Bayar aman menggunakan QRIS nasional. Dapatkan invoice resmi dan Barcode Fast Check-In sehingga Anda tidak perlu fotokopi identitas di meja resepsionis.
+        </p>
+        <div class="pt-1 text-xs font-semibold text-emerald-700 flex items-center gap-1.5">
+          <span>Barcode Check-In</span>
+          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ================= SECTION 5: METRICS STRIP ================= -->
+  <section class="bg-slate-900 text-white py-12 border-y border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-slate-800">
+        
+        <div class="pt-4 md:pt-0 space-y-1">
+          <div class="text-3xl font-extrabold text-amber-400 font-display">26+</div>
+          <div class="text-xs text-slate-400 font-medium">Akomodasi Terverifikasi</div>
+        </div>
+
+        <div class="pt-4 md:pt-0 space-y-1">
+          <div class="text-3xl font-extrabold text-white font-display">100%</div>
+          <div class="text-xs text-slate-400 font-medium">Data Terintegrasi Dukcapil</div>
+        </div>
+
+        <div class="pt-4 md:pt-0 space-y-1">
+          <div class="text-3xl font-extrabold text-amber-400 font-display">4.9 / 5.0</div>
+          <div class="text-xs text-slate-400 font-medium">Rating Kepuasan Tamu</div>
+        </div>
+
+        <div class="pt-4 md:pt-0 space-y-1">
+          <div class="text-3xl font-extrabold text-white font-display">&lt; 5 Detik</div>
+          <div class="text-xs text-slate-400 font-medium">Konfirmasi QRIS Instan</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 6: TESTIMONI WISATAWAN ================= -->
+  <section id="testimoni" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 space-y-12">
+    
+    <div class="text-center max-w-xl mx-auto space-y-2">
+      <span class="text-xs font-bold text-amber-700 uppercase tracking-widest">Pengalaman Tamu</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-display">
+        Ulasan Tamu StayJogja
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+      
+      <!-- Review 1 -->
+      <div class="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-subtle space-y-4">
+        <div class="flex items-center gap-1 text-amber-500 text-xs">
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed font-light">
+          "Proses booking Hotel Tentrem via StayJogja sangat efisien. Begitu pembayaran QRIS selesai, barcode check-in langsung terbit dan staf resepsionis langsung mengenali kamar kami."
+        </p>
+        <div class="flex items-center gap-3 pt-3 border-t border-slate-100">
+          <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-semibold flex items-center justify-center text-xs">
+            R
+          </div>
+          <div>
+            <h4 class="text-xs font-semibold text-slate-900">Rian Pratama</h4>
+            <span class="text-[10px] text-slate-400">Jakarta • Menginap 3 Malam</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review 2 -->
+      <div class="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-subtle space-y-4">
+        <div class="flex items-center gap-1 text-amber-500 text-xs">
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed font-light">
+          "Fitur rekomendasi itinerary AI sangat praktis. Rute perjalanan kami ke Tamansari dan kawasan kuliner Prawirotaman tersusun runut tanpa buang waktu macet di jalan."
+        </p>
+        <div class="flex items-center gap-3 pt-3 border-t border-slate-100">
+          <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-semibold flex items-center justify-center text-xs">
+            S
+          </div>
+          <div>
+            <h4 class="text-xs font-semibold text-slate-900">Sarah & Dimas</h4>
+            <span class="text-[10px] text-slate-400">Surabaya • Menginap 2 Malam</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review 3 -->
+      <div class="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200/90 shadow-subtle space-y-4">
+        <div class="flex items-center gap-1 text-amber-500 text-xs">
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed font-light">
+          "Trava House Homestay suasananya sangat tenang dan homie. Detail kamar sesuai foto dan harga transparan tanpa ada biaya tersembunyi saat tiba."
+        </p>
+        <div class="flex items-center gap-3 pt-3 border-t border-slate-100">
+          <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-semibold flex items-center justify-center text-xs">
+            A
+          </div>
+          <div>
+            <h4 class="text-xs font-semibold text-slate-900">Amanda Putri</h4>
+            <span class="text-[10px] text-slate-400">Bandung • Menginap 1 Malam</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ================= SECTION 7: EDITORIAL CLOSING BANNER ================= -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-28">
+    <div class="rounded-3xl overflow-hidden relative min-h-[360px] sm:min-h-[420px] flex items-center px-6 sm:px-12 py-10 text-white shadow-2xl border border-slate-800">
+      
+      <!-- Background Visual -->
+      <img src="/images/prambanan-sunset.jpg" alt="Liburan di Yogyakarta" class="absolute inset-0 w-full h-full object-cover">
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-950/40"></div>
+
+      <!-- Content -->
+      <div class="relative z-10 max-w-xl space-y-5">
+        <span class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-amber-300 border border-white/20 inline-flex items-center gap-1.5 backdrop-blur-md">
+          <i class="fa-solid fa-sparkles text-amber-400"></i>
+          <span>Rencanakan Sekarang</span>
+        </span>
+
+        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight font-display leading-tight">
+          Temukan Kenyamanan Menginap di Yogyakarta
+        </h2>
+
+        <p class="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
+          Pilih penginapan terbaik Anda hari ini. Nikmati kemudahan reservasi terverifikasi, invoice resmi instan, dan panduan perjalanan cerdas AI.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <a href="/katalog" class="px-6 py-3.5 rounded-full text-xs sm:text-sm font-semibold bg-white text-slate-900 hover:bg-amber-400 hover:text-slate-950 transition-all flex items-center gap-2 shadow-lg tap-highlight">
+            <span>Jelajahi Katalog Penginapan</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+
+          <button onclick="toggleChatbot()" class="px-5 py-3.5 rounded-full text-xs font-medium text-white bg-white/15 hover:bg-white/25 border border-white/30 backdrop-blur-md transition-all flex items-center gap-2 tap-highlight cursor-pointer">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+            <span>Tanya Asisten AI Jogja</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= OFFICIAL FOOTER ================= -->
+  <footer class="bg-slate-950 text-white pt-16 pb-12 border-t border-slate-900">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        
+        <!-- Brand Info -->
+        <div class="space-y-4 md:col-span-1">
+          <div class="flex items-center gap-2.5">
+            <img src="/images/logo-stayjogja.png" alt="StayJogja" class="w-8 h-8 rounded-xl object-contain">
+            <span class="text-xl font-black tracking-tight font-display">Stay<span class="text-amber-500">Jogja</span></span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed font-light">
+            Platform kurasi akomodasi resmi Daerah Istimewa Yogyakarta. Menghadirkan hotel berbintang, homestay keluarga, dan apartemen dengan integrasi verifikasi Dukcapil.
+          </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Jelajahi</h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="/katalog" class="hover:text-white transition">Katalog Penginapan</a></li>
+            <li><a href="/katalog?type=hotel" class="hover:text-white transition">Hotel Berbintang</a></li>
+            <li><a href="/katalog?type=homestay" class="hover:text-white transition">Homestay Keluarga</a></li>
+            <li><a href="/katalog?type=apartemen" class="hover:text-white transition">Apartemen Modern</a></li>
+          </ul>
+        </div>
+
+        <!-- Kawasan Populer -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Kawasan Favorit</h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="/katalog?area=Malioboro" class="hover:text-white transition">Malioboro & Keraton</a></li>
+            <li><a href="/katalog?area=Prawirotaman" class="hover:text-white transition">Prawirotaman</a></li>
+            <li><a href="/katalog?area=Kaliurang" class="hover:text-white transition">Kaliurang & Merapi</a></li>
+            <li><a href="/katalog?area=Kotagede" class="hover:text-white transition">Kotagede Heritage</a></li>
+          </ul>
+        </div>
+
+        <!-- Akses Khusus -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Akses Portal</h4>
+          <ul class="space-y-2 text-xs text-slate-400">
+            <li><a href="/owner" class="hover:text-white transition">Portal Pemilik Penginapan</a></li>
+            <li><a href="/checkin" class="hover:text-white transition">Portal Resepsionis Hotel</a></li>
+            <li><a href="/admin" class="hover:text-white transition">Panel Administrator</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bottom Row -->
+      <div class="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
+        <p>© 2026 StayJogja Hospitality Platform. Daerah Istimewa Yogyakarta.</p>
+        <div class="flex items-center gap-4">
+          <span>Verifikasi Dukcapil</span>
+          <span>•</span>
+          <span>Didukung Google Gemini AI</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ================= FLOATING AI ASSISTANT TRIGGER BUTTON ================= -->
+  <div class="fixed bottom-6 right-6 z-40">
+    <button onclick="toggleChatbot()" class="p-3 sm:px-4 sm:py-3 rounded-full bg-slate-900 hover:bg-amber-600 text-white font-semibold text-xs shadow-2xl transition-all flex items-center gap-2 tap-highlight cursor-pointer border border-slate-700/60">
+      <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-sm"></i>
+      <span class="hidden sm:inline">Tanya Asisten AI</span>
+    </button>
+  </div>
+
+  <!-- ================= AI CHATBOT DRAWER ================= -->
+  <div id="chatbot-drawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-96 bg-white shadow-2xl border-l border-slate-200 transform translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Header -->
+    <div class="p-4 bg-slate-900 text-white flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center text-xs">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-sm font-display leading-tight">Asisten Pintar StayJogja</h3>
+          <span class="text-[10px] text-emerald-400 flex items-center gap-1 font-medium">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online
+          </span>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button onclick="clearChatHistory()" class="text-slate-400 hover:text-red-400 p-1.5 text-xs transition" title="Hapus riwayat obrolan (Reset chat)">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+        <button onclick="toggleChatbot()" class="text-slate-400 hover:text-white p-1.5 text-sm transition" title="Tutup">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="chat-messages-container" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 text-xs">
+      <div class="chat-bubble-bot p-3.5 max-w-[88%] text-xs leading-relaxed bg-white rounded-2xl border border-slate-200 shadow-xs">
+        Sugeng rawuh! 👋 Saya asisten pintar StayJogja. Ada yang bisa saya bantu seputar rekomendasi hotel, homestay, kuliner khas, atau rute wisata di Yogyakarta?
+      </div>
+    </div>
+
+    <!-- Chat Input Form -->
+    <form id="chat-form" onsubmit="handleChatSubmit(event)" class="p-3 border-t border-slate-200 bg-white flex items-center gap-2">
+      <input type="text" id="chat-input" placeholder="Tanyakan rekomendasi penginapan..." required class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+      <button type="submit" class="p-2.5 bg-slate-900 hover:bg-amber-600 rounded-xl text-white text-xs shadow-xs transition">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script>
+    // Liquid Glass Navbar Scroll State
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('landing-navbar')?.firstElementChild;
+      if (!nav) return;
+      if (window.scrollY > 30) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+
+    // Handle Navbar User Session
+    document.addEventListener('DOMContentLoaded', () => {
+      initLandingAuth();
+      setupLandingDates();
+      loadLandingFeaturedProperties();
+      restoreChatHistory();
+    });
+
+    function initLandingAuth() {
+      const container = document.getElementById('nav-auth-container');
+      if (!container) return;
+
+      const rawUser = localStorage.getItem('stayjogja_user');
+      if (rawUser) {
+        try {
+          const user = JSON.parse(rawUser);
+          const firstName = user.name ? user.name.split(' ')[0] : 'Akun';
+          const roleBadge = user.role === 'admin' ? 'Admin' : (user.role === 'owner' ? 'Owner' : 'Tamu');
+          const roleColor = user.role === 'admin' ? 'bg-purple-100 text-purple-700' : (user.role === 'owner' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700');
+          let profileUrl = '/user';
+          if (user.role === 'admin') profileUrl = '/admin';
+          else if (user.role === 'owner') profileUrl = '/owner';
+
+          container.innerHTML = `
+            <a href="${profileUrl}" class="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 text-xs font-semibold rounded-full text-slate-800 bg-white/95 hover:bg-white transition-all border border-slate-200/80 shadow-2xs whitespace-nowrap active:scale-95" title="Buka Dashboard">
+              <span class="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] flex-shrink-0">
+                <i class="fa-solid fa-user"></i>
+              </span>
+              <span class="max-w-[85px] truncate font-medium">${firstName}</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${roleColor}">${roleBadge}</span>
+            </a>
+          `;
+          return;
+        } catch(e) {}
+      }
+
+      container.innerHTML = `
+        <a href="/login" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-full text-white bg-slate-900 hover:bg-amber-600 transition-all whitespace-nowrap shadow-xs tap-highlight">
+          <i class="fa-solid fa-right-to-bracket text-[11px]"></i>
+          <span>Masuk</span>
+        </a>
+      `;
+    }
+
+    // Apple HIG Mobile Navigation Controller
+    function toggleLandingMobileMenu() {
+      const menu = document.getElementById('landing-mobile-menu');
+      const icon = document.getElementById('landing-mobile-menu-icon');
+      if (!menu) return;
+      menu.classList.toggle('hidden');
+      if (menu.classList.contains('hidden')) {
+        icon.classList.remove('fa-xmark');
+        icon.classList.add('fa-bars');
+      } else {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-xmark');
+      }
+    }
+
+    function closeLandingMobileMenu() {
+      const menu = document.getElementById('landing-mobile-menu');
+      const icon = document.getElementById('landing-mobile-menu-icon');
+      if (menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+        if (icon) {
+          icon.classList.remove('fa-xmark');
+          icon.classList.add('fa-bars');
+        }
+      }
+    }
+
+    // Default Dates
+    function setupLandingDates() {
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
+      const fmt = d => d.toISOString().split('T')[0];
+
+      const cin = document.getElementById('landing-search-checkin');
+      const cout = document.getElementById('landing-search-checkout');
+      if (cin && cout) {
+        cin.value = fmt(today);
+        cout.value = fmt(tomorrow);
+        cin.min = fmt(today);
+        cout.min = fmt(today);
+      }
+    }
+
+    // Handle Hero Search Form Submit
+    function handleHeroSearch(e) {
+      e.preventDefault();
+      const area = document.getElementById('landing-search-area').value;
+      const cin = document.getElementById('landing-search-checkin').value;
+      const cout = document.getElementById('landing-search-checkout').value;
+
+      let nights = 1;
+      if (cin && cout) {
+        const d1 = new Date(cin);
+        const d2 = new Date(cout);
+        nights = Math.max(1, Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)));
+      }
+
+      // Save to sessionStorage
+      try {
+        sessionStorage.setItem('stayjogja_search_dates', JSON.stringify({ checkIn: cin, checkOut: cout, nights }));
+      } catch(err) {}
+
+      let url = `/katalog?checkIn=${encodeURIComponent(cin)}&checkOut=${encodeURIComponent(cout)}`;
+      if (area && area !== 'all') {
+        url += `&area=${encodeURIComponent(area)}`;
+      }
+      window.location.href = url;
+    }
+
+    // Load Featured Properties
+    let allFeaturedProps = [];
+    async function loadLandingFeaturedProperties() {
+      const container = document.getElementById('landing-properties-grid');
+      if (!container) return;
+
+      try {
+        const res = await API.getProperties();
+        if (res.success && res.data) {
+          allFeaturedProps = res.data;
+          renderLandingCards(allFeaturedProps.slice(0, 6));
+        }
+      } catch(err) {
+        console.warn('Error loading featured properties:', err);
+      }
+    }
+
+    function renderLandingCards(props) {
+      const container = document.getElementById('landing-properties-grid');
+      if (!container) return;
+
+      if (!props || props.length === 0) {
+        container.innerHTML = '<div class="col-span-3 text-center py-10 text-xs text-slate-400">Tidak ada properti ditemukan.</div>';
+        return;
+      }
+
+      container.innerHTML = props.map(p => {
+        const minPrice = p.units && p.units.length > 0 ? Math.min(...p.units.map(u => u.price)) : 350000;
+        const photo = (p.photos && p.photos[0]) || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80';
+        const typeBadge = p.type === 'hotel' 
+          ? (p.stars ? `Hotel Bintang ${p.stars}` : 'Hotel')
+          : (p.type === 'homestay' ? 'Homestay' : 'Apartemen');
+
+        return `
+          <div class="apple-card bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-subtle flex flex-col group">
+            <div class="h-52 overflow-hidden relative bg-slate-100">
+              <img src="${photo}" alt="${p.name}" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
+              
+              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white/95 text-slate-900 shadow-xs backdrop-blur-md">
+                ${typeBadge}
+              </span>
+
+              <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500 text-white flex items-center gap-1 shadow-xs">
+                <i class="fa-solid fa-star text-[10px]"></i>
+                <span>${p.rating || 9.2}</span>
+              </div>
+
+              <div class="absolute bottom-3 left-3 right-3 text-white">
+                <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">
+                  <i class="fa-solid fa-location-dot mr-1"></i>${p.area || 'Yogyakarta'}
+                </span>
+                <h3 class="font-bold text-base font-display truncate">${p.name}</h3>
+              </div>
+            </div>
+
+            <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+              <p class="text-xs text-slate-500 font-light line-clamp-2 leading-relaxed">
+                ${p.description || 'Penginapan nyaman dan strategis dengan pelayanan khas keramahan Yogyakarta.'}
+              </p>
+
+              <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] text-slate-400 block font-medium">Mulai dari</span>
+                  <span class="text-sm font-extrabold text-amber-700 font-display">Rp ${minPrice.toLocaleString('id-ID')}</span>
+                  <span class="text-[10px] text-slate-400">/malam</span>
+                </div>
+
+                <a href="/detail?id=${p.id}" class="px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 text-white hover:bg-amber-600 transition-all flex items-center gap-1.5 tap-highlight cursor-pointer">
+                  <span>Lihat Detail</span>
+                  <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterLandingProperties(type, btn) {
+      document.querySelectorAll('.landing-tab-btn').forEach(b => {
+        b.className = 'landing-tab-btn px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900 transition-all cursor-pointer';
+      });
+      if (btn) {
+        btn.className = 'landing-tab-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-slate-900 shadow-xs transition-all cursor-pointer';
+      }
+
+      if (type === 'all') {
+        renderLandingCards(allFeaturedProps.slice(0, 6));
+      } else {
+        const filtered = allFeaturedProps.filter(p => p.type === type);
+        renderLandingCards(filtered.slice(0, 6));
+      }
+    }
+
+    // AI Chatbot UI & 24-Hour Cache System in Landing
+    const CHAT_CACHE_KEY = 'stayjogja_ai_chat_cache';
+    const CHAT_CACHE_TTL = 24 * 60 * 60 * 1000; // 1 Hari (24 Jam) dalam milidetik
+
+    function getChatHistoryCache() {
+      try {
+        const raw = localStorage.getItem(CHAT_CACHE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        const now = Date.now();
+        if (!data.timestamp || (now - data.timestamp > CHAT_CACHE_TTL)) {
+          console.log('[Landing Chat Cache] ⏳ Riwayat chat telah melebihi 1 hari, dibersihkan otomatis.');
+          localStorage.removeItem(CHAT_CACHE_KEY);
+          return null;
+        }
+        return data.messages || [];
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveMessageToChatCache(text, sender) {
+      try {
+        let messages = getChatHistoryCache() || [];
+        messages.push({
+          sender,
+          text,
+          time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          timestamp: Date.now()
+        });
+        if (messages.length > 100) messages = messages.slice(-100);
+        localStorage.setItem(CHAT_CACHE_KEY, JSON.stringify({
+          timestamp: Date.now(),
+          expires_at: Date.now() + CHAT_CACHE_TTL,
+          messages
+        }));
+      } catch (e) {}
+    }
+
+    function restoreChatHistory() {
+      const container = document.getElementById('chat-messages-container');
+      if (!container) return;
+
+      const messages = getChatHistoryCache();
+      if (messages && messages.length > 0) {
+        container.innerHTML = `
+          <div class="text-center my-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[10px] font-medium border border-slate-200">
+              <i class="fa-solid fa-clock-rotate-left text-[9px] text-amber-500"></i> Riwayat obrolan aktif (Tersimpan 1 hari)
+            </span>
+          </div>
+        `;
+        messages.forEach(m => {
+          appendChatMessage(m.text, m.sender, true);
+        });
+      }
+    }
+
+    function clearChatHistory() {
+      if (confirm('Mulai obrolan baru dan hapus riwayat chat AI?')) {
+        localStorage.removeItem(CHAT_CACHE_KEY);
+        const container = document.getElementById('chat-messages-container');
+        if (container) {
+          container.innerHTML = `
+            <div class="chat-bubble-bot p-3.5 max-w-[88%] text-xs leading-relaxed bg-white text-slate-800 rounded-2xl rounded-tl-xs border border-slate-200 shadow-xs">
+              Sugeng rawuh! 👋 Saya asisten pintar StayJogja. Ada yang bisa saya bantu seputar rekomendasi hotel, homestay, kuliner khas, atau rute wisata di Yogyakarta?
+            </div>
+          `;
+        }
+      }
+    }
+
+    function toggleChatbot() {
+      const drawer = document.getElementById('chatbot-drawer');
+      if (!drawer) return;
+      drawer.classList.toggle('translate-x-full');
+      if (!drawer.classList.contains('translate-x-full')) {
+        setTimeout(() => document.getElementById('chat-input')?.focus(), 250);
+      }
+    }
+
+    async function handleChatSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      appendChatMessage(msg, 'user');
+      input.value = '';
+
+      const typingDiv = document.createElement('div');
+      typingDiv.id = 'chat-typing';
+      typingDiv.className = 'p-2.5 max-w-[50%] text-xs text-slate-400 italic flex items-center gap-1.5';
+      typingDiv.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Asisten sedang mengetik...';
+      document.getElementById('chat-messages-container').appendChild(typingDiv);
+
+      try {
+        const res = await API.sendChatbotMessage(msg);
+        typingDiv.remove();
+        if (res.success && res.reply) {
+          appendChatMessage(res.reply, 'bot');
+        } else {
+          appendChatMessage('Maaf, asisten sedang sibuk. Silakan coba lagi.', 'bot');
+        }
+      } catch(err) {
+        typingDiv.remove();
+        appendChatMessage('Gagal terhubung dengan asisten cerdas.', 'bot');
+      }
+    }
+
+    function renderMarkdown(raw) {
+      let s = raw || '';
+
+      // Strip fenced code blocks (```...```)
+      s = s.replace(/```[\s\S]*?```/g, '');
+
+      // Hotel links → clickable pill
+      s = s.replace(/\[([^\]]+)\]\(([^)]*\/detail[^)]*)\)/gi, (_, title, url) =>
+        `<a href="${url}" class="hotel-chat-link inline-flex items-center gap-1 font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded-lg border border-amber-300 text-xs transition my-0.5" title="Buka ${title}"><i class="fa-solid fa-hotel text-amber-700 mr-1"></i>${title}</a>`
+      );
+
+      // External links
+      s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/gi, (_, title, url) =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="font-semibold text-blue-600 hover:underline">${title}</a>`
+      );
+
+      // Headings ### → bold line (strip # prefix)
+      s = s.replace(/^#{1,6}\s+(.+)$/gm, '<b>$1</b>');
+
+      // Horizontal rules ---
+      s = s.replace(/^---+$/gm, '<hr class="my-1 border-slate-200">');
+
+      // Bold **text** (must be BEFORE bullet * handling)
+      s = s.replace(/\*\*(.*?)\*\*/gs, '<b>$1</b>');
+
+      // Bullet lines starting with "* " or "- "
+      s = s.replace(/^[\*\-]\s+/gm, '• ');
+
+      // Italic *text* (after bullets)
+      s = s.replace(/(?<!\w)\*([^*\n]+)\*(?!\w)/g, '<em>$1</em>');
+
+      // Numbered list indent
+      s = s.replace(/^(\d+\.\s)/gm, '<span class="mr-1 font-semibold">$1</span>');
+
+      // Line breaks
+      s = s.replace(/\n/g, '<br>');
+
+      return s;
+    }
+
+    function appendChatMessage(text, sender, skipCache = false) {
+      const container = document.getElementById('chat-messages-container');
+      if (!container) return;
+
+      const div = document.createElement('div');
+      const formatted = renderMarkdown(text);
+
+      if (sender === 'user') {
+        div.className = 'p-3 max-w-[85%] ml-auto text-xs bg-slate-900 text-white rounded-2xl rounded-tr-xs shadow-xs';
+        div.innerHTML = formatted;
+      } else {
+        div.className = 'chat-bubble-bot p-3.5 max-w-[88%] text-xs leading-relaxed bg-white text-slate-800 rounded-2xl rounded-tl-xs border border-slate-200 shadow-xs';
+        div.innerHTML = formatted;
+      }
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+
+      // Simpan ke cache 1 hari jika bukan saat restore
+      if (!skipCache) {
+        saveMessageToChatCache(text, sender);
+      }
+    }
+  </script>
+
+</body>
+</html>

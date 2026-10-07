@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StayJogja — Pendaftaran Mitra Akomodasi Yogyakarta</title>
+  <link rel="icon" type="image/svg+xml" href="/images/logo-stayjogja.png">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+    }
+    .font-montserrat {
+      font-family: 'Montserrat', sans-serif;
+    }
+    .amber-600 {
+      background-color: #d97706;
+    }
+    .text-amber-600 {
+      color: #d97706;
+    }
+    .border-amber-600 {
+      border-color: #d97706;
+    }
+    .step-active {
+      border-color: #d97706;
+      background-color: #d97706;
+      color: white;
+    }
+    .step-done {
+      border-color: #10b981;
+      background-color: #10b981;
+      color: white;
+    }
+  </style>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- ================= STAYYK TOP NAVIGATION ================= -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <a href="/owner" class="flex items-center gap-2.5 group">
+          <img src="/images/logo-stayjogja.png" alt="StayJogja Logo" class="w-9 h-9 rounded-xl shadow-xs group-hover:scale-105 transition">
+          <div class="flex items-center">
+            <span class="font-black text-xl text-slate-900 tracking-tight">StayJogja</span>
+            <span class="ml-1.5 px-2 py-0.5 rounded bg-slate-900 text-white font-extrabold text-[11px] tracking-wider uppercase">PARTNER</span>
+          </div>
+        </a>
+        <span class="hidden md:inline-block text-slate-300 font-light text-lg">|</span>
+        <span class="hidden md:inline-block text-xs font-semibold text-slate-500">
+          Portal Pendaftaran Mitra Akomodasi Yogyakarta
+        </span>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="/owner" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="hidden sm:inline">Kembali ke</span> Dashboard
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+    
+    <!-- PROGRESS STEPPER BAR (StayJogja Partner Hub 6 Steps) -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm mb-8">
+      <div class="flex items-center justify-between gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
+        
+        <!-- Step 1 -->
+        <button type="button" onclick="goToStep(1)" id="step-nav-1" class="flex items-center gap-2.5 text-xs font-bold transition flex-shrink-0">
+          <span id="step-badge-1" class="w-8 h-8 rounded-full flex items-center justify-center step-active font-black text-xs shadow-sm">1</span>
+          <div class="text-left hidden sm:block">
+            <span class="block text-slate-800 leading-tight">Info Properti</span>
+            <span class="text-[10px] text-slate-400 font-normal">Tipe & Bintang</span>
+          </div>
+        </button>
+
+        <div id="step-line-1" class="flex-1 h-0.5 bg-slate-200 min-w-[20px]"></div>
+
+        <!-- Step 2 -->
+        <button type="button" onclick="goToStep(2)" id="step-nav-2" class="flex items-center gap-2.5 text-xs font-bold transition flex-shrink-0">
+          <span id="step-badge-2" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-500 font-black text-xs border border-slate-200">2</span>
+          <div class="text-left hidden sm:block">
+            <span class="block text-slate-500 leading-tight">Lokasi & PIC</span>
+            <span class="text-[10px] text-slate-400 font-normal">Kawasan Jogja</span>
+          </div>
+        </button>
+
+        <div id="step-line-2" class="flex-1 h-0.5 bg-slate-200 min-w-[20px]"></div>
+
+        <!-- Step 3 -->
+        <button type="button" onclick="goToStep(3)" id="step-nav-3" class="flex items-center gap-2.5 text-xs font-bold transition flex-shrink-0">
+          <span id="step-badge-3" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-500 font-black text-xs border border-slate-200">3</span>
+          <div class="text-left hidden sm:block">
+            <span class="block text-slate-500 leading-tight">Fasilitas</span>
+            <span class="text-[10px] text-slate-400 font-normal">Fasilitas Umum</span>
+          </div>
+        </button>
+
+        <div id="step-line-3" class="flex-1 h-0.5 bg-slate-200 min-w-[20px]"></div>
+
+        <!-- Step 4 -->
+        <button type="button" onclick="goToStep(4)" id="step-nav-4" class="flex items-center gap-2.5 text-xs font-bold transition flex-shrink-0">
+          <span id="step-badge-4" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-500 font-black text-xs border border-slate-200">4</span>
+          <div class="text-left hidden sm:block">
+            <span class="block text-slate-500 leading-tight">Kamar & Tarif</span>
+            <span class="text-[10px] text-slate-400 font-normal">Harga / Malam</span>
+          </div>
+        </button>
+
+        <div id="step-line-4" class="flex-1 h-0.5 bg-slate-200 min-w-[20px]"></div>
+
+        <!-- Step 5 -->
+        <button type="button" onclick="goToStep(5)" id="step-nav-5" class="flex items-center gap-2.5 text-xs font-bold transition flex-shrink-0">
+          <span id="step-badge-5" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-500 font-black text-xs border border-slate-200">5</span>
+          <div class="text-left hidden sm:block">
+            <span class="block text-slate-500 leading-tight">Foto Galeri</span>
+            <span class="text-[10px] text-slate-400 font-normal">Fasad & Kamar</span>
+          </div>
+        </button>
+
+        <div id="step-line-5" class="flex-1 h-0.5 bg-slate-200 min-w-[20px]"></div>
+
+        <!-- Step 6 -->
+        <button type="button" onclick="goToStep(6)" id="step-nav-6" class="flex items-center gap-2.5 text-xs font-bold transition flex-shrink-0">
+          <span id="step-badge-6" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-500 font-black text-xs border border-slate-200">6</span>
+          <div class="text-left hidden sm:block">
+            <span class="block text-slate-500 leading-tight">Rekening & Legal</span>
+            <span class="text-[10px] text-slate-400 font-normal">Pencairan Dana</span>
+          </div>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- TWO-COLUMN LAYOUT: FORM (LEFT 65%) + LIVE PREVIEW & BENEFITS (RIGHT 35%) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- LEFT COLUMN: MULTI-STEP FORM (8 COLS) -->
+      <div class="lg:col-span-8">
+        <form id="tera-registration-form" onsubmit="handleTeraFormSubmit(event)" class="space-y-6">
+
+          <!-- ================= STEP 1: INFORMASI PROPERTI ================= -->
+          <div id="tera-step-1" class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+            <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <span class="text-amber-700 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-info"></i> Langkah 1 dari 6
+                </span>
+                <h2 class="text-lg font-black text-slate-900 mt-1">Informasi Dasar & Tipe Akomodasi</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Tentukan nama resmi properti dan jenis akomodasi Anda di Yogyakarta.</p>
+              </div>
+              <button type="button" onclick="openPartnershipModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-[11px] font-semibold transition cursor-pointer self-start sm:self-auto shadow-2xs">
+                <i class="fa-solid fa-file-contract text-slate-600"></i>
+                <span>Surat Perjanjian Kerjasama (MoU 5%)</span>
+              </button>
+            </div>
+
+            <!-- Tipe Properti Selector (Radio Cards) -->
+            <div>
+              <label class="block text-xs font-bold text-slate-800 mb-2">Pilih Tipe Akomodasi <span class="text-red-500">*</span></label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                
+                <label class="cursor-pointer border-2 rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 transition" id="card-type-hotel">
+                  <input type="radio" name="prop_type" value="hotel" checked onchange="handleTypeChange('hotel')" class="hidden">
+                  <div class="w-10 h-10 rounded-full bg-blue-50 text-amber-700 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-hotel"></i>
+                  </div>
+                  <div>
+                    <span class="font-bold text-xs text-slate-800 block">Hotel</span>
+                    <span class="text-[10px] text-slate-400">Bintang 1 s/d 5</span>
+                  </div>
+                </label>
+
+                <label class="cursor-pointer border-2 rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 transition" id="card-type-homestay">
+                  <input type="radio" name="prop_type" value="homestay" onchange="handleTypeChange('homestay')" class="hidden">
+                  <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-house-chimney"></i>
+                  </div>
+                  <div>
+                    <span class="font-bold text-xs text-slate-800 block">Homestay</span>
+                    <span class="text-[10px] text-slate-400">Rumah & Kamar</span>
+                  </div>
+                </label>
+
+                <label class="cursor-pointer border-2 rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 transition" id="card-type-apartemen">
+                  <input type="radio" name="prop_type" value="apartemen" onchange="handleTypeChange('apartemen')" class="hidden">
+                  <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-building"></i>
+                  </div>
+                  <div>
+                    <span class="font-bold text-xs text-slate-800 block">Apartemen</span>
+                    <span class="text-[10px] text-slate-400">Studio & Unit</span>
+                  </div>
+                </label>
+
+                <label class="cursor-pointer border-2 rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 hover:border-blue-400 transition" id="card-type-villa">
+                  <input type="radio" name="prop_type" value="villa" onchange="handleTypeChange('villa')" class="hidden">
+                  <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-tree"></i>
+                  </div>
+                  <div>
+                    <span class="font-bold text-xs text-slate-800 block">Villa / Resort</span>
+                    <span class="text-[10px] text-slate-400">Privat & Alam</span>
+                  </div>
+                </label>
+
+              </div>
+            </div>
+
+            <!-- Bintang Hotel (Tampil jika hotel) -->
+            <div id="hotel-stars-box" class="p-4 bg-blue-50/60 rounded-xl border border-blue-100">
+              <label class="block text-xs font-bold text-blue-900 mb-1.5">Klasifikasi Bintang Hotel <span class="text-red-500">*</span></label>
+              <div class="flex flex-wrap gap-2 text-xs">
+                <label class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 font-semibold">
+                  <input type="radio" name="hotel_stars" value="5" onchange="updateLivePreview()">
+                  <span class="text-amber-500">★★★★★</span> Bintang 5
+                </label>
+                <label class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 font-semibold">
+                  <input type="radio" name="hotel_stars" value="4" onchange="updateLivePreview()">
+                  <span class="text-amber-500">★★★★☆</span> Bintang 4
+                </label>
+                <label class="flex items-center gap-1.5 px-3 py-2 bg-white border border-blue-500 bg-blue-50/50 rounded-lg cursor-pointer font-semibold" id="star-default">
+                  <input type="radio" name="hotel_stars" value="3" checked onchange="updateLivePreview()">
+                  <span class="text-amber-500">★★★☆☆</span> Bintang 3
+                </label>
+                <label class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 font-semibold">
+                  <input type="radio" name="hotel_stars" value="2" onchange="updateLivePreview()">
+                  <span class="text-amber-500">★★☆☆☆</span> Bintang 2
+                </label>
+                <label class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 font-semibold">
+                  <input type="radio" name="hotel_stars" value="1" onchange="updateLivePreview()">
+                  <span class="text-amber-500">★☆☆☆☆</span> Bintang 1
+                </label>
+              </div>
+            </div>
+
+            <!-- Nama Properti -->
+            <div>
+              <label class="block text-xs font-bold text-slate-800 mb-1">Nama Resmi Properti / Penginapan <span class="text-red-500">*</span></label>
+              <input type="text" id="tera-prop-name" placeholder="Contoh: Grand Malioboro Heritage Hotel" required oninput="updateLivePreview()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white font-medium">
+              <span class="text-[11px] text-slate-400 mt-1 block">Gunakan nama yang tertera pada plang nama atau izin usaha akomodasi Anda.</span>
+            </div>
+
+            <!-- Deskripsi Properti -->
+            <div>
+              <label class="block text-xs font-bold text-slate-800 mb-1">Deskripsi Singkat Akomodasi</label>
+              <textarea id="tera-prop-desc" rows="3" placeholder="Ceritakan keistimewaan properti, suasana menginap, akses terdekat ke wisata Jogja, dan kenyamanan fasilitas yang ditawarkan..." oninput="updateLivePreview()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white leading-relaxed"></textarea>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="flex justify-end pt-4 border-t border-slate-100">
+              <button type="button" onclick="goToStep(2)" class="px-6 py-2.5 bg-slate-900 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-600/20 transition flex items-center gap-2">
+                <span>Simpan & Lanjutkan ke Lokasi</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 2: LOKASI & KONTAK PIC ================= -->
+          <div id="tera-step-2" class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6 hidden">
+            <div class="border-b border-slate-100 pb-4">
+              <span class="text-amber-700 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-map-location-dot"></i> Langkah 2 dari 6
+              </span>
+              <h2 class="text-lg font-black text-slate-900 mt-1">Lokasi Properti di Yogyakarta & Kontak PIC</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Tentukan letak geografis akomodasi agar mudah ditemukan oleh wisatawan.</p>
+            </div>
+
+            <!-- Kawasan Area Jogja -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Wilayah / Kawasan di Jogja <span class="text-red-500">*</span></label>
+                <select id="tera-prop-area" required onchange="updateLivePreview()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 font-semibold">
+                  <option value="Malioboro / Pusat Kota">Malioboro / Pusat Kota (Stasiun Tugu, Titik Nol)</option>
+                  <option value="Kaliurang">Kaliurang / Lereng Merapi (Wisata Alam, Udara Dingin & Villa Sejuk)</option>
+                  <option value="Sleman / UGM">Sleman / Sekitar UGM (Kawasan Kampus & Ring Road Utara)</option>
+                  <option value="Prawirotaman / Selatan">Prawirotaman / Tirtodipuran (Kampung Turis)</option>
+                  <option value="Seturan / Babarsari">Seturan / Babarsari (Kawasan Kampus & Kuliner)</option>
+                  <option value="Bantul / Parangtritis">Bantul / Kasongan / Pantai Parangtritis</option>
+                  <option value="Kulon Progo / YIA">Kulon Progo (Bandara Internasional YIA)</option>
+                  <option value="Gunungkidul">Gunungkidul (Deretan Pantai Pasir Putih)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Kode Pos</label>
+                <input type="text" id="tera-prop-postal" placeholder="55271" value="55271" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500">
+              </div>
+            </div>
+
+            <!-- Alamat Lengkap -->
+            <div>
+              <label class="block text-xs font-bold text-slate-800 mb-1">Alamat Lengkap Properti <span class="text-red-500">*</span></label>
+              <textarea id="tera-prop-address" rows="2" placeholder="Contoh: Jl. Dagen No. 12, Sosromenduran, Gedong Tengen, Kota Yogyakarta" required oninput="updateLivePreview()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:border-blue-500"></textarea>
+            </div>
+
+            <!-- Tautan Link Google Maps Properti -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <i class="fa-solid fa-map-location-dot text-red-600"></i>
+                  <span>Tautan Google Maps Properti (Link Lokasi / Titik Maps)</span>
+                  <span class="text-[10px] text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">Disarankan</span>
+                </label>
+                <button type="button" onclick="testGmapsUrl()" id="btn-test-gmaps" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1 cursor-pointer">
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                  <span>Tes Buka Link</span>
+                </button>
+              </div>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-link text-xs"></i>
+                </div>
+                <input type="url" id="tera-prop-gmaps" placeholder="https://maps.app.goo.gl/... atau https://maps.google.com/?q=..." class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 font-medium">
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1.5 flex items-start gap-1.5 leading-relaxed">
+                <i class="fa-solid fa-circle-info text-blue-600 mt-0.5 shrink-0"></i>
+                <span>Buka Google Maps > cari nama/lokasi hotel Anda > klik tombol <b>Bagikan (Share)</b> > pilih <b>Salin Link (Copy link)</b> lalu tempel di sini agar navigasi rute ke hotel akurat.</span>
+              </p>
+            </div>
+
+            <!-- Kontak PIC Penanggung Jawab -->
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+              <span class="text-xs font-bold text-slate-800 block flex items-center gap-1.5">
+                <i class="fa-solid fa-user-tie text-amber-700"></i> Kontak Pengelola Properti (PIC Mitra StayJogja)
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nama Lengkap PIC</label>
+                  <input type="text" id="tera-pic-name" placeholder="Ibu Kartika" value="Ibu Kartika" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nomor WhatsApp / HP</label>
+                  <input type="tel" id="tera-pic-phone" placeholder="081987654321" value="081987654321" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Email Pengelola</label>
+                  <input type="email" id="tera-pic-email" placeholder="owner@stayjogja.id" value="owner@stayjogja.id" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800">
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button type="button" onclick="goToStep(1)" class="px-5 py-2.5 border border-slate-300 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50 transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya
+              </button>
+              <button type="button" onclick="goToStep(3)" class="px-6 py-2.5 bg-slate-900 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-600/20 transition flex items-center gap-2">
+                <span>Simpan & Lanjutkan ke Fasilitas</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 3: FASILITAS UMUM PROPERTI ================= -->
+          <div id="tera-step-3" class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6 hidden">
+            <div class="border-b border-slate-100 pb-4">
+              <span class="text-amber-700 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-bell-concierge"></i> Langkah 3 dari 6
+              </span>
+              <h2 class="text-lg font-black text-slate-900 mt-1">Fasilitas Utama Akomodasi</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Pilih seluruh fasilitas yang tersedia di properti Anda untuk menarik minat tamu.</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+              
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition">
+                <input type="checkbox" name="prop_facility" value="WiFi Gratis" checked onchange="updateLivePreview()" class="w-4 h-4 text-amber-700 rounded">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-wifi text-blue-500"></i>
+                  <span class="font-medium text-slate-800">WiFi Gratis</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition">
+                <input type="checkbox" name="prop_facility" value="AC" checked onchange="updateLivePreview()" class="w-4 h-4 text-amber-700 rounded">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-snowflake text-blue-500"></i>
+                  <span class="font-medium text-slate-800">AC di Semua Kamar</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition">
+                <input type="checkbox" name="prop_facility" value="Kolam Renang" checked onchange="updateLivePreview()" class="w-4 h-4 text-amber-700 rounded">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-person-swimming text-blue-500"></i>
+                  <span class="font-medium text-slate-800">Kolam Renang</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition">
+                <input type="checkbox" name="prop_facility" value="Parkir Gratis" checked onchange="updateLivePreview()" class="w-4 h-4 text-amber-700 rounded">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-square-parking text-blue-500"></i>
+                  <span class="font-medium text-slate-800">Area Parkir Luas</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition">
+                <input type="checkbox" name="prop_facility" value="Resepsionis 24 Jam" checked onchange="updateLivePreview()" class="w-4 h-4 text-amber-700 rounded">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-clock text-blue-500"></i>
+                  <span class="font-medium text-slate-800">Resepsionis 24 Jam</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition">
+                <input type="checkbox" name="prop_facility" value="Restoran & Sarapan" onchange="updateLivePreview()" class="w-4 h-4 text-amber-700 rounded">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-utensils text-blue-500"></i>
+                  <span class="font-medium text-slate-800">Restoran / Sarapan</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition">
+                <input type="checkbox" name="prop_facility" value="Antar-Jemput Bandara" onchange="updateLivePreview()" class="w-4 h-4 text-amber-700 rounded">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-van-shuttle text-blue-500"></i>
+                  <span class="font-medium text-slate-800">Antar-Jemput YIA/Stasiun</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition">
+                <input type="checkbox" name="prop_facility" value="Lift" onchange="updateLivePreview()" class="w-4 h-4 text-amber-700 rounded">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-elevator text-blue-500"></i>
+                  <span class="font-medium text-slate-800">Akses Lift</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition">
+                <input type="checkbox" name="prop_facility" value="Bebas Asap Rokok" checked onchange="updateLivePreview()" class="w-4 h-4 text-amber-700 rounded">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-ban-smoking text-blue-500"></i>
+                  <span class="font-medium text-slate-800">Bebas Asap Rokok</span>
+                </div>
+              </label>
+
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button type="button" onclick="goToStep(2)" class="px-5 py-2.5 border border-slate-300 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50 transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya
+              </button>
+              <button type="button" onclick="goToStep(4)" class="px-6 py-2.5 bg-slate-900 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-600/20 transition flex items-center gap-2">
+                <span>Simpan & Lanjutkan ke Kamar & Tarif</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 4: KAMAR & TARIF ================= -->
+          <div id="tera-step-4" class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6 hidden">
+            <div class="border-b border-slate-100 pb-4">
+              <span class="text-amber-700 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-bed"></i> Langkah 4 dari 6
+              </span>
+              <h2 class="text-lg font-black text-slate-900 mt-1">Tipe Kamar & Tarif per Malam</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Tentukan tipe unit kamar yang akan dijual kepada tamu beserta harga dasarnya. Anda dapat menambahkan beberapa tipe kamar sekaligus.</p>
+            </div>
+
+            <!-- Tipe Kamar 1 (Kamar Utama) -->
+            <div class="p-4 sm:p-5 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-4 room-card" data-room-idx="1">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-sm">1</span>
+                  <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">Tipe Kamar Utama</span>
+                </div>
+                <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">Kamar Dasar</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-800 mb-1">Nama Tipe Kamar / Unit <span class="text-red-500">*</span></label>
+                  <input type="text" id="tera-room-name" name="room_name[]" placeholder="Contoh: Deluxe King Room with Balcony" value="Deluxe King Room" required oninput="updateLivePreview()" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 font-medium">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-800 mb-1">Tipe Tempat Tidur</label>
+                  <select id="tera-room-bed" name="room_bed[]" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500">
+                    <option value="1 King Bed (200x200 cm)">1 King Bed (200x200 cm)</option>
+                    <option value="1 Queen Bed (160x200 cm)">1 Queen Bed (160x200 cm)</option>
+                    <option value="2 Single Beds (Twin)">2 Single Beds (Twin)</option>
+                    <option value="1 Double Bed + 1 Single Bed">1 Double Bed + 1 Single Bed (Family)</option>
+                    <option value="3 Queen Beds (Suite)">3 Queen Beds (Suite)</option>
+                    <option value="Bunk Bed Bertingkat">Bunk Bed Bertingkat</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-800 mb-1">Tarif per Malam (IDR) <span class="text-red-500">*</span></label>
+                  <div class="relative">
+                    <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400">Rp</span>
+                    <input type="number" id="tera-room-price" name="room_price[]" placeholder="450000" value="450000" min="50000" step="10000" required oninput="updateLivePreview()" class="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 font-black focus:outline-none focus:border-blue-500">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-800 mb-1">Jumlah Kamar Tersedia (Stok)</label>
+                  <input type="number" id="tera-room-stock" name="room_stock[]" value="5" min="1" max="100" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 font-semibold focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-800 mb-1">Kapasitas Tamu</label>
+                  <select id="tera-room-capacity" name="room_capacity[]" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500">
+                    <option value="2">2 Orang Dewasa</option>
+                    <option value="3">3 Orang (Family)</option>
+                    <option value="4">4 Orang (Grup)</option>
+                    <option value="1">1 Orang (Solo Traveler)</option>
+                    <option value="6">6+ Orang (Rombongan)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Fasilitas di Dalam Kamar (Checklist Pilihan) -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="block text-xs font-bold text-slate-800">
+                    <i class="fa-solid fa-list-check text-amber-700 mr-1"></i> Fasilitas di Dalam Kamar <span class="text-slate-400 font-normal">(Centang yang tersedia)</span>
+                  </label>
+                  <span class="text-[10px] text-amber-700 font-semibold bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">Pilih fasilitas kamar</span>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs room-facility-grid">
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition select-none">
+                    <input type="checkbox" name="room_facility_1" value="AC" checked class="w-4 h-4 text-amber-700 rounded">
+                    <span class="text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-snowflake text-blue-500 w-3.5"></i> AC</span>
+                  </label>
+
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition select-none">
+                    <input type="checkbox" name="room_facility_1" value="Kamar Mandi Pribadi" checked class="w-4 h-4 text-amber-700 rounded">
+                    <span class="text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-bath text-blue-500 w-3.5"></i> Kamar Mandi Dalam</span>
+                  </label>
+
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition select-none">
+                    <input type="checkbox" name="room_facility_1" value="Air Panas (Water Heater)" checked class="w-4 h-4 text-amber-700 rounded">
+                    <span class="text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-shower text-blue-500 w-3.5"></i> Air Panas</span>
+                  </label>
+
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition select-none">
+                    <input type="checkbox" name="room_facility_1" value="WiFi Gratis" checked class="w-4 h-4 text-amber-700 rounded">
+                    <span class="text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-wifi text-blue-500 w-3.5"></i> WiFi Gratis</span>
+                  </label>
+
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition select-none">
+                    <input type="checkbox" name="room_facility_1" value="TV Layar Datar" checked class="w-4 h-4 text-amber-700 rounded">
+                    <span class="text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-tv text-blue-500 w-3.5"></i> TV Layar Datar</span>
+                  </label>
+
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition select-none">
+                    <input type="checkbox" name="room_facility_1" value="Perlengkapan Mandi Gratis" checked class="w-4 h-4 text-amber-700 rounded">
+                    <span class="text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-pump-soap text-blue-500 w-3.5"></i> Perlengkapan Mandi</span>
+                  </label>
+
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition select-none">
+                    <input type="checkbox" name="room_facility_1" value="Balkon / Teras" class="w-4 h-4 text-amber-700 rounded">
+                    <span class="text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-mountain-sun text-blue-500 w-3.5"></i> Balkon / Teras</span>
+                  </label>
+
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition select-none">
+                    <input type="checkbox" name="room_facility_1" value="Kulkas / Mini Bar" class="w-4 h-4 text-amber-700 rounded">
+                    <span class="text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-temperature-low text-blue-500 w-3.5"></i> Mini Bar / Kulkas</span>
+                  </label>
+
+                  <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition select-none">
+                    <input type="checkbox" name="room_facility_1" value="Kopi & Teh Gratis" class="w-4 h-4 text-amber-700 rounded">
+                    <span class="text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-mug-hot text-blue-500 w-3.5"></i> Kopi & Teh Gratis</span>
+                  </label>
+                </div>
+
+                <!-- Input Tambahan Fasilitas Khusus (Opsional) -->
+                <div class="mt-2.5">
+                  <input type="text" name="room_custom_facs[]" placeholder="+ Tambah fasilitas lainnya (opsional, pisahkan dengan koma)" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500">
+                </div>
+              </div>
+
+              <!-- Foto Khusus Tipe Kamar 1 -->
+              <div class="pt-3 border-t border-slate-200">
+                <div class="flex items-center justify-between mb-2">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-800">
+                      <i class="fa-solid fa-camera text-amber-700 mr-1"></i> Foto Tipe Kamar <span class="text-slate-400 font-normal">(Opsional / Dianjurkan)</span>
+                    </label>
+                    <p class="text-[11px] text-slate-500">Unggah foto suasana kasur, kamar mandi, atau interior unit ini.</p>
+                  </div>
+                  <span class="text-[10px] text-blue-700 bg-blue-50 font-bold px-2.5 py-0.5 rounded-full border border-blue-100" id="room-photo-count-1">0 Foto</span>
+                </div>
+
+                <!-- Grid Foto Kamar 1 & Tombol Upload -->
+                <div class="space-y-2">
+                  <div id="room-photos-grid-1" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <!-- Slot Upload Foto Kamar 1 -->
+                    <label class="border-2 border-dashed border-blue-300 hover:border-blue-500 bg-white hover:bg-blue-50/50 rounded-xl p-3 flex flex-col items-center justify-center text-center cursor-pointer transition min-h-[96px] group shadow-2xs">
+                      <input type="file" accept="image/*" multiple onchange="handleRoomPhotoSelect(event, 1)" class="hidden" id="room-file-input-1">
+                      <div class="w-8 h-8 rounded-full bg-blue-50 group-hover:bg-slate-900 text-amber-700 group-hover:text-white flex items-center justify-center text-xs mb-1.5 transition">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                      </div>
+                      <span class="text-[11px] font-bold text-blue-700 leading-tight">+ Tambah Foto</span>
+                      <span class="text-[9px] text-slate-400 mt-0.5">Pilih dari perangkat</span>
+                    </label>
+                  </div>
+
+                  <!-- Pilihan URL Foto Kamar 1 (Opsional) -->
+                  <div class="flex items-center justify-between pt-1">
+                    <button type="button" onclick="toggleRoomUrlInput(1)" class="text-[11px] text-amber-700 hover:text-blue-800 font-semibold flex items-center gap-1 transition">
+                      <i class="fa-solid fa-link text-[10px]"></i>
+                      <span>Atau gunakan link URL foto</span>
+                    </button>
+                    <span class="text-[10px] text-slate-400">Format: JPG, PNG, WebP</span>
+                  </div>
+
+                  <div id="room-url-box-1" class="hidden flex gap-2 pt-1">
+                    <input type="url" id="room-url-input-1" placeholder="https://images.unsplash.com/photo-... (link gambar)" class="flex-1 bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500">
+                    <button type="button" onclick="addRoomPhotoFromUrl(1)" class="px-3.5 py-1.5 bg-slate-900 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition">
+                      Tambah
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Wadah Tambahan Tipe Kamar (Dinamis) -->
+            <div id="additional-rooms-container" class="space-y-4"></div>
+
+            <!-- Tombol + Tambah Tipe Kamar -->
+            <div class="pt-1">
+              <button type="button" onclick="addNewRoomType()" class="w-full py-3.5 px-4 border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/60 hover:bg-blue-100/70 text-blue-700 font-bold text-xs sm:text-sm rounded-2xl transition flex items-center justify-center gap-2 group shadow-sm">
+                <div class="w-6 h-6 rounded-full bg-slate-900 group-hover:bg-amber-700 text-white flex items-center justify-center text-xs group-hover:scale-110 transition shadow-sm">
+                  <i class="fa-solid fa-plus"></i>
+                </div>
+                <span>Tambah Tipe Kamar Lainnya</span>
+                <span class="hidden sm:inline text-xs font-normal text-amber-700/80">(misal: Superior, Suite Room, Family Villa, dll)</span>
+              </button>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button type="button" onclick="goToStep(3)" class="px-5 py-2.5 border border-slate-300 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50 transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya
+              </button>
+              <button type="button" onclick="goToStep(5)" class="px-6 py-2.5 bg-slate-900 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-600/20 transition flex items-center gap-2">
+                <span>Simpan & Lanjutkan ke Foto</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 5: FOTO PROPERTI & KAMAR ================= -->
+          <div id="tera-step-5" class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6 hidden">
+            <div class="border-b border-slate-100 pb-4">
+              <span class="text-amber-700 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-camera"></i> Langkah 5 dari 6
+              </span>
+              <h2 class="text-lg font-black text-slate-900 mt-1">Foto & Galeri Properti</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Unggah foto berkualitas tinggi untuk meningkatkan minat pemesanan hingga 80%.</p>
+            </div>
+
+            <!-- Upload Dropzone (Bentuk Add / Unggah Foto) -->
+            <div id="photo-upload-dropzone" onclick="document.getElementById('tera-file-input').click()" ondragover="handlePhotoDragOver(event)" ondragleave="handlePhotoDragLeave(event)" ondrop="handlePhotoDrop(event)" class="border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/40 hover:bg-blue-50/80 rounded-2xl p-8 sm:p-10 text-center cursor-pointer transition group">
+              <input type="file" id="tera-file-input" accept="image/*" multiple onchange="handlePhotoSelect(event)" class="hidden">
+              <div class="w-16 h-16 rounded-full bg-blue-100 group-hover:bg-slate-900 text-amber-700 group-hover:text-white flex items-center justify-center text-2xl mx-auto mb-3 transition shadow-sm group-hover:scale-110">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+              <h3 class="text-sm sm:text-base font-bold text-slate-800 group-hover:text-blue-700 transition">
+                Klik untuk Memilih Foto Hotel atau Tarik File ke Sini
+              </h3>
+              <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+                Dukung format gambar: <span class="font-semibold text-slate-700">JPG, JPEG, PNG, WEBP</span>. Anda dapat memilih beberapa foto sekaligus dari komputer atau smartphone Anda.
+              </p>
+              <div class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 group-hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/25 transition">
+                <i class="fa-solid fa-plus"></i>
+                <span>+ Unggah / Tambah Foto Hotel</span>
+              </div>
+            </div>
+
+            <!-- Opsi Tambah via URL / Contoh Cepat (Collapsible) -->
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <div class="flex items-center justify-between cursor-pointer" onclick="toggleUrlSection()">
+                <div class="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                  <i class="fa-solid fa-link text-amber-700"></i>
+                  <span>Punya link / URL gambar online? (Opsional)</span>
+                </div>
+                <span id="url-toggle-arrow" class="text-xs text-slate-400 transition"><i class="fa-solid fa-chevron-down"></i></span>
+              </div>
+              <div id="url-input-section" class="hidden mt-3 pt-3 border-t border-slate-200">
+                <div class="flex gap-2">
+                  <input type="url" id="manual-photo-url" placeholder="https://example.com/foto-hotel.jpg" class="flex-1 bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
+                  <button type="button" onclick="addPhotoFromUrl()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-plus"></i> Tambah URL
+                  </button>
+                </div>
+                <div class="mt-2.5 flex items-center gap-1.5 flex-wrap text-[11px]">
+                  <span class="text-slate-400">Pilihan Contoh Foto:</span>
+                  <button type="button" onclick="addPresetPhoto('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80', 'Hotel Mewah')" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 hover:border-blue-400 text-slate-600">Hotel Mewah</button>
+                  <button type="button" onclick="addPresetPhoto('https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80', 'Resort Kolam')" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 hover:border-blue-400 text-slate-600">Resort Kolam</button>
+                  <button type="button" onclick="addPresetPhoto('https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=800&q=80', 'Hotel Modern')" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 hover:border-blue-400 text-slate-600">Hotel Modern</button>
+                  <button type="button" onclick="addPresetPhoto('https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=800&q=80', 'Homestay Asri')" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 hover:border-blue-400 text-slate-600">Homestay Asri</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Wadah Foto yang Diunggah (Gallery Grid) -->
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-slate-800">Daftar Foto Hotel yang Diunggah:</span>
+                  <span id="photo-count-badge" class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-bold text-[10px]">0 Foto</span>
+                </div>
+                <span class="text-[11px] text-slate-400">Foto pertama otomatis menjadi foto utama di halaman depan</span>
+              </div>
+
+              <!-- Grid Galeri -->
+              <div id="uploaded-photos-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <!-- Empty state saat belum ada foto -->
+                <div id="photos-empty-state" class="col-span-2 sm:col-span-4 border border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 text-slate-400">
+                  <i class="fa-regular fa-images text-3xl mb-2 block text-slate-300"></i>
+                  <span class="text-xs font-medium block text-slate-600">Belum ada foto yang ditambahkan</span>
+                  <span class="text-[11px] text-slate-400 block mt-0.5">Silakan klik area unggah di atas untuk menambahkan foto hotel Anda.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hidden field for fallback submit compatibility -->
+            <input type="hidden" id="tera-photo-main" value="">
+
+            <!-- Bottom Navigation -->
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button type="button" onclick="goToStep(4)" class="px-5 py-2.5 border border-slate-300 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50 transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya
+              </button>
+              <button type="button" onclick="goToStep(6)" class="px-6 py-2.5 bg-slate-900 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-md shadow-blue-600/20 transition flex items-center gap-2">
+                <span>Simpan & Lanjutkan ke Rekening Bank</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 6: REKENING & LEGALITAS PERNYATAAN ================= -->
+          <div id="tera-step-6" class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6 hidden">
+            <div class="border-b border-slate-100 pb-4">
+              <span class="text-amber-700 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-building-columns"></i> Langkah 6 dari 6
+              </span>
+              <h2 class="text-lg font-black text-slate-900 mt-1">Rekening Pencairan Dana & Pernyataan Kemitraan</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Pendapatan hasil sewa kamar dari tamu akan ditransfer langsung ke rekening ini.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Nama Bank Penerima <span class="text-red-500">*</span></label>
+                <select id="tera-bank-name" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 font-semibold">
+                  <option value="BCA">Bank Central Asia (BCA)</option>
+                  <option value="Bank Mandiri">Bank Mandiri</option>
+                  <option value="BNI">Bank Negara Indonesia (BNI)</option>
+                  <option value="BRI">Bank Rakyat Indonesia (BRI)</option>
+                  <option value="BPD DIY">Bank BPD DIY (Istimewa)</option>
+                  <option value="CIMB Niaga">CIMB Niaga</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Nomor Rekening Bank <span class="text-red-500">*</span></label>
+                <input type="text" id="tera-bank-account" placeholder="1234567890" value="8820192831" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 font-mono font-bold focus:outline-none focus:border-blue-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Nama Pemilik Rekening (Sesuai Buku Tabungan) <span class="text-red-500">*</span></label>
+                <input type="text" id="tera-bank-holder" placeholder="Ibu Kartika" value="Ibu Kartika" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 font-semibold">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Nomor Induk Kependudukan (NIK / KTP) <span class="text-red-500">*</span></label>
+                <input type="text" id="tera-ktp-number" placeholder="3471012345670001" value="3471012345670001" maxlength="16" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 font-mono focus:outline-none focus:border-blue-500">
+              </div>
+            </div>
+
+            <!-- Agreement Box (StayJogja Partner Style) -->
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-2">
+              <label class="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" id="tera-agreement" checked required class="w-4 h-4 text-amber-700 rounded mt-0.5">
+                <span class="text-[11px] leading-relaxed">
+                  Saya menyatakan bahwa data properti, izin usaha penginapan, dan nomor rekening yang saya daftarkan adalah benar dan sah. Saya menyetujui <b>Syarat & Ketentuan Kemitraan StayJogja</b>, serta bersedia memverifikasi dan melayani reservasi tamu dengan standar keramahan Yogyakarta.
+                </span>
+              </label>
+            </div>
+
+            <!-- Bottom Navigation with Final Submit Button -->
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+              <button type="button" onclick="goToStep(5)" class="px-5 py-2.5 border border-slate-300 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50 transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Sebelumnya
+              </button>
+              
+              <button type="submit" id="btn-submit-tera" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-lg shadow-orange-500/25 transition flex items-center gap-2">
+                <i class="fa-solid fa-check-circle"></i>
+                <span>Kirim Pendaftaran Mitra StayJogja</span>
+              </button>
+            </div>
+
+          </div>
+
+        </form>
+      </div>
+
+      <!-- RIGHT COLUMN: LIVE PREVIEW & TERA BENEFITS (4 COLS) -->
+      <div class="lg:col-span-4 space-y-6">
+
+        <!-- Live Preview Card (StayJogja Catalog Card Style) -->
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm sticky top-24">
+          <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between text-xs">
+            <span class="font-bold flex items-center gap-1.5">
+              <i class="fa-solid fa-eye text-blue-400"></i> Pratinjau Tampilan Tamu
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-white font-bold uppercase">Live Preview</span>
+          </div>
+
+          <!-- Preview Card Body -->
+          <div class="p-4 space-y-3">
+            <div class="relative h-44 rounded-xl overflow-hidden bg-slate-100">
+              <img id="preview-card-img" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+              <div class="absolute top-2.5 left-2.5">
+                <span id="preview-card-type-badge" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-100 text-blue-800 shadow-sm backdrop-blur-md">
+                  Hotel Bintang 3
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between gap-1">
+                <h3 id="preview-card-name" class="font-bold text-slate-900 text-sm truncate">
+                  Grand Malioboro Heritage Hotel
+                </h3>
+                <span id="preview-card-stars" class="text-amber-500 text-xs flex-shrink-0">★★★☆☆</span>
+              </div>
+              <p id="preview-card-area" class="text-slate-500 text-xs mt-0.5 flex items-center gap-1">
+                <i class="fa-solid fa-location-dot text-red-500 text-[10px]"></i>
+                <span class="truncate">Malioboro / Pusat Kota</span>
+              </p>
+            </div>
+
+            <!-- Room snippet -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+              <span class="text-[10px] text-slate-400 block font-semibold">Tipe Kamar Pertama:</span>
+              <span id="preview-card-room" class="font-bold text-slate-800 text-xs block">Deluxe King Room</span>
+              <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-200">
+                <span class="text-[10px] text-slate-500">Harga Mulai</span>
+                <span id="preview-card-price" class="font-black text-amber-700 text-sm">Rp 450.000 <span class="text-[10px] font-normal text-slate-400">/malam</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Benefits Box -->
+          <div class="p-4 bg-gradient-to-br from-amber-50/60 to-indigo-50/60 border-t border-slate-100 text-xs space-y-2.5">
+            <span class="font-bold text-slate-900 block flex items-center gap-1">
+              <i class="fa-solid fa-star text-amber-500"></i> Keuntungan Bermitra di StayJogja:
+            </span>
+            <ul class="space-y-1.5 text-[11px] text-slate-600">
+              <li class="flex items-start gap-1.5">
+                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                <span><b>Bagi Hasil Adil (5% Platform)</b>: Pemilik menerima 95% pendapatan bersih, platform hanya memotong 5%.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                <span><b>Jangkauan Luas</b>: Langsung tampil di pencarian ribuan pelancong di Jogja.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                <span><b>Panel ACC Reservasi</b>: Terima pesanan masuk dan setujui (ACC) secara instan.</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+                <span><b>Pencairan Dana Pasti</b>: Pembayaran tamu diteruskan aman ke rekening Anda.</span>
+              </li>
+            </ul>
+
+            <button type="button" onclick="openPartnershipModal()" class="w-full mt-2 py-2 px-3 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 rounded-lg text-center font-bold text-[11px] flex items-center justify-center gap-1.5 transition cursor-pointer shadow-2xs">
+              <i class="fa-solid fa-file-contract text-slate-600"></i>
+              <span>Tinjau Surat Perjanjian Kemitraan (MoU)</span>
+            </button>
+          </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= PROPOSAL PERJANJIAN KERJASAMA KEMITRAAN (KOMISI PLATFORM 5%) ================= -->
+  <div id="proposal-partnership-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden border border-slate-300 flex flex-col max-h-[92vh]">
+      
+      <!-- Formal Document Header Bar -->
+      <div class="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between border-b border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-file-contract text-amber-400 text-sm"></i>
+          <span class="text-xs font-bold tracking-wide uppercase">Dokumen Perjanjian Kerjasama Kemitraan</span>
+        </div>
+        <a href="/owner" class="text-slate-400 hover:text-white text-xs px-2 py-1 rounded hover:bg-slate-800 transition" title="Batal & Kembali ke Dashboard">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </a>
+      </div>
+
+      <!-- Formal Document Sheet (Scrollable) -->
+      <div class="p-6 sm:p-8 overflow-y-auto space-y-4 text-slate-800 bg-white">
+        
+        <!-- Kop Dokumen Resmi -->
+        <div class="text-center pb-3 border-b-2 border-slate-800 mb-4">
+          <div class="text-xs font-black tracking-widest text-slate-900 uppercase">STAYJOGJA HOSPITALITY NETWORK</div>
+          <div class="text-[10px] text-slate-600 font-semibold uppercase tracking-wider">SISTEM INFORMASI & RESERVASI AKOMODASI D.I. YOGYAKARTA</div>
+          <div class="text-[9px] text-slate-500 mt-0.5">Kantor Operasional: Jl. Malioboro No. 120, Kota Yogyakarta, DIY 55213 &bull; Surel: legal@stayjogja.id</div>
+          
+          <div class="mt-3 pt-2.5 border-t border-slate-300">
+            <h2 class="text-sm sm:text-base font-black text-slate-900 uppercase tracking-tight font-serif">
+              SURAT PERJANJIAN KERJASAMA KEMITRAAN (MoU)
+            </h2>
+            <p class="text-[10px] font-mono text-slate-600 mt-0.5">Nomor Registrasi Dokumen: 042/MoU-SJ/MITRA/2026</p>
+          </div>
+        </div>
+
+        <!-- Bagian Pembukaan & Para Pihak -->
+        <p class="text-[11px] text-slate-700 text-justify leading-relaxed">
+          Pada hari ini, dalam rangka kerjasama publikasi, pemasaran digital, dan pemrosesan reservasi akomodasi penginapan di wilayah Daerah Istimewa Yogyakarta, dibuat dan disepakati perjanjian kerjasama kemitraan operasional antara:
+        </p>
+
+        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px] text-slate-700 space-y-2">
+          <div class="flex flex-col sm:flex-row gap-1 sm:gap-3">
+            <span class="font-bold sm:w-28 flex-shrink-0 text-slate-900">1. PIHAK PERTAMA:</span>
+            <span><b>StayJogja Hospitality Network</b>, selaku badan pengelola sistem informasi, aplikasi katalog akomodasi online, dan gerbang transaksi pembayaran pariwisata Yogyakarta.</span>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-1 sm:gap-3 pt-2 border-t border-slate-200">
+            <span class="font-bold sm:w-28 flex-shrink-0 text-slate-900">2. PIHAK KEDUA:</span>
+            <span><b>Pemilik / Pengelola Sah Akomodasi</b>, selaku penyedia unit fisik akomodasi (Hotel, Homestay, Apartemen, atau Villa) yang melakukan registrasi kemitraan operasional.</span>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-slate-700 text-justify leading-relaxed">
+          Kedua belah pihak secara sadar dan beritikad baik menyatakan setuju dan mengikatkan diri dalam pasal-pasal ketentuan sebagai berikut:
+        </p>
+
+        <!-- Klausul Pasal-Pasal Formal -->
+        <div class="space-y-3 text-[11px] text-slate-700 text-justify leading-relaxed border-t border-slate-200 pt-3">
+          
+          <div>
+            <div class="font-bold text-slate-900 uppercase">PASAL 1 — SKEMA BAGI HASIL DAN BIAYA LAYANAN (95% : 5%)</div>
+            <ol class="list-decimal list-outside ml-4 space-y-1.5 mt-1 text-slate-700">
+              <li>Pihak Pertama dan Pihak Kedua bersepakat menetapkan pembagian hasil atas setiap pemesanan akomodasi yang berhasil dibayarkan oleh tamu sebagai berikut:
+                <ul class="list-disc ml-4 mt-1 space-y-1 text-slate-800">
+                  <li><b>Hak Pendapatan Pihak Kedua (Pemilik Properti)</b>: Sebesar <b>95% (sembilan puluh lima persen)</b> dari total nilai bruto transaksi sewa kamar sebagai pendapatan operasional bersih pemilik.</li>
+                  <li><b>Biaya Layanan Pihak Pertama (Pengelola Platform)</b>: Sebesar <b>5% (lima persen)</b> dari total nilai bruto transaksi sewa kamar sebagai biaya administrasi pemeliharaan sistem teknologi, gerbang pembayaran (payment gateway), dan publikasi promosi pariwisata.</li>
+                </ul>
+              </li>
+              <li>Pihak Pertama tidak membebankan biaya registrasi awal, biaya listing properti, maupun biaya langganan berkala bulanan/tahunan kepada Pihak Kedua.</li>
+            </ol>
+          </div>
+
+          <div class="border-t border-slate-200 pt-2.5">
+            <div class="font-bold text-slate-900 uppercase">PASAL 2 — PENERIMAAN PEMBAYARAN DAN PENYALURAN DANA (SETTLEMENT)</div>
+            <ol class="list-decimal list-outside ml-4 space-y-1 mt-1 text-slate-700">
+              <li>Seluruh transaksi pembayaran reservasi dari tamu diproses secara terpusat melalui sistem pembayaran elektronik resmi (QRIS Dinamis dan Virtual Account Bank).</li>
+              <li>Penyaluran hak dana Pihak Kedua sebesar 95% ditransfer langsung ke rekening bank resmi yang didaftarkan oleh Pihak Kedua selambat-lambatnya 1 x 24 jam terhitung sejak tamu menyelesaikan proses check-in.</li>
+            </ol>
+          </div>
+
+          <div class="border-t border-slate-200 pt-2.5">
+            <div class="font-bold text-slate-900 uppercase">PASAL 3 — HAK OTORISASI DAN KONFIRMASI RESERVASI (ACC)</div>
+            <ol class="list-decimal list-outside ml-4 space-y-1 mt-1 text-slate-700">
+              <li>Pihak Kedua memiliki hak wewenang mutlak untuk menyetujui (ACC) atau menolak setiap reservasi yang masuk melalui sistem berdasarkan ketersediaan unit kamar fisik yang sebenarnya.</li>
+              <li>Dokumen Invoice Resmi tamu hanya akan berstatus lunas dan sah setelah Pihak Kedua melakukan verifikasi dan menekan tombol ACC di Panel Pemilik.</li>
+            </ol>
+          </div>
+
+          <div class="border-t border-slate-200 pt-2.5">
+            <div class="font-bold text-slate-900 uppercase">PASAL 4 — KEDAULATAN PENETAPAN TARIF DAN KUOTA KAMAR</div>
+            <p class="mt-1">
+              Pihak Kedua berhak menentukan tarif sewa kamar per malam serta jumlah ketersediaan unit kamar secara mandiri tanpa adanya intervensi harga secara sepihak dari Pihak Pertama.
+            </p>
+          </div>
+
+          <div class="border-t border-slate-200 pt-2.5">
+            <div class="font-bold text-slate-900 uppercase">PASAL 5 — STANDAR MUTU PELAYANAN & KESOPANAN</div>
+            <p class="mt-1">
+              Pihak Kedua berkewajiban menjamin kebersihan fasilitas, keamanan tamu, serta memberikan pelayanan akomodasi dengan mengedepankan etika kesantunan dan keramah-tamahan (*hospitality*) khas Daerah Istimewa Yogyakarta.
+            </p>
+          </div>
+
+          <div class="border-t border-slate-200 pt-2.5">
+            <div class="font-bold text-slate-900 uppercase">PASAL 6 — MASA BERLAKU PERJANJIAN</div>
+            <p class="mt-1">
+              Perjanjian kerjasama ini berlaku efektif sejak tanggal pengesahan elektronik ini disetujui oleh Pihak Kedua dan dapat dievaluasi sewaktu-waktu atas kesepakatan tertulis kedua belah pihak.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Kolom Pengesahan Legal & Tanda Tangan Para Pihak -->
+        <div class="mt-4 pt-4 border-t-2 border-slate-300 grid grid-cols-2 gap-3 text-center text-[10px]">
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+            <span class="font-bold text-slate-900 block">PIHAK PERTAMA</span>
+            <span class="text-[9px] text-slate-500 block mb-3">StayJogja Hospitality Network</span>
+            <div class="py-1">
+              <span class="inline-block px-2 py-0.5 text-[9px] font-mono font-bold text-blue-900 border border-blue-400 bg-blue-50 rounded uppercase tracking-wider">
+                [TERCATAT ELEKTRONIK]
+              </span>
+            </div>
+            <span class="font-bold text-slate-800 block mt-2 pt-1 border-t border-slate-300">Direksi Kemitraan StayJogja</span>
+          </div>
+
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+            <span class="font-bold text-slate-900 block">PIHAK KEDUA</span>
+            <span class="text-[9px] text-slate-500 block mb-3">Mitra Pemilik Akomodasi</span>
+            <div class="py-1">
+              <span class="text-[9px] font-mono text-slate-500 italic">[Persetujuan Elektronik Mitra]</span>
+            </div>
+            <span class="font-bold text-slate-800 block mt-2 pt-1 border-t border-slate-300">Pemilik / Pengelola Sah</span>
+          </div>
+        </div>
+
+        <!-- Pernyataan Persetujuan Legal Checkbox -->
+        <div class="p-3.5 bg-slate-50 border-2 border-slate-300 rounded-xl flex items-start gap-3 mt-4">
+          <input type="checkbox" id="agree-partnership-checkbox" onchange="toggleAgreementBtn(this.checked)" class="w-4 h-4 mt-0.5 rounded text-blue-900 border-slate-400 focus:ring-blue-900 cursor-pointer">
+          <label for="agree-partnership-checkbox" class="text-xs text-slate-800 font-medium cursor-pointer select-none leading-snug">
+            Saya selaku Pihak Kedua menyatakan telah membaca, memahami, dan menyetujui seluruh ketentuan dalam <b>Surat Perjanjian Kerjasama Kemitraan ini</b>, termasuk ketentuan pembagian hak pendapatan <b>95% untuk Pemilik Akomodasi</b> dan biaya operasional platform sebesar <b>5% untuk Pengelola Platform StayJogja</b>.
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Formal Modal Footer Action Buttons -->
+      <div class="p-4 bg-slate-100 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 flex-shrink-0">
+        <a href="/owner" class="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition text-center">
+          <i class="fa-solid fa-arrow-left mr-1"></i> Batal & Kembali ke Dashboard
+        </a>
+        <button type="button" id="btn-accept-partnership" onclick="acceptPartnershipAgreement()" disabled class="w-full sm:w-auto px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-white bg-slate-400 cursor-not-allowed transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-file-signature text-xs"></i>
+          <span>Setujui & Lanjutkan Pendaftaran</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= SUCCESS MODAL (STAYYK PARTNER REGISTRATION SUCCESS) ================= -->
+  <div id="tera-success-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden overflow-y-auto flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden p-6 sm:p-8 text-center animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+
+      <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold mb-2">
+        <i class="fa-solid fa-clock-rotate-left"></i> Pengajuan Pendaftaran Mitra StayJogja
+      </div>
+
+      <h3 class="text-xl font-black text-slate-900 mb-1">Pendaftaran Berhasil Dikirim!</h3>
+      <p class="text-xs text-slate-500 mb-6 max-w-sm mx-auto">
+        Data properti Anda telah masuk ke sistem StayJogja dan saat ini berstatus <b>Menunggu Persetujuan Admin</b> sebelum tayang di katalog publik.
+      </p>
+
+      <!-- Details Summary Card -->
+      <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2 mb-6">
+        <div class="flex justify-between items-center pb-2 border-b border-slate-200">
+          <span class="text-slate-500">Nama Akomodasi:</span>
+          <span id="modal-success-prop-name" class="font-bold text-slate-800">-</span>
+        </div>
+        <div class="flex justify-between items-center pb-2 border-b border-slate-200">
+          <span class="text-slate-500">Tipe & Lokasi:</span>
+          <span id="modal-success-prop-type" class="font-semibold text-slate-800">-</span>
+        </div>
+        <div class="flex justify-between items-center pb-2 border-b border-slate-200">
+          <span class="text-slate-500">Tarif Mulai:</span>
+          <span id="modal-success-prop-price" class="font-black text-amber-700">-</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-slate-500">Status Approval:</span>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1">
+            <i class="fa-solid fa-hourglass-half"></i> Menunggu Verifikasi Admin
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <a href="/owner" class="px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-gauge"></i>
+          <span>Ke Panel Pemilik (Owner)</span>
+        </a>
+        <a href="/admin" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-600/20 transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Panel Admin (Verifikasi)</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/tera.js"></script>
+</body>
+</html>

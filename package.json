@@ -1,0 +1,30 @@
+{
+  "name": "stayjogja-app",
+  "version": "1.0.0",
+  "description": "Aplikasi Reservasi Akomodasi Jogja (Hotel Bintang 1-5, Homestay, Apartemen)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node tests/verify-system.js"
+  },
+  "keywords": [
+    "stayjogja",
+    "traveloka-clone",
+    "hotel-reservation",
+    "jogja-accommodation"
+  ],
+  "author": "Raynor Athaillah",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.109.0",
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.5",
+    "express": "^4.19.2",
+    "html5-qrcode": "^2.3.8",
+    "nik-parser": "^1.0.1",
+    "nodemailer": "^10.0.13",
+    "qrcode": "^1.5.4",
+    "ws": "^8.22.0"
+  }
+}

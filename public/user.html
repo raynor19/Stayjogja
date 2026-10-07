@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Tamu (User Hub) — StayJogja</title>
+  <link rel="icon" type="image/svg+xml" href="/images/logo-stayjogja.png">
+  
+  <!-- Google Fonts: DM Sans & Lora -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              600: '#1e3a8a',
+              700: '#172554',
+              900: '#0f172a'
+            },
+            accent: {
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            }
+          },
+          fontFamily: {
+            sans: ['"DM Sans"', 'sans-serif'],
+            display: ['"Lora"', 'Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col font-sans antialiased">
+
+  <!-- ================= USER HEADER (LIQUID GLASS) ================= -->
+  <header class="glass-nav sticky top-0 z-30 shadow-subtle">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+      
+      <div class="flex items-center gap-3">
+        <a href="/user" class="flex items-center gap-2.5">
+          <img src="/images/logo-stayjogja.png" alt="StayJogja Logo" class="w-10 h-10 rounded-2xl shadow-sm border border-amber-500/30">
+          <div class="flex items-center">
+            <span class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-none">Stay<span class="text-amber-600">Jogja</span> <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full ml-1">Tamu Hub</span></span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center gap-3">
+        <a href="/tamu" class="px-4 py-2 btn-gold text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Cari Penginapan</span>
+        </a>
+
+        <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
+          <div id="user-avatar-initials" class="w-9 h-9 rounded-full bg-slate-900 text-amber-400 font-bold flex items-center justify-center text-xs border border-amber-500/30">
+            --
+          </div>
+          <div class="hidden sm:block text-xs text-left">
+            <span id="user-display-name" class="font-bold text-slate-900 block">Tamu</span>
+            <span class="text-[10px] text-emerald-700 font-semibold">Tamu Terverifikasi</span>
+          </div>
+          <a href="/login" onclick="logoutUser(); return false;" class="px-2.5 py-1.5 text-xs text-slate-500 hover:text-red-600 rounded-lg hover:bg-slate-100 transition flex items-center gap-1 ml-1" title="Keluar">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span class="hidden md:inline">Keluar</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= USER MAIN DASHBOARD ================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+    
+    <!-- Welcome Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-slate-800">
+      <div class="relative z-10 max-w-2xl">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 inline-block mb-2">
+          Dashboard Wisatawan
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight font-display">Sugeng Rawuh, <span id="user-welcome-name">Tamu</span>! 👋</h1>
+        <p class="text-slate-300 text-xs sm:text-sm mt-1 font-light leading-relaxed">
+          Pantau status reservasi hotel, homestay keluarga, atau apartemen Anda di Yogyakarta. Invoice resmi dapat langsung diunduh dan dicetak setelah pemilik akomodasi menyetujui (ACC) pemesanan Anda.
+        </p>
+      </div>
+      <div class="absolute -right-10 -bottom-10 opacity-10 text-amber-400 text-9xl pointer-events-none">
+        <i class="fa-solid fa-file-invoice"></i>
+      </div>
+    </div>
+
+    <!-- 4 KPI Stats Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-card flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Pesanan Aktif</span>
+          <div id="user-kpi-active" class="text-2xl sm:text-3xl font-black text-amber-700 mt-1 font-display">0</div>
+          <span class="text-[11px] text-slate-500">Invoice menunggu ACC / aktif</span>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-file-invoice"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-card flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Terkonfirmasi (ACC)</span>
+          <div id="user-kpi-confirmed" class="text-2xl sm:text-3xl font-black text-emerald-700 mt-1 font-display">0</div>
+          <span class="text-[11px] text-slate-500">Siap untuk check-in</span>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-card flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Total Reservasi</span>
+          <div id="user-kpi-total" class="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-display">0</div>
+          <span class="text-[11px] text-slate-500">Sepanjang waktu</span>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-slate-50 text-slate-600 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-card flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Total Transaksi</span>
+          <div id="user-kpi-spent" class="text-xl sm:text-2xl font-black text-amber-700 mt-1 font-display">Rp 0</div>
+          <span class="text-[11px] text-slate-500">Pembayaran terverifikasi</span>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-credit-card"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Navigation Tabs for User Content -->
+    <div class="flex border-b border-slate-200 gap-6 text-sm font-bold">
+      <button onclick="switchUserTab('active')" id="user-tab-btn-active" class="pb-3 text-amber-700 border-b-2 border-amber-600 transition flex items-center gap-2 cursor-pointer">
+        <i class="fa-solid fa-file-invoice text-amber-600"></i> Invoice Resmi & Pesanan Aktif
+        <span id="user-tab-badge-active" class="px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-800">0</span>
+      </button>
+      <button onclick="switchUserTab('history')" id="user-tab-btn-history" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer">
+        <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Lengkap
+      </button>
+      <button onclick="switchUserTab('profile')" id="user-tab-btn-profile" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer">
+        <i class="fa-solid fa-id-card"></i> Data Profil Tamu
+      </button>
+      <button onclick="switchUserTab('itinerary')" id="user-tab-btn-itinerary" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer">
+        <i class="fa-solid fa-map-location-dot"></i> Rencana Liburan AI
+        <span id="user-tab-badge-itinerary" class="px-2 py-0.5 rounded-full text-xs bg-amber-100 text-amber-800 font-bold">0</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: INVOICE RESMI & PESANAN AKTIF -->
+    <div id="user-sec-active" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 font-display">Daftar Invoice Resmi & Pesanan Berjalan</h2>
+          <p class="text-xs text-slate-500">Klik "Buka Invoice Resmi" untuk melihat bukti pembayaran dan reservasi resmi lengkap dengan QR code check-in.</p>
+        </div>
+        <a href="/tamu" class="px-4 py-2 btn-gold text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5">
+          <i class="fa-solid fa-plus"></i>
+          <span>Pesan Kamar Lain</span>
+        </a>
+      </div>
+
+      <div id="active-bookings-list" class="space-y-3">
+        <div id="user-active-bookings-list" class="space-y-3">
+          <!-- Rendered via user.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: RIWAYAT LENGKAP -->
+    <div id="user-sec-history" class="hidden space-y-4">
+      <div>
+        <h2 class="text-base font-bold text-slate-900 font-display">Arsip Seluruh Riwayat Reservasi</h2>
+        <p class="text-xs text-slate-500">Catatan pemesanan Anda yang telah selesai, ditolak, atau dibatalkan.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-card overflow-hidden" id="history-bookings-list">
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-semibold text-[11px] border-b border-slate-200">
+              <tr>
+                <th class="p-4">Kode Booking</th>
+                <th class="p-4">Akomodasi & Unit</th>
+                <th class="p-4">Tanggal Menginap</th>
+                <th class="p-4">Total Biaya</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="user-history-table" class="divide-y divide-slate-200">
+              <!-- Rendered via user.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: PROFIL PENGGUNA -->
+    <div id="user-sec-profile" class="hidden space-y-4">
+      <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-card max-w-xl">
+        <h3 class="font-bold text-slate-900 text-sm mb-1 font-display">Informasi Akun Tamu</h3>
+        <p class="text-xs text-slate-500 mb-6">Data ini digunakan untuk mengisi formulir pemesanan kamar secara otomatis.</p>
+
+        <form id="profile-form" onsubmit="saveUserProfile(event); return false;" class="space-y-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+            <input type="text" id="prof-name" placeholder="Nama Lengkap" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Alamat Email</label>
+            <input type="email" id="prof-email" placeholder="nama@email.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Nomor WhatsApp</label>
+            <input type="tel" id="prof-phone" placeholder="08xxxxxxxxxx" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+          <button type="submit" id="save-prof-btn" class="px-5 py-2.5 btn-gold font-bold text-xs rounded-xl shadow-sm transition">
+            Simpan Perubahan
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 4: RENCANA LIBURAN AI TERSIMPAN -->
+    <div id="user-sec-itinerary" class="hidden space-y-4">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 font-display flex items-center gap-2">
+            <i class="fa-solid fa-map-location-dot text-amber-600"></i> Rencana Liburan (Itinerary) AI Tersimpan
+          </h2>
+          <p class="text-xs text-slate-500">Koleksi rencana perjalanan cerdas yang tersambung dengan akun Anda berdasarkan rekomendasi hotel.</p>
+        </div>
+        <a href="/tamu" class="px-4 py-2 btn-gold text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1.5">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Buat Itinerary Baru</span>
+        </a>
+      </div>
+
+      <div id="user-itinerary-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Rendered via user.js -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= MODAL: INVOICE RESMI ================= -->
+  <div id="voucher-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden overflow-y-auto flex items-start justify-center p-2 sm:p-6 md:p-8">
+    <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col my-2 sm:my-6">
+      
+      <!-- Invoice Top Bar (Modal Control - Hidden on Print) -->
+      <div class="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between print:hidden">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-file-invoice text-lg text-amber-400"></i>
+          <div>
+            <h3 class="font-bold text-sm font-display tracking-tight">Invoice Resmi Reservasi</h3>
+            <p class="text-[11px] text-slate-400">Dokumen Sah & Bukti Pembayaran Lunas StayJogja</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="printVoucherDocument()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-print"></i>
+            <span>Cetak / PDF</span>
+          </button>
+          <button onclick="closeVoucherModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Invoice Sheet -->
+      <div id="printable-voucher" class="p-5 sm:p-7 text-slate-800 bg-white relative flex flex-col justify-between">
+        
+        <!-- Header: Nama & Logo Hotel (Resmi & Terverifikasi) -->
+        <div class="flex flex-col sm:flex-row items-center justify-between pb-4 border-b-2 border-slate-900 gap-4">
+          <!-- Sisi Kiri: Logo Hotel & Nama Hotel -->
+          <div class="flex items-center gap-3.5 text-center sm:text-left w-full sm:w-auto">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-slate-200 overflow-hidden shadow-sm bg-slate-100 shrink-0 flex items-center justify-center p-0.5">
+              <img id="voucher-hotel-logo" src="/images/logo-stayjogja.png" alt="Logo Hotel" class="w-full h-full object-cover rounded-xl">
+            </div>
+            <div>
+              <div class="flex items-center justify-center sm:justify-start gap-2">
+                <span id="voucher-hotel-type-badge" class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                  HOTEL BINTANG 5
+                </span>
+                <span id="voucher-hotel-stars" class="text-amber-500 text-xs flex gap-0.5">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </span>
+              </div>
+              <h2 id="voucher-hotel-name-header" class="font-black text-xl sm:text-2xl text-slate-900 tracking-tight font-display mt-0.5">
+                Hotel Tentrem Yogyakarta
+              </h2>
+              <p id="voucher-hotel-address-header" class="text-xs text-slate-500 font-medium line-clamp-1">
+                Jl. P. Mangkubumi No. 72A, Cokrodiningratan, Jetis, D.I. Yogyakarta
+              </p>
+            </div>
+          </div>
+
+          <!-- Sisi Kanan: Platform StayJogja Official Partner Stamp -->
+          <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-2xl shrink-0 self-center sm:self-auto">
+            <img src="/images/logo-stayjogja.png" alt="StayJogja" class="w-8 h-8 object-contain">
+            <div class="text-left">
+              <span class="text-[9px] font-bold tracking-widest text-slate-400 uppercase block">MITRA RESMI TERVERIFIKASI</span>
+              <span class="font-black text-xs text-blue-950 font-display">STAYJOGJA PLATFORM</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Tracking Banner (Light bar) -->
+        <div id="voucher-status-banner" class="my-3 p-2.5 rounded-xl flex items-center justify-between text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+          <span id="voucher-status-text">Status: Menunggu ACC Pemilik</span>
+          <span id="voucher-status-desc" class="text-[10px] font-normal text-slate-600">Pesanan telah dibayar</span>
+        </div>
+
+        <!-- Metadata Row: INVOICE TO vs INVOICE -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-4">
+          <!-- Left: INVOICE TO -->
+          <div class="space-y-1.5 text-xs text-slate-600">
+            <h4 class="font-black text-xs sm:text-sm tracking-wider text-slate-900 uppercase">INVOICE TO:</h4>
+            <div class="font-bold text-sm sm:text-base text-slate-900" id="voucher-guest-name">-</div>
+            
+            <div class="flex items-center gap-2 text-slate-600 pt-0.5">
+              <i class="fa-solid fa-phone text-slate-400 w-3.5 text-center"></i>
+              <span>Phone: <span id="voucher-guest-phone" class="font-medium text-slate-800">-</span></span>
+            </div>
+            
+            <div class="flex items-center gap-2 text-slate-600">
+              <i class="fa-solid fa-envelope text-slate-400 w-3.5 text-center"></i>
+              <span>Email: <span id="voucher-guest-email" class="font-medium text-slate-800">-</span></span>
+            </div>
+
+            <!-- Fallback hidden contact span for backwards compatibility -->
+            <span id="voucher-guest-contact" class="hidden"></span>
+
+            <div class="flex items-center gap-2 text-slate-600">
+              <i class="fa-solid fa-id-card text-blue-700 w-3.5 text-center"></i>
+              <span>NIK KTP: <span id="voucher-guest-nik" class="font-mono font-bold text-blue-900">-</span>
+                <span class="inline-block ml-1 text-[9px] bg-emerald-50 text-emerald-700 font-bold px-1.5 py-0.5 rounded border border-emerald-200">Dukcapil Verified</span>
+              </span>
+            </div>
+
+            <div class="flex items-start gap-2 text-slate-600">
+              <i class="fa-solid fa-location-dot text-slate-400 w-3.5 text-center mt-0.5"></i>
+              <span>Alamat KTP: <span id="voucher-guest-address" class="font-medium text-slate-800">Jl. Malioboro Blok D4 No. 18, RT 003/008, Kel. Sosrowijayan, Kec. Gedongtengen, Kota Yogyakarta, D.I. Yogyakarta</span></span>
+            </div>
+
+            <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-[11px] space-y-0.5 mt-1.5 text-slate-600">
+              <div><span class="text-slate-400">TTL / Gender:</span> <span id="voucher-guest-birth" class="font-semibold text-slate-800">Yogyakarta, 19 Maret 2005 (Laki-laki)</span></div>
+              <div><span class="text-slate-400">Agama / Status:</span> <span id="voucher-guest-religion-marital" class="font-semibold text-slate-800">Islam • Belum Kawin</span></div>
+              <div><span class="text-slate-400">Pekerjaan / WN:</span> <span id="voucher-guest-occupation-citizen" class="font-semibold text-slate-800">Pelajar / Mahasiswa • WNI</span></div>
+            </div>
+          </div>
+
+          <!-- Right: INVOICE Metadata -->
+          <div class="sm:text-right flex flex-col justify-start sm:items-end">
+            <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight font-display uppercase">INVOICE</h1>
+            
+            <div class="mt-3 space-y-1.5 text-xs text-slate-600 w-full sm:w-auto">
+              <div class="flex justify-between sm:justify-end gap-3 items-center">
+                <span class="text-slate-500 font-medium">Invoice Number:</span>
+                <span id="voucher-booking-code" class="font-mono font-bold text-slate-900 text-sm">SJ-XXXXX</span>
+              </div>
+              <div class="flex justify-between sm:justify-end gap-3 items-center">
+                <span class="text-slate-500 font-medium">Invoice Date:</span>
+                <span id="voucher-invoice-date" class="font-semibold text-slate-800">27/09/2026</span>
+              </div>
+              <div class="flex justify-between sm:justify-end gap-3 items-center pt-1">
+                <span class="text-slate-500 font-medium">Status Dokumen:</span>
+                <span id="voucher-invoice-badge" class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[10px] font-black uppercase tracking-wider">
+                  LUNAS / SAH
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items Table (Classic High-Contrast Dark Bar Table) -->
+        <div class="my-4 overflow-x-auto rounded-lg border border-slate-200">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-900 text-white uppercase text-[10px] tracking-wider">
+                <th class="py-2.5 px-3 w-[6%] text-center">SL.</th>
+                <th class="py-2.5 px-3 w-[46%]">ITEM DESCRIPTION</th>
+                <th class="py-2.5 px-3 w-[18%] text-right">UNIT PRICE</th>
+                <th class="py-2.5 px-3 w-[15%] text-center">QUANTITY</th>
+                <th class="py-2.5 px-3 w-[15%] text-right">TOTAL</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white">
+              <!-- Item 01: Room & Lodging -->
+              <tr class="align-top">
+                <td class="py-3 px-3 text-center font-bold text-slate-400">01</td>
+                <td class="py-3 px-3">
+                  <div class="font-bold text-slate-900 text-sm" id="voucher-prop-name">Hotel Tentrem Yogyakarta</div>
+                  <div class="text-[10px] font-bold text-amber-700 uppercase" id="voucher-prop-type">HOTEL BINTANG 5</div>
+                  <div class="text-xs text-slate-700 mt-0.5">Tipe Kamar: <span id="voucher-unit-name" class="font-bold text-slate-900">Deluxe King Bed</span></div>
+                  <div class="text-[11px] text-slate-500 mt-1">
+                    <i class="fa-regular fa-calendar-check text-blue-600"></i> Check-in: <b id="voucher-checkin">27 Sep 2026</b> (14:00) — Check-out: <b id="voucher-checkout">28 Sep 2026</b> (12:00)
+                  </div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">
+                    <i class="fa-solid fa-map-pin text-slate-400"></i> <span id="voucher-prop-address">Jl. P. Mangkubumi No. 72A, Jetis</span>
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-right font-mono font-medium text-slate-800" id="voucher-unit-price">Rp 0</td>
+                <td class="py-3 px-3 text-center text-slate-700" id="voucher-quantity">1 Malam<br><span class="text-[10px] text-slate-400">(1 Tamu)</span></td>
+                <td class="py-3 px-3 text-right font-mono font-bold text-slate-900" id="voucher-item-total">Rp 0</td>
+              </tr>
+              
+              <!-- Item 02: Verification & Protection -->
+              <tr class="align-top bg-slate-50/50">
+                <td class="py-2.5 px-3 text-center font-bold text-slate-400">02</td>
+                <td class="py-2.5 px-3">
+                  <div class="font-bold text-slate-800 text-xs">Jaminan Reservasi Sah & Verifikasi Dukcapil RI</div>
+                  <div class="text-[10px] text-slate-500">Validasi NIK Kemendagri & Hak Perlindungan Konsumen StayJogja</div>
+                </td>
+                <td class="py-2.5 px-3 text-right font-mono text-slate-400">Rp 0</td>
+                <td class="py-2.5 px-3 text-center text-slate-500">1 Paket</td>
+                <td class="py-2.5 px-3 text-right font-mono text-emerald-700 font-bold">Termasuk</td>
+              </tr>
+
+              <!-- Item 03: Regional Hospitality Tax (PB1) -->
+              <tr class="align-top">
+                <td class="py-2.5 px-3 text-center font-bold text-slate-400">03</td>
+                <td class="py-2.5 px-3">
+                  <div class="font-bold text-slate-800 text-xs">Pajak Akomodasi & Retribusi Daerah (PB1 D.I. Yogyakarta)</div>
+                  <div class="text-[10px] text-slate-500">Pajak Resmi Daerah Istimewa Yogyakarta (10%)</div>
+                </td>
+                <td class="py-2.5 px-3 text-right font-mono text-slate-500" id="voucher-tax-rate">10%</td>
+                <td class="py-2.5 px-3 text-center text-slate-500">1 Trx</td>
+                <td class="py-2.5 px-3 text-right font-mono font-semibold text-slate-800" id="voucher-tax-amount">Rp 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Lower Section: Bank Info & QR Code (Left) vs Subtotal, Total, Signature (Right) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-2 pt-2 items-start">
+          
+          <!-- Left: Bank Information, Scannable QR Code, Terms -->
+          <div class="space-y-3">
+            <div>
+              <h5 class="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-1">BANK INFORMATION:</h5>
+              <div class="text-xs text-slate-600 space-y-0.5">
+                <div class="flex justify-between sm:justify-start gap-4"><span class="text-slate-400 w-24">Payment Mode:</span> <span id="voucher-pay-method" class="font-bold text-slate-800">QRIS Instan (Sandbox)</span></div>
+                <div class="flex justify-between sm:justify-start gap-4"><span class="text-slate-400 w-24">Transaction ID:</span> <span id="voucher-pay-txid" class="font-mono font-bold text-blue-900">TRX-SBX-72228391</span></div>
+                <div class="flex justify-between sm:justify-start gap-4"><span class="text-slate-400 w-24">Verify Status:</span> <span class="font-semibold text-emerald-700">LUNAS (Terverifikasi Otomatis)</span></div>
+              </div>
+            </div>
+
+            <!-- Authentic Scannable QR Code Box -->
+            <div class="p-3.5 bg-blue-50/50 border border-blue-200 rounded-2xl flex flex-col sm:flex-row items-center gap-4">
+              <div class="relative group cursor-pointer" onclick="openQrZoomModal()" title="Klik untuk memperbesar barcode scan kamera HP resepsionis">
+                <div class="w-32 h-32 sm:w-36 sm:h-36 bg-white border-2 border-slate-300 rounded-xl p-2 shrink-0 flex items-center justify-center shadow-sm hover:shadow-md transition" id="voucher-qr-container">
+                  <img id="voucher-qr-image" src="" alt="QR Code Fast Check-In" class="w-full h-full object-contain" >
+                </div>
+                <div class="absolute inset-0 bg-slate-900/60 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-[11px] font-bold gap-1 pointer-events-none">
+                  <i class="fa-solid fa-expand"></i> Perbesar
+                </div>
+              </div>
+              <div class="text-left space-y-1.5 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-extrabold text-blue-950 text-xs uppercase flex items-center gap-1.5">
+                    <i class="fa-solid fa-bolt text-amber-500 text-sm"></i> Barcode Fast Check-In Resepsionis
+                  </span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    Bebas Formulir Kertas
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-600 leading-snug">
+                  Cukup tunjukkan barcode ini ke resepsionis hotel saat tiba. Resepsionis langsung scan dari kamera HP untuk memuat data KTP Dukcapil & reservasi secara instan tanpa perlu isi formulir manual.
+                </p>
+                <div class="pt-1 flex flex-wrap items-center gap-2">
+                  <button type="button" onclick="openQrZoomModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-900 hover:bg-blue-800 text-white text-[11px] font-bold rounded-lg shadow-sm transition cursor-pointer">
+                    <i class="fa-solid fa-expand"></i> Perbesar Barcode HD
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terms and Condition -->
+            <div>
+              <h5 class="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-1">TERMS AND CONDITION:</h5>
+              <p class="text-[10px] text-slate-500 leading-relaxed">
+                1. Waktu check-in mulai 14:00 WIB dan check-out maksimal 12:00 WIB.<br>
+                2. Wajib menunjukkan invoice resmi ini dan KTP fisik asli saat check-in.<br>
+                3. Invoice ini merupakan dokumen sah yang diterbitkan oleh sistem StayJogja.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: Sub Total, Tax, TOTAL Box, Signature -->
+          <div class="flex flex-col justify-between h-full space-y-3">
+            <div class="space-y-1.5 text-xs">
+              <div class="flex justify-between text-slate-600">
+                <span class="font-medium">Sub Total</span>
+                <span id="voucher-subtotal-price" class="font-mono font-semibold text-slate-900">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span class="font-medium">Shipping / Layanan</span>
+                <span class="font-mono text-slate-600">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span class="font-medium">Tax Rate (PB1 10%)</span>
+                <span id="voucher-summary-tax" class="font-mono text-slate-600">Rp 0</span>
+              </div>
+              
+              <!-- TOTAL Highlight Dark Box -->
+              <div class="bg-slate-900 text-white px-4 py-3 rounded-lg flex justify-between items-center shadow-md mt-2">
+                <span class="font-black text-xs uppercase tracking-wider">TOTAL</span>
+                <span id="voucher-total-price" class="font-black text-lg sm:text-xl font-mono text-amber-400">Rp 0</span>
+              </div>
+            </div>
+
+            <!-- Signature Graphic exactly like image -->
+            <div class="pt-2 text-right flex flex-col items-end">
+              <div class="h-8 flex items-center justify-end pr-2">
+                <span class="font-serif italic text-xl text-slate-700 select-none tracking-wide" style="font-family: 'Brush Script MT', cursive, Georgia, serif;">StayJogja Management</span>
+              </div>
+              <div class="w-40 border-b border-slate-400 mb-1"></div>
+              <div class="font-bold text-xs text-slate-900">StayJogja Management</div>
+              <div class="text-[10px] text-slate-500">Official Hospitality Director</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Thank you text -->
+        <div class="text-center pt-6 pb-2">
+          <p class="font-serif italic text-sm text-slate-600">Thank you for your business!</p>
+        </div>
+
+        <!-- Geometric Angular Accent Banner at Bottom (Direct from Image Design) -->
+        <div class="w-full h-8 overflow-hidden rounded-b-xl mt-1">
+          <svg viewBox="0 0 800 50" preserveAspectRatio="none" class="w-full h-full">
+            <polygon points="0,50 0,15 90,50" fill="#dc2626" />
+            <polygon points="0,50 80,18 160,50" fill="#b91c1c" />
+            <polygon points="130,50 220,25 300,50" fill="#0f172a" />
+            <polygon points="280,50 420,28 800,28 800,50" fill="#0f172a" />
+            <polygon points="400,28 470,22 800,22 800,28" fill="#dc2626" />
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- Modal Bottom Actions (Print: hidden) -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center gap-3 print:hidden">
+        <div class="flex items-center gap-2">
+          <button onclick="printVoucherDocument()" class="px-4 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+          </button>
+          <button id="btn-send-voucher-email" onclick="sendInvoiceToMyEmail()" class="px-4 py-2 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-xl text-xs font-semibold text-blue-900 transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+            <i class="fa-regular fa-paper-plane text-blue-600"></i> Kirim ke Email Saya
+          </button>
+        </div>
+        <button onclick="closeVoucherModal()" class="px-5 py-2 btn-gold rounded-xl text-xs font-semibold text-white transition shadow-sm cursor-pointer">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ZOOM QR CODE HD ================= -->
+  <div id="qr-zoom-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden p-6 text-center animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-900 text-amber-400 flex items-center justify-center text-sm font-bold shadow-xs">
+            <i class="fa-solid fa-qrcode"></i>
+          </div>
+          <div class="text-left">
+            <h4 class="font-bold text-sm text-slate-900 font-display">Barcode Fast Check-In Resepsionis</h4>
+            <p class="text-[10px] text-slate-500">Scan kamera HP untuk verifikasi instan KTP Dukcapil & Kamar</p>
+          </div>
+        </div>
+        <button onclick="closeQrZoomModal()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Massive Ultra-Sharp QR Code on Pure White Ground -->
+      <div class="w-72 h-72 mx-auto bg-white border-2 border-slate-200 rounded-2xl p-3 flex items-center justify-center shadow-md">
+        <img id="zoom-qr-image" src="" alt="QR Code HD" class="w-full h-full object-contain" >
+      </div>
+
+      <!-- Content: Fast Check-in Resepsionis -->
+      <div id="qr-view-checkin" class="mt-4 space-y-3">
+        <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl text-left space-y-1">
+          <p class="font-bold text-xs text-blue-950 flex items-center gap-1.5">
+            <i class="fa-solid fa-camera text-blue-700"></i> Arahkan Kamera HP Resepsionis ke Barcode Ini
+          </p>
+          <p class="text-[11px] text-slate-600 leading-relaxed">
+            Barcode berformat ringkas (29x29 module) sehingga terbaca dalam <strong>&lt;0,1 detik</strong> di kamera HP apa pun. Sistem langsung membuka portal check-in hotel dengan identitas KTP Dukcapil dan reservasi terisi otomatis.
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-left">
+          <div class="min-w-0 flex-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase block">Link Portal Resepsionis:</span>
+            <span id="zoom-qr-url-text" class="text-[11px] font-mono text-blue-800 font-semibold truncate block">http://...</span>
+          </div>
+          <button type="button" onclick="openReceptionistPortalDirectly()" class="w-full sm:w-auto px-3.5 py-1.5 bg-blue-900 hover:bg-blue-800 text-white rounded-lg text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            <span>Buka di Web</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-5 flex gap-2">
+        <button onclick="closeQrZoomModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer">
+          Tutup Tampilan Barcode
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: LIHAT ITINERARY LENGKAP ================= -->
+  <div id="itinerary-view-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden overflow-y-auto flex items-start justify-center p-2 sm:p-6 md:p-8">
+    <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col my-2 sm:my-6">
+      
+      <!-- Print Only Header (Starts line 1 of page 1) -->
+      <div class="hidden print:block pb-4 mb-4 border-b-2 border-slate-900">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <img src="/images/logo-stayjogja.png" alt="StayJogja" class="w-10 h-10 object-contain" />
+            <div>
+              <h2 class="text-xs font-black uppercase tracking-widest text-slate-500">STAYJOGJA TRAVEL COMPANION</h2>
+              <h1 id="modal-itin-print-title" class="text-base font-extrabold text-slate-900 leading-tight">Rencana Liburan</h1>
+              <p id="modal-itin-print-hotel" class="text-[11px] text-slate-600 mt-0.5">Pusat Akomodasi: -</p>
+            </div>
+          </div>
+          <div class="text-right text-[10px] text-slate-400 shrink-0">
+            <p class="font-bold text-slate-700">Dokumen Liburan Tamu</p>
+            <p>stayjogja.com</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Header (Screen Only - Hidden on Print) -->
+      <div class="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between print:hidden">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <i class="fa-solid fa-map-location-dot"></i>
+          </div>
+          <div>
+            <h3 id="modal-itin-title" class="font-bold text-sm font-display tracking-tight">Rencana Liburan Tersimpan</h3>
+            <p id="modal-itin-hotel" class="text-[11px] text-slate-400">Pusat Akomodasi: -</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="printItineraryDocument()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-print"></i>
+            <span>Cetak PDF</span>
+          </button>
+          <button onclick="closeItineraryViewModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Content -->
+      <div id="modal-itin-content" class="p-5 sm:p-7 space-y-4 max-h-[78vh] overflow-y-auto">
+        <!-- Rendered via user.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/nikParser.js"></script>
+  <script src="/js/user.js"></script>
+</body>
+</html>

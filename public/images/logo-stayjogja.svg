@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <!-- Palet Warna Resmi Kemewahan Budaya Jogja -->
+    <linearGradient id="prambananGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="35%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+
+    <linearGradient id="tuguGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff1c5" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+
+    <!-- Deep Midnight Royal Navy (Executive Corporate Presence) -->
+    <linearGradient id="corpNavyBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070d1e" />
+      <stop offset="50%" stop-color="#0d172e" />
+      <stop offset="100%" stop-color="#14213d" />
+    </linearGradient>
+
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Squircle Base Berbingkai Emas Presisi -->
+  <rect x="5" y="5" width="110" height="110" rx="28" fill="url(#corpNavyBg)" stroke="#d4af37" stroke-width="1.5" stroke-opacity="0.5" />
+
+  <!-- ================= 1. UNSUR CANDI PRAMBANAN (MENARA CANDI SIWA & CANDI APIT) ================= -->
+  
+  <!-- A. Menara Candi Prambanan Sayap Kiri (Candi Brahma / Candi Pendamping) -->
+  <g id="prambanan-kiri" stroke="url(#prambananGold)" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Puncak Mahkota Ratna Kiri -->
+    <path d="M 28 26 L 30 32 L 26 32 Z" fill="url(#prambananGold)" stroke-width="0.8" />
+    <circle cx="28" cy="25" r="1.2" fill="#fef08a" />
+    
+    <!-- Tingkat 1 Candi Kiri -->
+    <path d="M 25 33 L 31 33 L 33 41 L 23 41 Z" stroke-width="1.8" />
+    <!-- Hiasan Ratna Sisi Tingkat 1 -->
+    <circle cx="23" cy="41" r="1" fill="#f59e0b" />
+    <circle cx="33" cy="41" r="1" fill="#f59e0b" />
+
+    <!-- Tingkat 2 Candi Kiri -->
+    <path d="M 22 42 L 34 42 L 36 53 L 20 53 Z" stroke-width="1.8" />
+    <circle cx="20" cy="53" r="1.2" fill="#f59e0b" />
+    <circle cx="36" cy="53" r="1.2" fill="#f59e0b" />
+
+    <!-- Tingkat 3 Candi Kiri (Badan Candi Prambanan) -->
+    <path d="M 19 54 L 37 54 L 38 70 L 18 70 Z" stroke-width="2" />
+    
+    <!-- Pondasi Candi Kiri Turun ke Kaki -->
+    <path d="M 17 71 L 39 71 L 39 88 L 17 88" stroke-width="1.8" />
+  </g>
+
+  <!-- B. Menara Candi Prambanan Sayap Kanan (Candi Wisnu / Symmetrical Twin) -->
+  <g id="prambanan-kanan" stroke="url(#prambananGold)" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Puncak Mahkota Ratna Kanan -->
+    <path d="M 92 26 L 94 32 L 90 32 Z" fill="url(#prambananGold)" stroke-width="0.8" />
+    <circle cx="92" cy="25" r="1.2" fill="#fef08a" />
+
+    <!-- Tingkat 1 Candi Kanan -->
+    <path d="M 89 33 L 95 33 L 97 41 L 87 41 Z" stroke-width="1.8" />
+    <circle cx="87" cy="41" r="1" fill="#f59e0b" />
+    <circle cx="97" cy="41" r="1" fill="#f59e0b" />
+
+    <!-- Tingkat 2 Candi Kanan -->
+    <path d="M 86 42 L 98 42 L 100 53 L 84 53 Z" stroke-width="1.8" />
+    <circle cx="84" cy="53" r="1.2" fill="#f59e0b" />
+    <circle cx="100" cy="53" r="1.2" fill="#f59e0b" />
+
+    <!-- Tingkat 3 Candi Kanan -->
+    <path d="M 83 54 L 101 54 L 102 70 L 82 70 Z" stroke-width="2" />
+    
+    <!-- Pondasi Candi Kanan Turun ke Kaki -->
+    <path d="M 81 71 L 103 71 L 103 88 L 81 88" stroke-width="1.8" />
+  </g>
+
+  <!-- Lengkungan Atap Penghubung Prambanan & Joglo (Harmoni Lanskap Jogja) -->
+  <path d="M 28 64 C 42 56 50 49 60 46 C 70 49 78 56 92 64" 
+        fill="none" 
+        stroke="url(#prambananGold)" 
+        stroke-width="3" 
+        stroke-linecap="round" />
+
+  <!-- ================= 2. UNSUR TUGU YOGYAKARTA (MONUMEN PAL PUTIH PUSAT) ================= -->
+  
+  <!-- 1. Puncak Jarum Emas Spire Tugu Pal Putih -->
+  <polygon points="60,13 63.5,23 56.5,23" fill="url(#tuguGold)" />
+  <circle cx="60" cy="13" r="1.5" fill="#ffffff" />
+
+  <!-- 2. Bola Emas Golong (Simbol Filosofi Golong-Gilig Kasultanan) -->
+  <circle cx="60" cy="26" r="2.8" fill="#fef08a" stroke="#d97706" stroke-width="0.8" />
+  <rect x="58" y="29" width="4" height="2" fill="#f59e0b" rx="0.5" />
+
+  <!-- 3. Mahkota Pelipit Bertingkat Tugu Pal Putih -->
+  <polygon points="54,31 66,31 68,34.5 52,34.5" fill="#ffffff" />
+  <rect x="50" y="34.5" width="20" height="2.5" fill="url(#tuguGold)" rx="0.5" />
+  <polygon points="53,37 67,37 66,40.5 54,40.5" fill="#ffffff" />
+
+  <!-- 4. Batang Tiang Monumen Tugu Pal Putih (Kokoh & Tegak) -->
+  <!-- Sisi Kiri (Putih Bersih / Pal Putih) -->
+  <polygon points="54,40.5 60,40.5 60,73 53,73" fill="#ffffff" />
+  <!-- Sisi Kanan (Bayangan Soft Slate / Dimensi Keanggunan) -->
+  <polygon points="60,40.5 66,40.5 67,73 60,73" fill="#e2e8f0" />
+  <!-- Rusuk Sumbu Tengah Emas -->
+  <line x1="60" y1="40.5" x2="60" y2="73" stroke="#f59e0b" stroke-width="0.9" />
+
+  <!-- Sabuk Tengah Ornamen Tugu -->
+  <rect x="54.5" y="54" width="11" height="2.2" fill="url(#tuguGold)" rx="0.5" />
+
+  <!-- 5. Kaki & Umpak Prasasti Tugu Bertingkat -->
+  <!-- Trap Plinth 1 (Putih) -->
+  <polygon points="51,73 69,73 71,77 49,77" fill="#ffffff" />
+  <!-- Trap Plinth 2 (Emas dengan Ulir Ornamen Khas Jogja) -->
+  <rect x="46" y="77" width="28" height="3.5" fill="url(#tuguGold)" rx="0.8" />
+
+  <!-- Ulir Ornamen Kaki Tugu Jogja (Kiri & Kanan) -->
+  <path d="M 46 78 C 42 78 40 82 44 85 C 46 85 47 83 46 81" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" />
+  <path d="M 74 78 C 78 78 80 82 76 85 C 74 85 73 83 74 81" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" />
+
+  <!-- ================= 3. UNSUR GERBANG KERAMAHAN PENGINAPAN (STAY & HOSPITALITY) ================= -->
+  <!-- Kubah Pintu Masuk / Welcoming Portal (Putih Murni Melingkupi Kaki Tugu) -->
+  <path d="M 39 94 L 39 74 C 39 63 48 57 60 57 C 72 57 81 63 81 74 L 81 94" 
+        fill="none" 
+        stroke="#ffffff" 
+        stroke-width="3.5" 
+        stroke-linecap="round" />
+
+  <!-- Dasar Pondasi & Horizon Rehat Kamar -->
+  <polygon points="42,85 78,85 82,92 38,92" fill="#ffffff" />
+  <rect x="34" y="92" width="52" height="4" fill="url(#tuguGold)" rx="1.5" />
+</svg>

@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StayJogja — Akomodasi Budaya & Wisata Istimewa Yogyakarta</title>
+  <link rel="icon" type="image/svg+xml" href="/images/logo-stayjogja.png">
+  
+  <!-- Google Fonts: DM Sans & Lora -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              600: '#1e3a8a',
+              700: '#172554',
+              800: '#1e40af',
+              900: '#0f172a'
+            },
+            accent: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            }
+          },
+          fontFamily: {
+            sans: ['"DM Sans"', 'sans-serif'],
+            display: ['"Lora"', 'Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom Design System Tokens -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col font-sans antialiased">
+
+  <!-- ================= MAIN NAVBAR (LIQUID GLASS STAYJOGJA) ================= -->
+  <header class="glass-nav sticky top-0 z-40 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
+        
+        <!-- Logo & Brand -->
+        <div class="flex items-center gap-6 lg:gap-10">
+          <a href="/" class="flex items-center gap-2.5 group" title="Kembali ke Beranda">
+            <img src="/images/logo-stayjogja.png" alt="StayJogja Logo" class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl shadow-sm border border-amber-500/30 group-hover:scale-105 transition">
+            <div class="flex items-center">
+              <span class="text-2xl font-black tracking-tight text-slate-900 leading-none">Stay<span class="text-amber-600">Jogja</span></span>
+            </div>
+          </a>
+
+          <!-- Quick Navigation & Type Switcher -->
+          <nav class="hidden md:flex items-center p-1 bg-slate-100/80 rounded-xl border border-slate-200/80">
+            <a href="/" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-house text-slate-500"></i> Beranda
+            </a>
+            <div class="h-4 w-[1px] bg-slate-300 mx-1"></div>
+            <button onclick="setTypeFilter('all')" id="nav-type-all" class="px-3.5 py-1.5 text-xs font-bold rounded-lg text-blue-900 bg-white shadow-xs transition flex items-center gap-2">
+              <i class="fa-solid fa-layer-group text-blue-800"></i> Semua
+            </button>
+            <button onclick="setTypeFilter('hotel')" id="nav-type-hotel" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-blue-900 hover:bg-white/60 transition flex items-center gap-2">
+              <i class="fa-solid fa-hotel text-amber-500"></i> Hotel
+            </button>
+            <button onclick="setTypeFilter('homestay')" id="nav-type-homestay" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-blue-900 hover:bg-white/60 transition flex items-center gap-2">
+              <i class="fa-solid fa-house-chimney text-emerald-600"></i> Homestay
+            </button>
+            <button onclick="setTypeFilter('apartemen')" id="nav-type-apartemen" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-blue-900 hover:bg-white/60 transition flex items-center gap-2">
+              <i class="fa-solid fa-building text-purple-600"></i> Apartemen
+            </button>
+          </nav>
+        </div>
+
+        <!-- Right Action Items -->
+        <div class="flex items-center gap-2 sm:gap-2.5">
+
+          <!-- Pesanan Aktif (Khusus Tamu / Publik) -->
+          <button id="nav-btn-active-orders" onclick="openGuestOrdersModal('active')" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 bg-white hover:bg-amber-50 hover:text-amber-700 transition border border-slate-200/90 shadow-subtle" title="Pesanan yang sedang aktif & memantau konfirmasi pemilik">
+            <i class="fa-solid fa-bell-concierge text-amber-600"></i>
+            <span class="hidden sm:inline">Pesanan</span>
+            <span id="active-orders-badge" class="hidden bg-amber-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+          </button>
+
+          <!-- Riwayat Pesanan (Khusus Tamu / Publik) -->
+          <button id="nav-btn-history-orders" onclick="openGuestOrdersModal('history')" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 bg-white hover:bg-blue-50 hover:text-blue-900 transition border border-slate-200/90 shadow-subtle" title="Lacak riwayat semua pesanan Anda">
+            <i class="fa-solid fa-clock-rotate-left text-blue-800"></i>
+            <span class="hidden md:inline">Riwayat</span>
+            <span id="history-orders-badge" class="hidden bg-slate-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+          </button>
+
+          <!-- Dashboard Mitra (Khusus Role Owner) -->
+          <a href="/owner" id="nav-btn-owner" class="hidden items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl text-amber-900 bg-amber-50 hover:bg-amber-100 transition border border-amber-200 shadow-subtle" title="Buka Dashboard Pemilik Properti">
+            <i class="fa-solid fa-hotel text-amber-600"></i>
+            <span>Dashboard Mitra</span>
+          </a>
+
+          <!-- Daftar Properti (Khusus Role Owner / Publik) -->
+          <a href="/tera" id="nav-btn-tera" class="hidden items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl text-slate-700 bg-white hover:bg-amber-50 hover:text-amber-800 transition border border-slate-200/90 shadow-subtle" title="Daftarkan Hotel, Homestay, atau Apartemen Anda">
+            <i class="fa-solid fa-handshake text-amber-600"></i>
+            <span>Daftar Properti</span>
+          </a>
+
+          <!-- Panel Admin (Khusus Role Admin) -->
+          <a href="/admin" id="nav-btn-admin" class="hidden items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl text-purple-900 bg-purple-50 hover:bg-purple-100 transition border border-purple-200 shadow-subtle" title="Buka Dashboard Administrator">
+            <i class="fa-solid fa-shield-halved text-purple-600"></i>
+            <span>Panel Admin</span>
+          </a>
+
+          <!-- Resepsionis Fast Check-In (Khusus Role Admin) -->
+          <a href="/checkin" id="nav-btn-checkin" class="hidden items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl text-slate-700 bg-white hover:bg-blue-50 hover:text-blue-900 transition border border-slate-200/90 shadow-subtle" title="Portal Resepsionis Fast Check-in Barcode">
+            <i class="fa-solid fa-qrcode text-blue-700"></i>
+            <span>Resepsionis</span>
+          </a>
+
+          <!-- Login Container -->
+          <div id="nav-auth-container">
+            <a href="/login" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl text-white btn-gold shadow-sm transition">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i>
+              <span>Masuk</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO SEARCH SECTION (STAYJOGJA HERITAGE) ================= -->
+  <section class="hero-jogja text-white py-14 sm:py-20 px-4 sm:px-6 lg:px-8 relative shadow-inner">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center sm:text-left mb-8 max-w-2xl">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5 mb-3">
+          <i class="fa-solid fa-sparkles text-amber-400"></i> Selamat Datang di Yogyakarta
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-3 font-display">
+          Temukan Penginapan Nyaman di Kota Istimewa
+        </h1>
+        <p class="text-sm sm:text-base text-slate-200 font-light leading-relaxed">
+          Pilihan terlengkap mulai dari hotel berbintang, homestay asri bernuansa Jawa, hingga apartemen modern dengan kemudahan reservasi dan konfirmasi instan.
+        </p>
+      </div>
+
+      <!-- UNIVERSAL SEARCH CAPSULE -->
+      <div class="search-capsule p-4 sm:p-6 text-slate-800" id="search-form">
+        <form id="hero-search-form" onsubmit="handleHeroSearch(event)" class="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-center">
+          
+          <!-- Field 1: Area / Kawasan Jogja -->
+          <div id="search-area-container" class="md:col-span-4 bg-slate-50/90 p-3 sm:p-3.5 rounded-xl border border-slate-200 hover:border-amber-500 transition relative">
+            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
+              <span><i class="fa-solid fa-location-dot text-amber-600 mr-1"></i> Destinasi / Kawasan Jogja</span>
+              <span id="selected-area-badge" class="text-[10px] text-amber-600 font-semibold hidden sm:inline">Semua Jogja</span>
+            </label>
+            <div class="relative flex items-center cursor-pointer" onclick="toggleAreaDropdown(event)">
+              <input type="hidden" id="search-area" name="area" value="all">
+              <input type="text" id="search-area-input" value="Semua Wilayah Yogyakarta" placeholder="Pilih area (Malioboro, Sleman, dll)..." readonly class="w-full bg-transparent text-sm font-extrabold text-slate-900 focus:outline-none cursor-pointer pr-6">
+              <i class="fa-solid fa-chevron-down text-slate-400 text-xs absolute right-0 pointer-events-none transition-transform" id="area-dropdown-arrow"></i>
+            </div>
+
+            <!-- Dropdown Menu Area Jogja -->
+            <div id="area-dropdown-menu" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 text-xs animate-in fade-in duration-150">
+              <div class="p-2 border-b border-slate-100 font-bold text-slate-400 uppercase text-[10px] tracking-wider">
+                Kawasan Populer Yogyakarta
+              </div>
+              <div class="max-h-56 overflow-y-auto space-y-1 pt-1">
+<button type="button" onclick="selectArea('all', 'Semua Wilayah Yogyakarta')" data-area="all" class="area-item-btn w-full text-left px-3 py-2 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between font-semibold text-slate-700 cursor-pointer">
+  <span><i class="fa-solid fa-map-location-dot text-blue-900 mr-2"></i> Semua Wilayah Yogyakarta</span>
+  <span class="text-[10px] text-slate-400">DIY</span>
+</button>
+
+<div class="px-3 py-1 mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kota Yogyakarta</div>
+<button type="button" onclick="selectArea('Malioboro', 'Malioboro, Kota Yogyakarta')" data-area="Malioboro" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Malioboro</span>
+</button>
+<button type="button" onclick="selectArea('Prawirotaman', 'Prawirotaman, Kota Yogyakarta')" data-area="Prawirotaman" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Prawirotaman</span>
+</button>
+<button type="button" onclick="selectArea('Kotabaru', 'Kotabaru, Kota Yogyakarta')" data-area="Kotabaru" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kotabaru</span>
+</button>
+<button type="button" onclick="selectArea('Kotagede', 'Kotagede, Kota Yogyakarta')" data-area="Kotagede" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kotagede</span>
+</button>
+<button type="button" onclick="selectArea('Beringharjo', 'Beringharjo, Kota Yogyakarta')" data-area="Beringharjo" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Beringharjo</span>
+</button>
+<button type="button" onclick="selectArea('Keraton', 'Keraton, Kota Yogyakarta')" data-area="Keraton" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Keraton</span>
+</button>
+<button type="button" onclick="selectArea('Alun-Alun Kidul', 'Alun-Alun Kidul, Kota Yogyakarta')" data-area="Alun-Alun Kidul" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Alun-Alun Kidul</span>
+</button>
+<button type="button" onclick="selectArea('Mantrijeron', 'Mantrijeron, Kota Yogyakarta')" data-area="Mantrijeron" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Mantrijeron</span>
+</button>
+<button type="button" onclick="selectArea('Sosromenduran', 'Sosromenduran, Kota Yogyakarta')" data-area="Sosromenduran" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Sosromenduran</span>
+</button>
+<button type="button" onclick="selectArea('Ngampilan', 'Ngampilan, Kota Yogyakarta')" data-area="Ngampilan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Ngampilan</span>
+</button>
+<button type="button" onclick="selectArea('Pakualaman', 'Pakualaman, Kota Yogyakarta')" data-area="Pakualaman" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Pakualaman</span>
+</button>
+<button type="button" onclick="selectArea('Kauman', 'Kauman, Kota Yogyakarta')" data-area="Kauman" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kauman</span>
+</button>
+<button type="button" onclick="selectArea('Kraton', 'Kraton, Kota Yogyakarta')" data-area="Kraton" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kraton</span>
+</button>
+<button type="button" onclick="selectArea('Lempuyangan', 'Lempuyangan, Kota Yogyakarta')" data-area="Lempuyangan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Lempuyangan</span>
+</button>
+<button type="button" onclick="selectArea('Gondokusuman', 'Gondokusuman, Kota Yogyakarta')" data-area="Gondokusuman" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Gondokusuman</span>
+</button>
+<button type="button" onclick="selectArea('Wirobrajan', 'Wirobrajan, Kota Yogyakarta')" data-area="Wirobrajan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Wirobrajan</span>
+</button>
+<button type="button" onclick="selectArea('Gedongtengen', 'Gedongtengen, Kota Yogyakarta')" data-area="Gedongtengen" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Gedongtengen</span>
+</button>
+<button type="button" onclick="selectArea('Umbulharjo', 'Umbulharjo, Kota Yogyakarta')" data-area="Umbulharjo" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Umbulharjo</span>
+</button>
+<button type="button" onclick="selectArea('Mergangsan', 'Mergangsan, Kota Yogyakarta')" data-area="Mergangsan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Mergangsan</span>
+</button>
+<button type="button" onclick="selectArea('Tegalrejo', 'Tegalrejo, Kota Yogyakarta')" data-area="Tegalrejo" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Tegalrejo</span>
+</button>
+
+<div class="px-3 py-1 mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kabupaten Sleman</div>
+<button type="button" onclick="selectArea('Depok', 'Depok, Kabupaten Sleman')" data-area="Depok" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Depok</span>
+</button>
+<button type="button" onclick="selectArea('Seturan', 'Seturan, Kabupaten Sleman')" data-area="Seturan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Seturan</span>
+</button>
+<button type="button" onclick="selectArea('Babarsari', 'Babarsari, Kabupaten Sleman')" data-area="Babarsari" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Babarsari</span>
+</button>
+<button type="button" onclick="selectArea('Caturtunggal', 'Caturtunggal, Kabupaten Sleman')" data-area="Caturtunggal" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Caturtunggal</span>
+</button>
+<button type="button" onclick="selectArea('Condongcatur', 'Condongcatur, Kabupaten Sleman')" data-area="Condongcatur" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Condongcatur</span>
+</button>
+<button type="button" onclick="selectArea('Karangasem', 'Karangasem, Kabupaten Sleman')" data-area="Karangasem" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Karangasem</span>
+</button>
+<button type="button" onclick="selectArea('Gejayan', 'Gejayan, Kabupaten Sleman')" data-area="Gejayan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Gejayan</span>
+</button>
+<button type="button" onclick="selectArea('Jalan Kaliurang', 'Jalan Kaliurang, Kabupaten Sleman')" data-area="Jalan Kaliurang" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Jalan Kaliurang</span>
+</button>
+<button type="button" onclick="selectArea('Pogung', 'Pogung, Kabupaten Sleman')" data-area="Pogung" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Pogung</span>
+</button>
+<button type="button" onclick="selectArea('Sinduadi', 'Sinduadi, Kabupaten Sleman')" data-area="Sinduadi" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Sinduadi</span>
+</button>
+<button type="button" onclick="selectArea('Mlati', 'Mlati, Kabupaten Sleman')" data-area="Mlati" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Mlati</span>
+</button>
+<button type="button" onclick="selectArea('Kaliurang', 'Kaliurang, Kabupaten Sleman')" data-area="Kaliurang" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kaliurang</span>
+</button>
+<button type="button" onclick="selectArea('Pakem', 'Pakem, Kabupaten Sleman')" data-area="Pakem" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Pakem</span>
+</button>
+<button type="button" onclick="selectArea('Cangkringan', 'Cangkringan, Kabupaten Sleman')" data-area="Cangkringan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Cangkringan</span>
+</button>
+<button type="button" onclick="selectArea('Ngaglik', 'Ngaglik, Kabupaten Sleman')" data-area="Ngaglik" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Ngaglik</span>
+</button>
+<button type="button" onclick="selectArea('Gamping', 'Gamping, Kabupaten Sleman')" data-area="Gamping" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Gamping</span>
+</button>
+<button type="button" onclick="selectArea('Berbah', 'Berbah, Kabupaten Sleman')" data-area="Berbah" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Berbah</span>
+</button>
+<button type="button" onclick="selectArea('Kalasan', 'Kalasan, Kabupaten Sleman')" data-area="Kalasan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kalasan</span>
+</button>
+<button type="button" onclick="selectArea('Prambanan', 'Prambanan, Kabupaten Sleman')" data-area="Prambanan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Prambanan</span>
+</button>
+<button type="button" onclick="selectArea('Ngemplak', 'Ngemplak, Kabupaten Sleman')" data-area="Ngemplak" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Ngemplak</span>
+</button>
+<button type="button" onclick="selectArea('Tempel', 'Tempel, Kabupaten Sleman')" data-area="Tempel" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Tempel</span>
+</button>
+<button type="button" onclick="selectArea('Seyegan', 'Seyegan, Kabupaten Sleman')" data-area="Seyegan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Seyegan</span>
+</button>
+<button type="button" onclick="selectArea('Minggir', 'Minggir, Kabupaten Sleman')" data-area="Minggir" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Minggir</span>
+</button>
+<button type="button" onclick="selectArea('Moyudan', 'Moyudan, Kabupaten Sleman')" data-area="Moyudan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Moyudan</span>
+</button>
+<button type="button" onclick="selectArea('Turi', 'Turi, Kabupaten Sleman')" data-area="Turi" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Turi</span>
+</button>
+
+<div class="px-3 py-1 mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kabupaten Bantul</div>
+<button type="button" onclick="selectArea('Parangtritis', 'Parangtritis, Kabupaten Bantul')" data-area="Parangtritis" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Parangtritis</span>
+</button>
+<button type="button" onclick="selectArea('Depok', 'Depok, Kabupaten Bantul')" data-area="Depok" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Depok</span>
+</button>
+<button type="button" onclick="selectArea('Samas', 'Samas, Kabupaten Bantul')" data-area="Samas" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Samas</span>
+</button>
+<button type="button" onclick="selectArea('Goa Cemara', 'Goa Cemara, Kabupaten Bantul')" data-area="Goa Cemara" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Goa Cemara</span>
+</button>
+<button type="button" onclick="selectArea('Kuwaru', 'Kuwaru, Kabupaten Bantul')" data-area="Kuwaru" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kuwaru</span>
+</button>
+<button type="button" onclick="selectArea('Pandansimo', 'Pandansimo, Kabupaten Bantul')" data-area="Pandansimo" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Pandansimo</span>
+</button>
+<button type="button" onclick="selectArea('Dlingo', 'Dlingo, Kabupaten Bantul')" data-area="Dlingo" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Dlingo</span>
+</button>
+<button type="button" onclick="selectArea('Mangunan', 'Mangunan, Kabupaten Bantul')" data-area="Mangunan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Mangunan</span>
+</button>
+<button type="button" onclick="selectArea('Imogiri', 'Imogiri, Kabupaten Bantul')" data-area="Imogiri" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Imogiri</span>
+</button>
+<button type="button" onclick="selectArea('Kasihan', 'Kasihan, Kabupaten Bantul')" data-area="Kasihan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kasihan</span>
+</button>
+<button type="button" onclick="selectArea('Kasongan', 'Kasongan, Kabupaten Bantul')" data-area="Kasongan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kasongan</span>
+</button>
+<button type="button" onclick="selectArea('Sewon', 'Sewon, Kabupaten Bantul')" data-area="Sewon" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Sewon</span>
+</button>
+<button type="button" onclick="selectArea('Banguntapan', 'Banguntapan, Kabupaten Bantul')" data-area="Banguntapan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Banguntapan</span>
+</button>
+<button type="button" onclick="selectArea('Piyungan', 'Piyungan, Kabupaten Bantul')" data-area="Piyungan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Piyungan</span>
+</button>
+<button type="button" onclick="selectArea('Pleret', 'Pleret, Kabupaten Bantul')" data-area="Pleret" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Pleret</span>
+</button>
+<button type="button" onclick="selectArea('Pajangan', 'Pajangan, Kabupaten Bantul')" data-area="Pajangan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Pajangan</span>
+</button>
+<button type="button" onclick="selectArea('Sedayu', 'Sedayu, Kabupaten Bantul')" data-area="Sedayu" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Sedayu</span>
+</button>
+
+<div class="px-3 py-1 mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kabupaten Kulon Progo</div>
+<button type="button" onclick="selectArea('Temon', 'Temon, Kabupaten Kulon Progo')" data-area="Temon" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Temon</span>
+</button>
+<button type="button" onclick="selectArea('YIA', 'YIA, Kabupaten Kulon Progo')" data-area="YIA" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>YIA</span>
+</button>
+<button type="button" onclick="selectArea('Glagah', 'Glagah, Kabupaten Kulon Progo')" data-area="Glagah" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Glagah</span>
+</button>
+<button type="button" onclick="selectArea('Congot', 'Congot, Kabupaten Kulon Progo')" data-area="Congot" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Congot</span>
+</button>
+<button type="button" onclick="selectArea('Wates', 'Wates, Kabupaten Kulon Progo')" data-area="Wates" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Wates</span>
+</button>
+<button type="button" onclick="selectArea('Kalibawang', 'Kalibawang, Kabupaten Kulon Progo')" data-area="Kalibawang" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kalibawang</span>
+</button>
+<button type="button" onclick="selectArea('Samigaluh', 'Samigaluh, Kabupaten Kulon Progo')" data-area="Samigaluh" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Samigaluh</span>
+</button>
+<button type="button" onclick="selectArea('Girimulyo', 'Girimulyo, Kabupaten Kulon Progo')" data-area="Girimulyo" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Girimulyo</span>
+</button>
+<button type="button" onclick="selectArea('Kokap', 'Kokap, Kabupaten Kulon Progo')" data-area="Kokap" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kokap</span>
+</button>
+<button type="button" onclick="selectArea('Nanggulan', 'Nanggulan, Kabupaten Kulon Progo')" data-area="Nanggulan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Nanggulan</span>
+</button>
+<button type="button" onclick="selectArea('Panjatan', 'Panjatan, Kabupaten Kulon Progo')" data-area="Panjatan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Panjatan</span>
+</button>
+<button type="button" onclick="selectArea('Sentolo', 'Sentolo, Kabupaten Kulon Progo')" data-area="Sentolo" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Sentolo</span>
+</button>
+
+<div class="px-3 py-1 mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kabupaten Gunungkidul</div>
+<button type="button" onclick="selectArea('Wonosari', 'Wonosari, Kabupaten Gunungkidul')" data-area="Wonosari" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Wonosari</span>
+</button>
+<button type="button" onclick="selectArea('Baron', 'Baron, Kabupaten Gunungkidul')" data-area="Baron" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Baron</span>
+</button>
+<button type="button" onclick="selectArea('Kukup', 'Kukup, Kabupaten Gunungkidul')" data-area="Kukup" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Kukup</span>
+</button>
+<button type="button" onclick="selectArea('Krakal', 'Krakal, Kabupaten Gunungkidul')" data-area="Krakal" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Krakal</span>
+</button>
+<button type="button" onclick="selectArea('Drini', 'Drini, Kabupaten Gunungkidul')" data-area="Drini" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Drini</span>
+</button>
+<button type="button" onclick="selectArea('Indrayanti', 'Indrayanti, Kabupaten Gunungkidul')" data-area="Indrayanti" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Indrayanti</span>
+</button>
+<button type="button" onclick="selectArea('Sadranan', 'Sadranan, Kabupaten Gunungkidul')" data-area="Sadranan" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Sadranan</span>
+</button>
+<button type="button" onclick="selectArea('Pok Tunggal', 'Pok Tunggal, Kabupaten Gunungkidul')" data-area="Pok Tunggal" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Pok Tunggal</span>
+</button>
+<button type="button" onclick="selectArea('Siung', 'Siung, Kabupaten Gunungkidul')" data-area="Siung" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Siung</span>
+</button>
+<button type="button" onclick="selectArea('Timang', 'Timang, Kabupaten Gunungkidul')" data-area="Timang" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Timang</span>
+</button>
+<button type="button" onclick="selectArea('Nglambor', 'Nglambor, Kabupaten Gunungkidul')" data-area="Nglambor" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Nglambor</span>
+</button>
+<button type="button" onclick="selectArea('Wediombo', 'Wediombo, Kabupaten Gunungkidul')" data-area="Wediombo" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Wediombo</span>
+</button>
+<button type="button" onclick="selectArea('Jungwok', 'Jungwok, Kabupaten Gunungkidul')" data-area="Jungwok" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Jungwok</span>
+</button>
+<button type="button" onclick="selectArea('Sepanjang', 'Sepanjang, Kabupaten Gunungkidul')" data-area="Sepanjang" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Sepanjang</span>
+</button>
+<button type="button" onclick="selectArea('Patuk', 'Patuk, Kabupaten Gunungkidul')" data-area="Patuk" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Patuk</span>
+</button>
+<button type="button" onclick="selectArea('Nglipar', 'Nglipar, Kabupaten Gunungkidul')" data-area="Nglipar" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Nglipar</span>
+</button>
+<button type="button" onclick="selectArea('Semanu', 'Semanu, Kabupaten Gunungkidul')" data-area="Semanu" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Semanu</span>
+</button>
+<button type="button" onclick="selectArea('Tepus', 'Tepus, Kabupaten Gunungkidul')" data-area="Tepus" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Tepus</span>
+</button>
+<button type="button" onclick="selectArea('Tanjungsari', 'Tanjungsari, Kabupaten Gunungkidul')" data-area="Tanjungsari" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Tanjungsari</span>
+</button>
+<button type="button" onclick="selectArea('Saptosari', 'Saptosari, Kabupaten Gunungkidul')" data-area="Saptosari" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Saptosari</span>
+</button>
+<button type="button" onclick="selectArea('Purwosari', 'Purwosari, Kabupaten Gunungkidul')" data-area="Purwosari" class="area-item-btn w-full text-left px-4 py-1.5 rounded-lg hover:bg-amber-50 hover:text-amber-800 transition flex items-center justify-between text-slate-600 cursor-pointer text-xs">
+  <span>Purwosari</span>
+</button>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Field 2: Tanggal Menginap (Check-in & Check-out) -->
+          <div class="md:col-span-5 bg-slate-50/90 p-3 sm:p-3.5 rounded-xl border border-slate-200 grid grid-cols-2 gap-2 relative">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-calendar-check text-blue-900 mr-1"></i> Check-in
+              </label>
+              <input type="date" id="search-check-in" class="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 focus:outline-none cursor-pointer">
+            </div>
+            <div class="border-l border-slate-200 pl-2">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
+                <span><i class="fa-solid fa-calendar-xmark text-blue-900 mr-1"></i> Check-out</span>
+                <span id="nights-count-badge" class="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">1 Malam</span>
+              </label>
+              <input type="date" id="search-check-out" class="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 focus:outline-none cursor-pointer">
+            </div>
+          </div>
+
+          <!-- Field 3: Tamu & Kamar Dropdown -->
+          <div id="search-guests-container" class="md:col-span-3 bg-slate-50/90 p-3 sm:p-3.5 rounded-xl border border-slate-200 hover:border-amber-500 transition relative">
+            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
+              <span><i class="fa-solid fa-user-group text-blue-900 mr-1"></i> Tamu & Kamar</span>
+            </label>
+            <div class="relative flex items-center cursor-pointer" onclick="toggleGuestsDropdown(event)">
+              <input type="text" id="search-guests-input" value="1 Dewasa, 1 Kamar" readonly class="w-full bg-transparent text-xs sm:text-sm font-bold text-slate-900 focus:outline-none cursor-pointer pr-4 truncate">
+              <i class="fa-solid fa-chevron-down text-slate-400 text-xs absolute right-0 pointer-events-none transition-transform" id="guests-dropdown-arrow"></i>
+            </div>
+
+            <!-- Dropdown Tamu & Kamar Stepper -->
+            <div id="guests-dropdown-menu" class="hidden absolute top-full right-0 w-72 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 z-50 text-xs animate-in fade-in duration-150 space-y-3">
+              
+              <div class="space-y-3">
+                <!-- Stepper 1: Tamu Dewasa -->
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="font-bold text-slate-800 block text-xs">Tamu Dewasa</span>
+                    <span class="text-[10px] text-slate-400">Usia 12 tahun ke atas</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" id="stepper-minus-adults" onclick="updateGuestsStepper('adults', -1)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold transition shadow-2xs">
+                      <i class="fa-solid fa-minus text-[11px]"></i>
+                    </button>
+                    <span id="stepper-guests-val" class="font-black text-sm w-6 text-center text-slate-900">1</span>
+                    <button type="button" id="stepper-plus-adults" onclick="updateGuestsStepper('adults', 1)" class="w-8 h-8 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 flex items-center justify-center font-bold transition shadow-2xs">
+                      <i class="fa-solid fa-plus text-[11px]"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Stepper 2: Tamu Anak -->
+                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                  <div>
+                    <span class="font-bold text-slate-800 block text-xs">Tamu Anak</span>
+                    <span class="text-[10px] text-slate-400">Usia 0 - 11 tahun</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" id="stepper-minus-children" onclick="updateGuestsStepper('children', -1)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold transition shadow-2xs opacity-40 cursor-not-allowed">
+                      <i class="fa-solid fa-minus text-[11px]"></i>
+                    </button>
+                    <span id="stepper-children-val" class="font-black text-sm w-6 text-center text-slate-900">0</span>
+                    <button type="button" id="stepper-plus-children" onclick="updateGuestsStepper('children', 1)" class="w-8 h-8 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 flex items-center justify-center font-bold transition shadow-2xs">
+                      <i class="fa-solid fa-plus text-[11px]"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Stepper 3: Jumlah Kamar -->
+                <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                  <div>
+                    <span class="font-bold text-slate-800 block text-xs">Jumlah Kamar</span>
+                    <span class="text-[10px] text-slate-400">Kapasitas unit dipesan</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" id="stepper-minus-rooms" onclick="updateGuestsStepper('rooms', -1)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold transition shadow-2xs">
+                      <i class="fa-solid fa-minus text-[11px]"></i>
+                    </button>
+                    <span id="stepper-rooms-val" class="font-black text-sm w-6 text-center text-slate-900">1</span>
+                    <button type="button" id="stepper-plus-rooms" onclick="updateGuestsStepper('rooms', 1)" class="w-8 h-8 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 flex items-center justify-center font-bold transition shadow-2xs">
+                      <i class="fa-solid fa-plus text-[11px]"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2">
+                <button type="button" onclick="applyGuestsStepper()" class="w-full py-2.5 bg-gradient-to-r from-blue-900 to-indigo-900 hover:from-blue-800 hover:to-indigo-800 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-950/20 flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-check"></i>
+                  <span>Terapkan Pilihan</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Tombol Cari Akomodasi (Col-Span 12 jika mobile atau baris terpisah) -->
+          <div class="md:col-span-12 flex justify-end pt-1">
+            <button type="submit" id="search-btn" class="w-full sm:w-auto px-8 py-3.5 btn-gold rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>Cari Akomodasi di Jogja</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= MAIN CATALOG CONTENT (2-COLUMN GRID) ================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" id="property-list">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      
+      <!-- ================= LEFT COLUMN: STICKY FILTER SIDEBAR ================= -->
+      <aside class="lg:col-span-1 space-y-6" id="filter-sidebar">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-card sticky top-24">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2 font-bold text-slate-800 text-sm">
+              <i class="fa-solid fa-sliders text-amber-600"></i>
+              <span>Filter Penginapan</span>
+            </div>
+            <button onclick="resetAllFilters()" class="text-xs text-amber-700 hover:text-amber-800 font-semibold hover:underline">
+              Reset
+            </button>
+          </div>
+
+          <!-- Filter 1: Rentang Harga -->
+          <div class="py-4 border-b border-slate-100">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Rentang Harga Per Malam</h4>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-xs text-slate-700">
+                <span id="price-min-label">Rp 100.000</span>
+                <span id="price-max-label" class="font-bold text-amber-700">Rp 2.500.000+</span>
+              </div>
+              <input type="range" id="price-range-slider" min="100000" max="3000000" step="50000" value="3000000" oninput="handlePriceSliderChange(this.value)" class="w-full accent-amber-600 cursor-pointer">
+              <div class="flex gap-2">
+                <button type="button" onclick="setQuickBudget(300000)" data-budget="300000" class="quick-budget-btn flex-1 py-1 text-[11px] rounded-lg bg-slate-100 hover:bg-amber-50 hover:text-amber-700 border border-slate-200 transition font-medium cursor-pointer">
+                  &lt; 300rb
+                </button>
+                <button type="button" onclick="setQuickBudget(600000)" data-budget="600000" class="quick-budget-btn flex-1 py-1 text-[11px] rounded-lg bg-slate-100 hover:bg-amber-50 hover:text-amber-700 border border-slate-200 transition font-medium cursor-pointer">
+                  &lt; 600rb
+                </button>
+                <button type="button" onclick="setQuickBudget(1200000)" data-budget="1200000" class="quick-budget-btn flex-1 py-1 text-[11px] rounded-lg bg-slate-100 hover:bg-amber-50 hover:text-amber-700 border border-slate-200 transition font-medium cursor-pointer">
+                  &lt; 1.2jt
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filter 2: Klasifikasi Bintang -->
+          <div class="py-4 border-b border-slate-100">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Klasifikasi Bintang Hotel</h4>
+            <div class="space-y-2 text-xs">
+              <label class="flex items-center gap-2 cursor-pointer hover:text-blue-900">
+                <input type="checkbox" onchange="toggleStarFilter(5, this.checked)" id="star-5" class="rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                <span class="text-amber-500">★★★★★</span>
+                <span class="text-slate-600 font-medium">Bintang 5</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer hover:text-blue-900">
+                <input type="checkbox" onchange="toggleStarFilter(4, this.checked)" id="star-4" class="rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                <span class="text-amber-500">★★★★☆</span>
+                <span class="text-slate-600 font-medium">Bintang 4</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer hover:text-blue-900">
+                <input type="checkbox" onchange="toggleStarFilter(3, this.checked)" id="star-3" class="rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                <span class="text-amber-500">★★★☆☆</span>
+                <span class="text-slate-600 font-medium">Bintang 3</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer hover:text-blue-900">
+                <input type="checkbox" onchange="toggleStarFilter(2, this.checked)" id="star-2" class="rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                <span class="text-amber-500">★★☆☆☆</span>
+                <span class="text-slate-600 font-medium">Bintang 2</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer hover:text-blue-900">
+                <input type="checkbox" onchange="toggleStarFilter(1, this.checked)" id="star-1" class="rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                <span class="text-amber-500">★☆☆☆☆</span>
+                <span class="text-slate-600 font-medium">Bintang 1</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Filter 3: Fasilitas Utama -->
+          <div class="py-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Fasilitas Populer</h4>
+            <div class="space-y-2 text-xs">
+              <label class="flex items-center gap-2 cursor-pointer hover:text-blue-900">
+                <input type="checkbox" onchange="toggleFacilityFilter('wifi', this.checked)" id="fac-wifi" class="rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                <i class="fa-solid fa-wifi text-slate-400 w-4"></i>
+                <span class="text-slate-600 font-medium">WiFi Cepat Gratis</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer hover:text-blue-900">
+                <input type="checkbox" onchange="toggleFacilityFilter('kolam renang', this.checked)" id="fac-pool" class="rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                <i class="fa-solid fa-water-ladder text-slate-400 w-4"></i>
+                <span class="text-slate-600 font-medium">Kolam Renang</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer hover:text-blue-900">
+                <input type="checkbox" onchange="toggleFacilityFilter('parkir', this.checked)" id="fac-parking" class="rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                <i class="fa-solid fa-square-parking text-slate-400 w-4"></i>
+                <span class="text-slate-600 font-medium">Parkir Mobil Luas</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer hover:text-blue-900">
+                <input type="checkbox" onchange="toggleFacilityFilter('sarapan', this.checked)" id="fac-breakfast" class="rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                <i class="fa-solid fa-utensils text-slate-400 w-4"></i>
+                <span class="text-slate-600 font-medium">Sarapan Termasuk</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+      </aside>
+
+      <!-- ================= RIGHT COLUMN: SORT & BENTO PROPERTY CARDS ================= -->
+      <section class="lg:col-span-3 space-y-5">
+        
+        <!-- Results Top Header & Sort Control -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2 font-display">
+              <span>Hasil Pencarian Akomodasi</span>
+            </h2>
+            <div class="flex items-center gap-2 flex-wrap mt-0.5">
+              <span id="results-count-badge" class="text-xs text-slate-500 font-medium">Memuat data akomodasi...</span>
+              <span id="active-area-chip" class="hidden inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                <i class="fa-solid fa-location-dot text-amber-600"></i>
+                <span id="active-area-name">Kawasan</span>
+                <button type="button" onclick="selectArea('all', 'Semua Wilayah Yogyakarta')" class="ml-1 hover:text-red-600 transition cursor-pointer" title="Hapus filter area">
+                  <i class="fa-solid fa-xmark text-[11px]"></i>
+                </button>
+              </span>
+            </div>
+            <p id="search-summary-text" class="hidden text-xs text-slate-600 mt-1 font-medium"></p>
+          </div>
+
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-slate-400 font-semibold whitespace-nowrap"><i class="fa-solid fa-arrow-down-short-wide text-slate-500"></i> Urutkan:</span>
+            <select id="sort-by" onchange="handleSortChange(this.value)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-amber-500 cursor-pointer">
+              <option value="recommended">Rekomendasi Terbaik</option>
+              <option value="price_low">Harga Terendah</option>
+              <option value="price_high">Harga Tertinggi</option>
+              <option value="rating_high">Rating Tertinggi (Bintang)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Shimmer Skeleton Loading State -->
+        <div id="loading-state" class="space-y-4">
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col md:flex-row gap-5 animate-pulse">
+            <div class="md:w-72 h-48 bg-slate-200 rounded-xl"></div>
+            <div class="flex-1 space-y-3">
+              <div class="h-5 bg-slate-200 rounded w-2/3"></div>
+              <div class="h-3 bg-slate-200 rounded w-1/3"></div>
+              <div class="h-12 bg-slate-200 rounded w-full mt-4"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State Container -->
+        <div id="empty-state" class="hidden bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
+          <div class="w-16 h-16 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4 text-2xl">
+            <i class="fa-solid fa-hotel"></i>
+          </div>
+          <h3 class="text-base font-bold text-slate-800 mb-1">Akomodasi Tidak Ditemukan</h3>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto mb-4">
+            Tidak ada penginapan yang sesuai dengan filter atau kata kunci Anda saat ini. Coba sesuaikan rentang harga atau pilih kawasan lain.
+          </p>
+          <button onclick="resetAllFilters()" class="px-5 py-2.5 btn-gold rounded-xl text-xs font-bold shadow-sm transition">
+            Reset Semua Filter
+          </button>
+        </div>
+
+        <!-- Property List Bento Cards Container -->
+        <div id="property-list-container" class="space-y-4">
+          <!-- Bento Property Cards Injected via app.js -->
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ================= FOOTER (STAYJOGJA HERITAGE) ================= -->
+  <footer class="bg-slate-900 text-white mt-16 pt-12 pb-8 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-slate-800 text-xs">
+        
+        <div class="md:col-span-2 space-y-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-amber-500 text-slate-900 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-landmark"></i>
+            </div>
+            <span class="text-xl font-black tracking-tight text-white">Stay<span class="text-amber-400">Jogja</span></span>
+          </div>
+          <p class="text-slate-400 leading-relaxed max-w-md">
+            Platform reservasi akomodasi independen Yogyakarta (Hotel Bintang 1-5, Homestay Keluarga, dan Apartemen). Dirancang untuk memudahkan wisatawan memesan kamar dengan jaminan harga transparan dan konfirmasi pemilik properti secara cepat.
+          </p>
+          <div class="pt-2 text-slate-400">
+            <span>Dibuat untuk keperluan Skripsi / Tugas Akhir — Yogyakarta 2026</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-sm text-amber-400 mb-3">Tipe Akomodasi</h4>
+          <ul class="space-y-2 text-slate-400">
+            <li><button onclick="setTypeFilter('hotel')" class="hover:text-white transition">Hotel</button></li>
+            <li><button onclick="setTypeFilter('homestay')" class="hover:text-white transition">Homestay & Guest House</button></li>
+            <li><button onclick="setTypeFilter('apartemen')" class="hover:text-white transition">Apartemen Harian Jogja</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-sm text-amber-400 mb-3">Portal Pengguna</h4>
+          <ul class="space-y-2 text-slate-400">
+            <li><a href="/login" class="hover:text-white transition">Masuk / Daftar Akun</a></li>
+            <li><a href="/user" class="hover:text-white transition">Dashboard Tamu & Invoice</a></li>
+            <li><a href="/user#itinerary" class="hover:text-white transition">Rencana Liburan AI Saya</a></li>
+            <li><a href="/owner" class="hover:text-white transition">Portal Pemilik Penginapan (Owner)</a></li>
+            <li><a href="/tera" class="hover:text-white transition">Daftarkan Properti Baru (Mitra TERA)</a></li>
+            <li><a href="/checkin" class="hover:text-white transition">Portal Resepsionis (Fast Check-in)</a></li>
+            <li><a href="/admin" class="hover:text-white transition">Panel Kontrol Administrator</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
+        <p>&copy; 2026 StayJogja — Hak Cipta Dilindungi. Dikembangkan oleh Raynor Athaillah.</p>
+        <p class="flex items-center gap-2">
+          <span>Standar Desain UI/UX Pro Max</span>
+          <span>•</span>
+          <span>Yogyakarta, Indonesia</span>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODAL: DETAIL PROPERTI & PILIH KAMAR ================= -->
+  <div id="property-detail-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div id="detail-modal" class="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+        <div>
+          <span id="modal-type-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 uppercase tracking-wide">
+            Hotel Bintang 5
+          </span>
+          <h3 id="modal-prop-name" class="text-lg sm:text-xl font-bold text-slate-900 mt-1 font-display">Nama Properti</h3>
+          <p id="modal-prop-address" class="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+            <i class="fa-solid fa-location-dot text-amber-600"></i> Alamat
+          </p>
+        </div>
+        <button onclick="closePropertyDetailModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-6">
+        
+        <!-- Photo Gallery (Grid) -->
+        <div id="modal-photos-grid" class="grid grid-cols-1 md:grid-cols-3 gap-2 rounded-2xl overflow-hidden max-h-72">
+          <!-- Populated via JS -->
+        </div>
+
+        <!-- Description & Amenities -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-2">
+            <h4 class="font-bold text-slate-900 text-sm mb-2">Tentang Akomodasi</h4>
+            <p id="modal-prop-desc" class="text-xs text-slate-600 leading-relaxed"></p>
+
+            <!-- Lokasi & Petunjuk Arah Google Maps -->
+            <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-amber-300">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-900 text-amber-400 flex items-center justify-center text-lg flex-shrink-0 shadow-sm">
+                  <i class="fa-solid fa-map-location-dot"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-bold text-slate-900">Lokasi Google Maps</span>
+                    <span class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">Terverifikasi</span>
+                  </div>
+                  <p id="modal-prop-maps-address" class="text-xs text-slate-600 mt-1 break-words leading-relaxed"></p>
+                </div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <span class="text-[11px] text-slate-500 flex items-center gap-1.5">
+                  <i class="fa-solid fa-location-arrow text-amber-600 text-xs"></i>
+                  <span>Navigasi langsung rute ke akomodasi</span>
+                </span>
+                <a id="modal-prop-maps-btn" href="#" target="_blank" rel="noopener noreferrer" 
+                   class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs rounded-xl shadow-sm transition">
+                  <i class="fa-solid fa-diamond-turn-right text-xs text-amber-400"></i>
+                  <span>Buka di Google Maps</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">Fasilitas Unggulan</h4>
+            <div id="modal-prop-facilities" class="flex flex-wrap gap-1.5 text-xs text-slate-700">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Pilihan Tipe Kamar / Unit -->
+        <div id="modal-rooms-selection-section" class="pt-5 border-t border-slate-200">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200/80">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-5 bg-amber-600 rounded-full"></span>
+                <h4 class="font-extrabold text-slate-900 text-base">Pilihan Tipe Kamar / Unit Tersedia</h4>
+              </div>
+              <p class="text-xs text-slate-600 mt-0.5">Bandingkan fasilitas & harga tiap kamar di bawah, lalu klik <span class="font-bold text-amber-700">"Pilih Kamar"</span> untuk melanjutkan reservasi.</p>
+            </div>
+            <span id="modal-units-count" class="self-start sm:self-auto text-xs font-bold text-amber-800 bg-white px-3 py-1 rounded-full border border-amber-300 shadow-xs flex-shrink-0">
+              Pilihan Kamar Tersedia
+            </span>
+          </div>
+
+          <div id="modal-units-list" class="space-y-4">
+            <!-- Units cards injected via JS -->
+          </div>
+        </div>
+
+        <!-- Section: Wisata & Kuliner Terdekat -->
+        <div class="pt-4 border-t border-slate-200">
+          <h4 class="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-compass text-amber-600"></i> Tempat Wisata & Kuliner Sekitar
+          </h4>
+          <div id="modal-nearby-spots" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: DETAIL FOTO & DESKRIPSI KAMAR ================= -->
+  <div id="room-detail-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+        <div>
+          <span id="room-modal-hotel-name" class="text-xs font-semibold text-amber-700 block">Nama Hotel</span>
+          <h3 id="room-modal-name" class="text-lg sm:text-xl font-black text-slate-900 mt-0.5 font-display">Nama Tipe Kamar</h3>
+        </div>
+        <button onclick="closeRoomDetailModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-6">
+        
+        <!-- Galeri Foto-Foto Kamar -->
+        <div>
+          <div class="relative rounded-2xl overflow-hidden bg-slate-900 shadow-md">
+            <img id="room-modal-main-photo" src="" class="w-full h-64 sm:h-80 object-cover transition duration-300" alt="Foto Kamar">
+            <div class="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-camera"></i>
+              <span id="room-modal-photo-indicator">Foto 1</span>
+            </div>
+          </div>
+          <!-- Thumbnail strip -->
+          <div id="room-modal-thumbnails" class="grid grid-cols-4 gap-2 mt-3">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Spesifikasi Cepat Kamar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-center">
+            <i class="fa-solid fa-bed text-blue-900 text-lg mb-1 block"></i>
+            <span class="text-[10px] text-slate-400 uppercase font-bold block">Tipe Kasur</span>
+            <span id="room-modal-bed" class="text-xs font-bold text-slate-800 block mt-0.5">1 King Bed</span>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-center">
+            <i class="fa-solid fa-ruler-combined text-emerald-600 text-lg mb-1 block"></i>
+            <span class="text-[10px] text-slate-400 uppercase font-bold block">Luas Kamar</span>
+            <span id="room-modal-size" class="text-xs font-bold text-slate-800 block mt-0.5">38 m²</span>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-center">
+            <i class="fa-solid fa-users text-purple-600 text-lg mb-1 block"></i>
+            <span class="text-[10px] text-slate-400 uppercase font-bold block">Kapasitas Tamu</span>
+            <span id="room-modal-capacity" class="text-xs font-bold text-slate-800 block mt-0.5">Maks 2 Tamu</span>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-center">
+            <i class="fa-solid fa-mountain-sun text-amber-600 text-lg mb-1 block"></i>
+            <span class="text-[10px] text-slate-400 uppercase font-bold block">Pemandangan</span>
+            <span id="room-modal-view" class="text-xs font-bold text-slate-800 block mt-0.5">City View</span>
+          </div>
+        </div>
+
+        <!-- Deskripsi Lengkap Kamar -->
+        <div class="bg-amber-50/50 border border-amber-200/80 rounded-2xl p-4">
+          <h4 class="font-extrabold text-slate-900 text-sm mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-amber-700"></i> Deskripsi Kamar
+          </h4>
+          <p id="room-modal-desc" class="text-xs sm:text-sm text-slate-600 leading-relaxed"></p>
+        </div>
+
+        <!-- Fasilitas Kamar Lengkap -->
+        <div>
+          <h4 class="font-extrabold text-slate-900 text-sm mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-emerald-600"></i> Fasilitas & Keunggulan Kamar
+          </h4>
+          <div id="room-modal-facilities" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer (Sticky Bottom Action Bar) -->
+      <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between sticky bottom-0 z-10">
+        <div>
+          <span class="text-[11px] text-slate-400 block font-medium">Total Harga Kamar</span>
+          <div class="flex items-baseline gap-1">
+            <span id="room-modal-price" class="text-xl sm:text-2xl font-black text-amber-700 font-display">Rp 0</span>
+            <span class="text-xs text-slate-500 font-normal">/malam</span>
+          </div>
+          <span class="text-[10px] text-emerald-700 font-semibold block"><i class="fa-solid fa-check mr-1"></i>Termasuk Pajak & Biaya Layanan</span>
+        </div>
+        <button id="room-modal-book-btn" class="px-6 py-3 btn-gold font-bold text-xs sm:text-sm rounded-xl shadow-lg transition flex items-center gap-2">
+          <span>Pesan Kamar Ini Sekarang</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: CHECKOUT RESERVASI ================= -->
+  <div id="booking-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-base font-display">Konfirmasi Reservasi StayJogja</h3>
+          <p class="text-xs text-amber-300">Langkah 1 dari 2: Lengkapi informasi pemesan & tamu</p>
+        </div>
+        <button onclick="closeBookingModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="p-6 space-y-5">
+        
+        <!-- Summary Card -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex gap-4 items-center">
+          <img id="booking-prop-photo" src="" class="w-20 h-20 object-cover rounded-xl border border-white shadow-sm" alt="Foto Properti">
+          <div class="text-xs">
+            <span id="booking-prop-type" class="font-bold text-amber-700 uppercase">Hotel Bintang 5</span>
+            <h4 id="booking-prop-name" class="font-bold text-slate-900 text-sm mt-0.5">Nama Hotel</h4>
+            <p id="booking-unit-name" class="text-slate-600 font-medium">Deluxe King Bed</p>
+            <p id="booking-dates-summary" class="text-slate-500 mt-1">1 Malam • 27 Sep - 28 Sep 2026</p>
+          </div>
+        </div>
+
+        <!-- Guest Contact Form -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Informasi Kontak & Tamu</h4>
+          
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap Tamu (Sesuai KTP/Paspor)</label>
+            <input type="text" id="guest-name" placeholder="Nama Lengkap Tamu" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+
+          <!-- NIK KTP Field & Auto-Detect Dukcapil -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-slate-700">Nomor Induk Kependudukan (NIK KTP 16 Digit)</label>
+              <span id="nik-badge" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                Wajib Sesuai KTP
+              </span>
+            </div>
+            <div class="relative">
+              <input type="text" id="guest-nik" maxlength="16" value="" placeholder="Masukkan 16 digit NIK KTP" required
+                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 font-mono tracking-wider focus:outline-none focus:border-amber-500 pr-10"
+                oninput="handleNikInputChange(this.value)">
+              <div id="nik-icon-status" class="absolute right-3 top-2.5 text-slate-400 text-sm">
+                <i class="fa-solid fa-id-card"></i>
+              </div>
+            </div>
+
+            <!-- Live Dukcapil Auto-Detection Card -->
+            <div id="nik-detect-card" class="mt-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50/70 border border-blue-200 rounded-xl text-xs space-y-2 transition-all hidden">
+              <div class="flex items-center justify-between text-[11px] font-bold text-blue-900 border-b border-blue-100 pb-1.5">
+                <span class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-id-card text-blue-600"></i>
+                  <span>Data KTP Terverifikasi (Dukcapil Standar)</span>
+                </span>
+                <span id="nik-detect-gender" class="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-bold">Laki-laki</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-2 text-[11px] text-slate-700 pt-0.5">
+                <div>
+                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Tempat / Tgl Lahir:</span>
+                  <span id="nik-detect-birth" class="font-semibold text-slate-900">-</span>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Asal Wilayah KTP:</span>
+                  <span id="nik-detect-region" class="font-semibold text-slate-900">-</span>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Agama:</span>
+                  <select id="guest-religion" class="w-full mt-0.5 bg-white border border-blue-200 rounded-lg px-2 py-1 text-[11px] font-semibold text-slate-800 focus:outline-none focus:border-blue-500">
+                    <option value="Islam" selected>Islam</option>
+                    <option value="Kristen">Kristen</option>
+                    <option value="Katolik">Katolik</option>
+                    <option value="Hindu">Hindu</option>
+                    <option value="Buddha">Buddha</option>
+                    <option value="Khonghucu">Khonghucu</option>
+                  </select>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Status Perkawinan:</span>
+                  <select id="guest-marital" class="w-full mt-0.5 bg-white border border-blue-200 rounded-lg px-2 py-1 text-[11px] font-semibold text-slate-800 focus:outline-none focus:border-blue-500">
+                    <option value="Belum Kawin" selected>Belum Kawin</option>
+                    <option value="Kawin">Kawin</option>
+                    <option value="Cerai Hidup">Cerai Hidup</option>
+                    <option value="Cerai Mati">Cerai Mati</option>
+                  </select>
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Pekerjaan:</span>
+                  <input type="text" id="guest-occupation" value="Pelajar / Mahasiswa" placeholder="Contoh: Karyawan Swasta" class="w-full mt-0.5 bg-white border border-blue-200 rounded-lg px-2 py-1 text-[11px] font-semibold text-slate-800 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Kewarganegaraan:</span>
+                  <div class="mt-1 flex items-center gap-1.5 font-bold text-slate-900">
+                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[10px]">WNI (Indonesia)</span>
+                    <span class="text-[10px] text-slate-500 font-medium">• Seumur Hidup</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Domisili Sesuai KTP (Jalan/Blok/No/RT/RW)</label>
+            <input type="text" id="guest-address" value="" placeholder="Contoh: Jl. Malioboro Blok D4 No. 18, RT 003/008" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Email Aktif (Untuk Pengiriman Invoice Resmi)</label>
+              <input type="email" id="guest-email" value="user@stayjogja.id" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">No. WhatsApp / Telepon</label>
+              <input type="tel" id="guest-phone" value="081234567890" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Permintaan Khusus (Opsional)</label>
+            <input type="text" id="special-requests" placeholder="Contoh: Non-smoking room, check-in lebih awal jika memungkinkan" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <!-- Price Breakdown -->
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-xs space-y-1.5">
+          <div class="flex justify-between text-slate-600">
+            <span>Harga Kamar (<span id="calc-nights">1</span> Malam)</span>
+            <span id="calc-subtotal" class="font-semibold text-slate-800">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-slate-600">
+            <span>Pajak & Biaya Layanan (10%)</span>
+            <span id="calc-tax" class="font-semibold text-slate-800">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-sm font-bold text-slate-900 pt-2 border-t border-slate-200">
+            <span>Total Tagihan</span>
+            <span id="calc-total" class="text-amber-700 text-base font-display">Rp 0</span>
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeBookingModal()" class="w-1/3 py-2.5 px-4 rounded-xl border border-slate-300 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition">
+            Batal
+          </button>
+          <button type="submit" class="w-2/3 py-2.5 px-4 rounded-xl btn-gold font-bold text-xs text-white shadow-md transition flex items-center justify-center gap-2">
+            <span>Lanjut ke Pembayaran Sandbox</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: PEMBAYARAN SANDBOX (QRIS / VA) ================= -->
+  <div id="payment-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-credit-card text-amber-400"></i>
+          <h3 class="font-bold text-sm">Simulasi Pembayaran (Sandbox)</h3>
+        </div>
+        <button onclick="closePaymentModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 text-center space-y-4">
+        <div>
+          <span class="text-xs text-slate-500 font-medium">Total Pembayaran</span>
+          <div id="pay-total-amount" class="text-2xl font-black text-amber-700 my-1 font-display">Rp 0</div>
+          <p class="text-xs text-slate-500">Kode Booking: <span id="pay-booking-code" class="font-bold text-blue-900">SJ-XXXX</span></p>
+        </div>
+
+        <!-- Payment Method Tabs -->
+        <div class="flex rounded-xl bg-slate-100 p-1 text-xs font-semibold">
+          <button type="button" onclick="setPayMethod('qris')" id="pay-tab-qris" class="flex-1 py-1.5 rounded-lg bg-white text-blue-900 shadow-sm transition">
+            QRIS Instan
+          </button>
+          <button type="button" onclick="setPayMethod('va')" id="pay-tab-va" class="flex-1 py-1.5 rounded-lg text-slate-600 transition">
+            Virtual Account
+          </button>
+        </div>
+
+        <!-- QRIS Visual -->
+        <div id="pay-content-qris" class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center">
+          <div class="w-40 h-40 bg-white border-2 border-slate-800 rounded-xl p-2 flex flex-col items-center justify-center shadow-inner">
+            <i class="fa-solid fa-qrcode text-7xl text-slate-800"></i>
+            <span class="text-[9px] font-bold text-slate-600 mt-1">QRIS SANDBOX STAYJOGJA</span>
+          </div>
+          <span class="text-[11px] text-slate-500 mt-2">Scan dengan aplikasi e-wallet apa saja (GoPay, OVO, BCA, DANA)</span>
+        </div>
+
+        <!-- VA Visual (Hidden by default) -->
+        <div id="pay-content-va" class="hidden p-4 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs space-y-2">
+          <div class="flex justify-between items-center pb-2 border-b border-slate-200">
+            <span class="text-slate-500">Bank Virtual Account:</span>
+            <span class="font-bold text-slate-800">BCA Sandbox</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-500">Nomor Virtual Account:</span>
+            <span class="font-mono font-bold text-blue-900 text-sm">88019 0812 3456</span>
+          </div>
+        </div>
+
+        <!-- Sandbox Simulation CTA -->
+        <div class="pt-2">
+          <button onclick="triggerSimulatePaymentSuccess()" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Simulasikan Bayar Sukses (Sandbox)</span>
+          </button>
+          <span class="block text-[11px] text-slate-400 mt-2">
+            *Tidak ada pemotongan uang riil. Ini adalah simulasi payment gateway sandbox.
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: INVOICE RESMI & TRACKING ================= -->
+  <div id="voucher-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden overflow-y-auto flex items-start justify-center p-2 sm:p-6 md:p-8">
+    <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col my-2 sm:my-6">
+      
+      <!-- Invoice Top Bar (Modal Control - Hidden on Print) -->
+      <div class="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between print:hidden">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-file-invoice text-lg text-amber-400"></i>
+          <div>
+            <h3 class="font-bold text-sm font-display tracking-tight">Invoice Resmi Reservasi</h3>
+            <p class="text-[11px] text-slate-400">Dokumen Sah & Bukti Pembayaran Lunas StayJogja</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="printVoucherDocument()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-print"></i>
+            <span>Cetak / PDF</span>
+          </button>
+          <button onclick="closeVoucherModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Invoice Sheet -->
+      <div id="printable-voucher" class="p-5 sm:p-7 text-slate-800 bg-white relative flex flex-col justify-between">
+        
+        <!-- Header: Nama & Logo Hotel (Resmi & Terverifikasi) -->
+        <div class="flex flex-col sm:flex-row items-center justify-between pb-4 border-b-2 border-slate-900 gap-4">
+          <!-- Sisi Kiri: Logo Hotel & Nama Hotel -->
+          <div class="flex items-center gap-3.5 text-center sm:text-left w-full sm:w-auto">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-slate-200 overflow-hidden shadow-sm bg-slate-100 shrink-0 flex items-center justify-center p-0.5">
+              <img id="voucher-hotel-logo" src="/images/logo-stayjogja.png" alt="Logo Hotel" class="w-full h-full object-cover rounded-xl">
+            </div>
+            <div>
+              <div class="flex items-center justify-center sm:justify-start gap-2">
+                <span id="voucher-hotel-type-badge" class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                  HOTEL BINTANG 5
+                </span>
+                <span id="voucher-hotel-stars" class="text-amber-500 text-xs flex gap-0.5">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </span>
+              </div>
+              <h2 id="voucher-hotel-name-header" class="font-black text-xl sm:text-2xl text-slate-900 tracking-tight font-display mt-0.5">
+                Hotel Tentrem Yogyakarta
+              </h2>
+              <p id="voucher-hotel-address-header" class="text-xs text-slate-500 font-medium line-clamp-1">
+                Jl. P. Mangkubumi No. 72A, Cokrodiningratan, Jetis, D.I. Yogyakarta
+              </p>
+            </div>
+          </div>
+
+          <!-- Sisi Kanan: Platform StayJogja Official Partner Stamp -->
+          <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-2xl shrink-0 self-center sm:self-auto">
+            <img src="/images/logo-stayjogja.png" alt="StayJogja" class="w-8 h-8 object-contain">
+            <div class="text-left">
+              <span class="text-[9px] font-bold tracking-widest text-slate-400 uppercase block">MITRA RESMI TERVERIFIKASI</span>
+              <span class="font-black text-xs text-blue-950 font-display">STAYJOGJA PLATFORM</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Tracking Banner (Light bar) -->
+        <div id="voucher-status-banner" class="my-3 p-2.5 rounded-xl flex items-center justify-between text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+          <span id="voucher-status-text">Status: Menunggu ACC Pemilik</span>
+          <span id="voucher-status-desc" class="text-[10px] font-normal text-slate-600">Pesanan telah dibayar</span>
+        </div>
+
+        <!-- Metadata Row: INVOICE TO vs INVOICE -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-4">
+          <!-- Left: INVOICE TO -->
+          <div class="space-y-1.5 text-xs text-slate-600">
+            <h4 class="font-black text-xs sm:text-sm tracking-wider text-slate-900 uppercase">INVOICE TO:</h4>
+            <div class="font-bold text-sm sm:text-base text-slate-900" id="voucher-guest-name">-</div>
+            
+            <div class="flex items-center gap-2 text-slate-600 pt-0.5">
+              <i class="fa-solid fa-phone text-slate-400 w-3.5 text-center"></i>
+              <span>Phone: <span id="voucher-guest-phone" class="font-medium text-slate-800">-</span></span>
+            </div>
+            
+            <div class="flex items-center gap-2 text-slate-600">
+              <i class="fa-solid fa-envelope text-slate-400 w-3.5 text-center"></i>
+              <span>Email: <span id="voucher-guest-email" class="font-medium text-slate-800">-</span></span>
+            </div>
+
+            <!-- Fallback hidden contact span for backwards compatibility -->
+            <span id="voucher-guest-contact" class="hidden"></span>
+
+            <div class="flex items-center gap-2 text-slate-600">
+              <i class="fa-solid fa-id-card text-blue-700 w-3.5 text-center"></i>
+              <span>NIK KTP: <span id="voucher-guest-nik" class="font-mono font-bold text-blue-900">-</span>
+                <span class="inline-block ml-1 text-[9px] bg-emerald-50 text-emerald-700 font-bold px-1.5 py-0.5 rounded border border-emerald-200">Dukcapil Verified</span>
+              </span>
+            </div>
+
+            <div class="flex items-start gap-2 text-slate-600">
+              <i class="fa-solid fa-location-dot text-slate-400 w-3.5 text-center mt-0.5"></i>
+              <span>Alamat KTP: <span id="voucher-guest-address" class="font-medium text-slate-800">Jl. Malioboro Blok D4 No. 18, RT 003/008, Kel. Sosrowijayan, Kec. Gedongtengen, Kota Yogyakarta, D.I. Yogyakarta</span></span>
+            </div>
+
+            <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-[11px] space-y-0.5 mt-1.5 text-slate-600">
+              <div><span class="text-slate-400">TTL / Gender:</span> <span id="voucher-guest-birth" class="font-semibold text-slate-800">Yogyakarta, 19 Maret 2005 (Laki-laki)</span></div>
+              <div><span class="text-slate-400">Agama / Status:</span> <span id="voucher-guest-religion-marital" class="font-semibold text-slate-800">Islam • Belum Kawin</span></div>
+              <div><span class="text-slate-400">Pekerjaan / WN:</span> <span id="voucher-guest-occupation-citizen" class="font-semibold text-slate-800">Pelajar / Mahasiswa • WNI</span></div>
+            </div>
+          </div>
+
+          <!-- Right: INVOICE Metadata -->
+          <div class="sm:text-right flex flex-col justify-start sm:items-end">
+            <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight font-display uppercase">INVOICE</h1>
+            
+            <div class="mt-3 space-y-1.5 text-xs text-slate-600 w-full sm:w-auto">
+              <div class="flex justify-between sm:justify-end gap-3 items-center">
+                <span class="text-slate-500 font-medium">Invoice Number:</span>
+                <span id="voucher-booking-code" class="font-mono font-bold text-slate-900 text-sm">SJ-XXXXX</span>
+              </div>
+              <div class="flex justify-between sm:justify-end gap-3 items-center">
+                <span class="text-slate-500 font-medium">Invoice Date:</span>
+                <span id="voucher-invoice-date" class="font-semibold text-slate-800">27/09/2026</span>
+              </div>
+              <div class="flex justify-between sm:justify-end gap-3 items-center pt-1">
+                <span class="text-slate-500 font-medium">Status Dokumen:</span>
+                <span id="voucher-invoice-badge" class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[10px] font-black uppercase tracking-wider">
+                  LUNAS / SAH
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items Table (Classic High-Contrast Dark Bar Table) -->
+        <div class="my-4 overflow-x-auto rounded-lg border border-slate-200">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-900 text-white uppercase text-[10px] tracking-wider">
+                <th class="py-2.5 px-3 w-[6%] text-center">SL.</th>
+                <th class="py-2.5 px-3 w-[46%]">ITEM DESCRIPTION</th>
+                <th class="py-2.5 px-3 w-[18%] text-right">UNIT PRICE</th>
+                <th class="py-2.5 px-3 w-[15%] text-center">QUANTITY</th>
+                <th class="py-2.5 px-3 w-[15%] text-right">TOTAL</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white">
+              <!-- Item 01: Room & Lodging -->
+              <tr class="align-top">
+                <td class="py-3 px-3 text-center font-bold text-slate-400">01</td>
+                <td class="py-3 px-3">
+                  <div class="font-bold text-slate-900 text-sm" id="voucher-prop-name">Hotel Tentrem Yogyakarta</div>
+                  <div class="text-[10px] font-bold text-amber-700 uppercase" id="voucher-prop-type">HOTEL BINTANG 5</div>
+                  <div class="text-xs text-slate-700 mt-0.5">Tipe Kamar: <span id="voucher-unit-name" class="font-bold text-slate-900">Deluxe King Bed</span></div>
+                  <div class="text-[11px] text-slate-500 mt-1">
+                    <i class="fa-regular fa-calendar-check text-blue-600"></i> Check-in: <b id="voucher-checkin">27 Sep 2026</b> (14:00) — Check-out: <b id="voucher-checkout">28 Sep 2026</b> (12:00)
+                  </div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">
+                    <i class="fa-solid fa-map-pin text-slate-400"></i> <span id="voucher-prop-address">Jl. P. Mangkubumi No. 72A, Jetis</span>
+                  </div>
+                </td>
+                <td class="py-3 px-3 text-right font-mono font-medium text-slate-800" id="voucher-unit-price">Rp 0</td>
+                <td class="py-3 px-3 text-center text-slate-700" id="voucher-quantity">1 Malam<br><span class="text-[10px] text-slate-400">(1 Tamu)</span></td>
+                <td class="py-3 px-3 text-right font-mono font-bold text-slate-900" id="voucher-item-total">Rp 0</td>
+              </tr>
+              
+              <!-- Item 02: Verification & Protection -->
+              <tr class="align-top bg-slate-50/50">
+                <td class="py-2.5 px-3 text-center font-bold text-slate-400">02</td>
+                <td class="py-2.5 px-3">
+                  <div class="font-bold text-slate-800 text-xs">Jaminan Reservasi Sah & Verifikasi Dukcapil RI</div>
+                  <div class="text-[10px] text-slate-500">Validasi NIK Kemendagri & Hak Perlindungan Konsumen StayJogja</div>
+                </td>
+                <td class="py-2.5 px-3 text-right font-mono text-slate-400">Rp 0</td>
+                <td class="py-2.5 px-3 text-center text-slate-500">1 Paket</td>
+                <td class="py-2.5 px-3 text-right font-mono text-emerald-700 font-bold">Termasuk</td>
+              </tr>
+
+              <!-- Item 03: Regional Hospitality Tax (PB1) -->
+              <tr class="align-top">
+                <td class="py-2.5 px-3 text-center font-bold text-slate-400">03</td>
+                <td class="py-2.5 px-3">
+                  <div class="font-bold text-slate-800 text-xs">Pajak Akomodasi & Retribusi Daerah (PB1 D.I. Yogyakarta)</div>
+                  <div class="text-[10px] text-slate-500">Pajak Resmi Daerah Istimewa Yogyakarta (10%)</div>
+                </td>
+                <td class="py-2.5 px-3 text-right font-mono text-slate-500" id="voucher-tax-rate">10%</td>
+                <td class="py-2.5 px-3 text-center text-slate-500">1 Trx</td>
+                <td class="py-2.5 px-3 text-right font-mono font-semibold text-slate-800" id="voucher-tax-amount">Rp 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Lower Section: Bank Info & QR Code (Left) vs Subtotal, Total, Signature (Right) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-2 pt-2 items-start">
+          
+          <!-- Left: Bank Information, Scannable QR Code, Terms -->
+          <div class="space-y-3">
+            <div>
+              <h5 class="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-1">BANK INFORMATION:</h5>
+              <div class="text-xs text-slate-600 space-y-0.5">
+                <div class="flex justify-between sm:justify-start gap-4"><span class="text-slate-400 w-24">Payment Mode:</span> <span id="voucher-pay-method" class="font-bold text-slate-800">QRIS Instan (Sandbox)</span></div>
+                <div class="flex justify-between sm:justify-start gap-4"><span class="text-slate-400 w-24">Transaction ID:</span> <span id="voucher-pay-txid" class="font-mono font-bold text-blue-900">TRX-SBX-72228391</span></div>
+                <div class="flex justify-between sm:justify-start gap-4"><span class="text-slate-400 w-24">Verify Status:</span> <span class="font-semibold text-emerald-700">LUNAS (Terverifikasi Otomatis)</span></div>
+              </div>
+            </div>
+
+            <!-- Authentic Scannable QR Code Box -->
+            <div class="p-3.5 bg-blue-50/50 border border-blue-200 rounded-2xl flex flex-col sm:flex-row items-center gap-4">
+              <div class="relative group cursor-pointer" onclick="openQrZoomModal()" title="Klik untuk memperbesar barcode scan kamera HP resepsionis">
+                <div class="w-32 h-32 sm:w-36 sm:h-36 bg-white border-2 border-slate-300 rounded-xl p-2 shrink-0 flex items-center justify-center shadow-sm hover:shadow-md transition" id="voucher-qr-container">
+                  <img id="voucher-qr-image" src="" alt="QR Code Fast Check-In" class="w-full h-full object-contain" >
+                </div>
+                <div class="absolute inset-0 bg-slate-900/60 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-[11px] font-bold gap-1 pointer-events-none">
+                  <i class="fa-solid fa-expand"></i> Perbesar
+                </div>
+              </div>
+              <div class="text-left space-y-1.5 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-extrabold text-blue-950 text-xs uppercase flex items-center gap-1.5">
+                    <i class="fa-solid fa-bolt text-amber-500 text-sm"></i> Barcode Fast Check-In Resepsionis
+                  </span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    Bebas Formulir Kertas
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-600 leading-snug">
+                  Cukup tunjukkan barcode ini ke resepsionis hotel saat tiba. Resepsionis langsung scan dari kamera HP untuk memuat data KTP Dukcapil & reservasi secara instan tanpa perlu isi formulir manual.
+                </p>
+                <div class="pt-1 flex flex-wrap items-center gap-2">
+                  <button type="button" onclick="openQrZoomModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-900 hover:bg-blue-800 text-white text-[11px] font-bold rounded-lg shadow-sm transition cursor-pointer">
+                    <i class="fa-solid fa-expand"></i> Perbesar Barcode HD
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terms and Condition -->
+            <div>
+              <h5 class="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-1">TERMS AND CONDITION:</h5>
+              <p class="text-[10px] text-slate-500 leading-relaxed">
+                1. Waktu check-in mulai 14:00 WIB dan check-out maksimal 12:00 WIB.<br>
+                2. Wajib menunjukkan invoice resmi ini dan KTP fisik asli saat check-in.<br>
+                3. Invoice ini merupakan dokumen sah yang diterbitkan oleh sistem StayJogja.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: Sub Total, Tax, TOTAL Box, Signature -->
+          <div class="flex flex-col justify-between h-full space-y-3">
+            <div class="space-y-1.5 text-xs">
+              <div class="flex justify-between text-slate-600">
+                <span class="font-medium">Sub Total</span>
+                <span id="voucher-subtotal-price" class="font-mono font-semibold text-slate-900">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span class="font-medium">Shipping / Layanan</span>
+                <span class="font-mono text-slate-600">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span class="font-medium">Tax Rate (PB1 10%)</span>
+                <span id="voucher-summary-tax" class="font-mono text-slate-600">Rp 0</span>
+              </div>
+              
+              <!-- TOTAL Highlight Dark Box -->
+              <div class="bg-slate-900 text-white px-4 py-3 rounded-lg flex justify-between items-center shadow-md mt-2">
+                <span class="font-black text-xs uppercase tracking-wider">TOTAL</span>
+                <span id="voucher-total-price" class="font-black text-lg sm:text-xl font-mono text-amber-400">Rp 0</span>
+              </div>
+            </div>
+
+            <!-- Signature Graphic exactly like image -->
+            <div class="pt-2 text-right flex flex-col items-end">
+              <div class="h-8 flex items-center justify-end pr-2">
+                <span class="font-serif italic text-xl text-slate-700 select-none tracking-wide" style="font-family: 'Brush Script MT', cursive, Georgia, serif;">StayJogja Management</span>
+              </div>
+              <div class="w-40 border-b border-slate-400 mb-1"></div>
+              <div class="font-bold text-xs text-slate-900">StayJogja Management</div>
+              <div class="text-[10px] text-slate-500">Official Hospitality Director</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Thank you text -->
+        <div class="text-center pt-6 pb-2">
+          <p class="font-serif italic text-sm text-slate-600">Thank you for your business!</p>
+        </div>
+
+        <!-- Geometric Angular Accent Banner at Bottom (Direct from Image Design) -->
+        <div class="w-full h-8 overflow-hidden rounded-b-xl mt-1">
+          <svg viewBox="0 0 800 50" preserveAspectRatio="none" class="w-full h-full">
+            <polygon points="0,50 0,15 90,50" fill="#dc2626" />
+            <polygon points="0,50 80,18 160,50" fill="#b91c1c" />
+            <polygon points="130,50 220,25 300,50" fill="#0f172a" />
+            <polygon points="280,50 420,28 800,28 800,50" fill="#0f172a" />
+            <polygon points="400,28 470,22 800,22 800,28" fill="#dc2626" />
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- Modal Bottom Actions (Print: hidden) -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center gap-3 print:hidden">
+        <div class="flex items-center gap-2">
+          <button onclick="printVoucherDocument()" class="px-4 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+          </button>
+          <button id="btn-send-voucher-email" onclick="sendInvoiceToMyEmail()" class="px-4 py-2 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-xl text-xs font-semibold text-blue-900 transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+            <i class="fa-regular fa-paper-plane text-blue-600"></i> Kirim ke Email Saya
+          </button>
+        </div>
+        <button onclick="closeVoucherModal()" class="px-5 py-2 btn-gold rounded-xl text-xs font-semibold text-white transition shadow-sm cursor-pointer">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ZOOM QR CODE HD ================= -->
+  <div id="qr-zoom-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden p-6 text-center animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-900 text-amber-400 flex items-center justify-center text-sm font-bold shadow-xs">
+            <i class="fa-solid fa-qrcode"></i>
+          </div>
+          <div class="text-left">
+            <h4 class="font-bold text-sm text-slate-900 font-display">Barcode Fast Check-In Resepsionis</h4>
+            <p class="text-[10px] text-slate-500">Scan kamera HP untuk verifikasi instan KTP Dukcapil & Kamar</p>
+          </div>
+        </div>
+        <button onclick="closeQrZoomModal()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Massive Ultra-Sharp QR Code on Pure White Ground -->
+      <div class="w-72 h-72 mx-auto bg-white border-2 border-slate-200 rounded-2xl p-3 flex items-center justify-center shadow-md">
+        <img id="zoom-qr-image" src="" alt="QR Code HD" class="w-full h-full object-contain" >
+      </div>
+
+      <!-- Content: Fast Check-in Resepsionis -->
+      <div id="qr-view-checkin" class="mt-4 space-y-3">
+        <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl text-left space-y-1">
+          <p class="font-bold text-xs text-blue-950 flex items-center gap-1.5">
+            <i class="fa-solid fa-camera text-blue-700"></i> Arahkan Kamera HP Resepsionis ke Barcode Ini
+          </p>
+          <p class="text-[11px] text-slate-600 leading-relaxed">
+            Barcode berformat ringkas (29x29 module) sehingga terbaca dalam <strong>&lt;0,1 detik</strong> di kamera HP apa pun. Sistem langsung membuka portal check-in hotel dengan identitas KTP Dukcapil dan reservasi terisi otomatis.
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-left">
+          <div class="min-w-0 flex-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase block">Link Portal Resepsionis:</span>
+            <span id="zoom-qr-url-text" class="text-[11px] font-mono text-blue-800 font-semibold truncate block">http://...</span>
+          </div>
+          <button type="button" onclick="openReceptionistPortalDirectly()" class="w-full sm:w-auto px-3.5 py-1.5 bg-blue-900 hover:bg-blue-800 text-white rounded-lg text-xs font-bold shadow-xs transition flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            <span>Buka di Web</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-5 flex gap-2">
+        <button onclick="closeQrZoomModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer">
+          Tutup Tampilan Barcode
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: PESANAN & RIWAYAT PESANAN TAMU ================= -->
+  <div id="my-bookings-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[88vh]">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+        <div>
+          <h3 id="orders-modal-title" class="font-black text-base text-slate-900 flex items-center gap-2 font-display">
+            <i class="fa-solid fa-bell-concierge text-amber-600"></i>
+            <span>Pesanan Tamu</span>
+          </h3>
+          <p id="orders-modal-subtitle" class="text-xs text-slate-500 mt-0.5">
+            Pantau status konfirmasi pemilik penginapan & lacak riwayat pemesanan Anda
+          </p>
+        </div>
+        <button onclick="closeMyBookingsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Tab Switcher: Pesanan vs Riwayat Pesanan -->
+      <div class="px-6 border-b border-slate-200 flex gap-2 text-xs font-bold bg-white pt-2.5">
+        <button type="button" onclick="switchOrdersTab('active')" id="orders-tab-active" class="py-2.5 px-4 border-b-2 border-amber-600 text-amber-700 transition flex items-center gap-2">
+          <i class="fa-solid fa-bell-concierge"></i>
+          <span>Pesanan (Sedang Dipesan)</span>
+          <span id="tab-active-count" class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+        </button>
+        <button type="button" onclick="switchOrdersTab('history')" id="orders-tab-history" class="py-2.5 px-4 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Riwayat Pesanan (Track Semua)</span>
+          <span id="tab-history-count" class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+        </button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="p-6 overflow-y-auto space-y-4 flex-1">
+        <div id="orders-view-active" class="space-y-3">
+          <!-- Active orders injected via JS -->
+        </div>
+        <div id="orders-view-history" class="hidden space-y-3">
+          <!-- History orders injected via JS -->
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-xs">
+        <span class="text-slate-400"><i class="fa-solid fa-circle-info mr-1"></i> Data diperbarui otomatis secara real-time</span>
+        <button onclick="closeMyBookingsModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-semibold transition">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= FLOATING AI ASSISTANT WIDGET ================= -->
+  <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+    
+    <!-- Chat Drawer (Toggled) -->
+    <div id="chatbot-drawer" class="hidden mb-3 w-[340px] sm:w-[380px] h-[480px] bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-200" id="chatbot-window">
+      
+      <!-- Chat Header -->
+      <div class="px-4 py-3.5 bg-slate-900 text-white flex items-center justify-between border-b border-amber-500/30">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center">
+            <i class="fa-solid fa-sparkles text-sm"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-xs">Asisten Cerdas StayJogja</h4>
+            <span class="text-[10px] text-slate-300 flex items-center gap-1">
+              <i class="fa-solid fa-circle text-[7px] text-emerald-400 animate-pulse"></i> Rekomendasi Wisata, Kuliner & Hotel
+            </span>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button onclick="clearChatHistory()" class="w-6 h-6 rounded-full bg-slate-800 hover:bg-red-900/60 text-slate-300 hover:text-red-300 flex items-center justify-center text-[10px] transition" title="Hapus riwayat obrolan (Reset chat)">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+          <button onclick="toggleChatbot()" class="w-6 h-6 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center text-xs transition" title="Tutup">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="px-3 py-2 bg-slate-50 border-b border-slate-100 flex gap-1.5 overflow-x-auto text-[11px] whitespace-nowrap">
+        <button onclick="sendQuickPrompt('Rekomendasi hotel bintang 5 dekat Malioboro')" class="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300 transition">
+          💡 Hotel Malioboro
+        </button>
+        <button onclick="sendQuickPrompt('Cari homestay murah di bawah 300 ribu di Prawirotaman')" class="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300 transition">
+          🏡 Homestay &lt; 300rb
+        </button>
+        <button onclick="sendQuickPrompt('Kuliner malam legendaris sekitar Malioboro')" class="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300 transition">
+          🍲 Kuliner Malam
+        </button>
+      </div>
+
+      <!-- Chat Messages Container -->
+      <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+        <div class="chat-bubble-bot p-3.5 max-w-[88%]">
+          Sugeng rawuh! 👋 Saya asisten pintar <strong>StayJogja</strong>.<br><br>
+          Ada yang bisa saya bantu seputar rekomendasi <strong>Hotel Bintang 1–5</strong>, <strong>Homestay</strong>, <strong>Apartemen</strong>, atau <strong>kuliner & tempat wisata</strong> di Yogyakarta?
+        </div>
+      </div>
+
+      <!-- Chat Input Field -->
+      <form id="chat-form" onsubmit="handleChatSubmit(event)" class="p-3 border-t border-slate-100 bg-white flex gap-2">
+        <input type="text" id="chat-input" placeholder="Tanyakan wisata, hotel, atau budget..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+        <button type="submit" class="w-9 h-9 rounded-xl btn-gold text-white flex items-center justify-center transition shadow-sm">
+          <i class="fa-solid fa-paper-plane text-xs"></i>
+        </button>
+      </form>
+
+    </div>
+
+    <!-- Floating Action Button -->
+    <button onclick="toggleChatbot()" id="chatbot-toggle-btn" class="chatbot-launcher group px-4 py-3 rounded-full flex items-center gap-2.5 cursor-pointer">
+      <div class="relative">
+        <i class="fa-solid fa-comments text-lg text-amber-400"></i>
+        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-slate-900"></span>
+      </div>
+      <span class="text-xs font-bold tracking-wide">Tanya Asisten Jogja</span>
+    </button>
+
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="/js/api.js"></script>
+  <script src="/js/state.js"></script>
+  <script src="/js/nikParser.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

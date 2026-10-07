@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StayJogja — Portal Masuk & Keanggotaan</title>
+  <link rel="icon" type="image/svg+xml" href="/images/logo-stayjogja.png">
+  
+  <!-- Google Fonts: DM Sans & Lora -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              600: '#1e3a8a',
+              700: '#172554',
+              900: '#0f172a'
+            },
+            accent: {
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            }
+          },
+          fontFamily: {
+            sans: ['"DM Sans"', 'sans-serif'],
+            display: ['"Lora"', 'Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Multi-slide Ken Burns Carousel Animation with Jogja Ambiance */
+    .bg-slideshow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-slide {
+      position: absolute;
+      top: -5%;
+      left: -5%;
+      width: 110%;
+      height: 110%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      animation: kenBurnsFade 24s infinite;
+      transition: opacity 2s ease-in-out;
+    }
+
+    /* Slide 1: Candi Prambanan Megah Warisan Dunia */
+    .bg-slide-1 {
+      background-image: url('/images/prambanan.jpg');
+      animation-delay: 0s;
+    }
+
+    /* Slide 2: Tugu Pal Putih Ikon Legendaris Kota Yogyakarta */
+    .bg-slide-2 {
+      background-image: url('/images/tugu-jogja.jpg');
+      background-position: center 30%;
+      animation-delay: 8s;
+    }
+
+    /* Slide 3: Candi Prambanan Sunset & Panorama Merapi */
+    .bg-slide-3 {
+      background-image: url('/images/prambanan-sunset.jpg');
+      animation-delay: 16s;
+    }
+
+    @keyframes kenBurnsFade {
+      0% { opacity: 0; transform: scale(1) translate(0, 0); }
+      6% { opacity: 1; }
+      33% { opacity: 1; }
+      40% { opacity: 0; transform: scale(1.08) translate(-1.5%, -1%); }
+      100% { opacity: 0; transform: scale(1); }
+    }
+
+    /* Traditional Javanese Motif Watermark */
+    .batik-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(217, 119, 6, 0.12) 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+      mix-blend-mode: overlay;
+    }
+
+    /* Atmospheric Warm Vignette & Contrast Overlay */
+    .vignette-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.45) 0%, rgba(10, 16, 26, 0.82) 65%, rgba(3, 7, 18, 0.96) 100%);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 relative overflow-x-hidden flex flex-col justify-between selection:bg-amber-600 selection:text-white">
+
+  <!-- Animated Background Slideshow (Prambanan & Tugu Jogja) -->
+  <div class="bg-slideshow-container">
+    <div class="bg-slide bg-slide-1"></div>
+    <div class="bg-slide bg-slide-2"></div>
+    <div class="bg-slide bg-slide-3"></div>
+  </div>
+
+  <!-- Traditional Batik Watermark Pattern -->
+  <div class="batik-overlay"></div>
+
+  <!-- Warm Atmospheric Vignette & Contrast Overlay -->
+  <div class="vignette-overlay"></div>
+
+  <!-- ================= TOP NAVBAR ================= -->
+  <header class="w-full px-6 lg:px-12 py-5 relative z-30">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Logo: StayJogja -->
+      <a href="/tamu" class="flex items-center gap-3 group">
+        <img src="/images/logo-stayjogja.png" alt="StayJogja Logo" class="w-10 h-10 rounded-2xl shadow-sm border border-amber-500/40 group-hover:scale-105 transition">
+        <div class="flex items-center">
+          <span class="text-2xl font-black tracking-tight text-white leading-none">
+            Stay<span class="text-amber-400">Jogja</span>
+          </span>
+        </div>
+      </a>
+
+      <!-- Direct Link to Guest Explorer -->
+      <div class="flex items-center gap-3">
+        <a href="/tamu" class="px-4 py-2 rounded-xl border border-white/20 bg-white/10 hover:bg-white hover:text-slate-900 text-white font-bold text-xs transition duration-200 backdrop-blur-md flex items-center gap-2">
+          <i class="fa-solid fa-compass text-amber-400"></i>
+          <span>Jelajahi Penginapan</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= MAIN CENTERED AUTHENTICATION PORTAL ================= -->
+  <main class="flex-1 relative z-30 flex items-center justify-center p-4 sm:p-6 my-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-slate-800 relative border border-slate-100 my-auto animate-in fade-in zoom-in-95 duration-200">
+          
+      <!-- Card Title -->
+      <div class="mb-5 text-left">
+        <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-600 block mb-1">
+          Portal Keanggotaan & Mitra
+        </span>
+        <h2 id="auth-title" class="text-2xl font-black text-slate-900 tracking-tight font-display">Masuk ke StayJogja</h2>
+        <p id="auth-subtitle" class="text-xs text-slate-500 mt-1">Silakan masuk ke akun Anda untuk melanjutkan:</p>
+      </div>
+
+      <!-- Alert Box -->
+      <div id="auth-alert" class="hidden mb-4 p-3 rounded-xl text-xs flex items-center gap-2"></div>
+
+      <!-- FORM 1: LOGIN -->
+      <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4 text-xs text-left">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Alamat Email</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+              <i class="fa-regular fa-envelope"></i>
+            </span>
+            <input type="email" id="login-email" placeholder="nama@email.com" required 
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition">
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="font-semibold text-slate-700">Kata Sandi</label>
+            <a href="#" onclick="alert('Password akun demo: password123')" class="text-[11px] text-amber-700 hover:underline">
+              Lupa sandi?
+            </a>
+          </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input type="password" id="login-password" placeholder="••••••••" required 
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition">
+            <button type="button" onclick="togglePasswordVisibility('login-password')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <label class="flex items-center gap-2 text-slate-600 cursor-pointer">
+            <input type="checkbox" id="remember-me" checked class="w-4 h-4 rounded text-amber-600 border-slate-300 focus:ring-amber-500">
+            <span>Ingat saya di perangkat ini</span>
+          </label>
+        </div>
+
+        <button type="submit" id="btn-login-submit" 
+                class="w-full py-3 px-4 btn-gold rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer">
+          <span>Masuk ke Akun</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+
+        <!-- Daftar Akun Baru di bawah tombol login -->
+        <div class="pt-2 text-center text-xs text-slate-600">
+          <span>Belum memiliki akun?</span>
+          <button type="button" onclick="switchAuthTab('register')" class="text-amber-700 hover:text-amber-800 font-bold hover:underline ml-1 cursor-pointer">
+            Daftar Akun Baru
+          </button>
+        </div>
+      </form>
+
+      <!-- Google Sign-In Container -->
+      <div id="google-auth-container">
+        <div class="relative my-4 flex items-center justify-center">
+          <div class="border-t border-slate-200 w-full"></div>
+          <span class="bg-white px-3 text-[10px] uppercase font-bold text-slate-400 tracking-wider absolute">atau lanjutkan dengan</span>
+        </div>
+
+        <!-- Google Sign-In Button -->
+        <button type="button" onclick="handleGoogleSignIn()" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl font-semibold text-xs text-slate-700 shadow-2xs transition flex items-center justify-center gap-2.5 cursor-pointer group">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.27v3.13C3.31 21.44 7.37 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.58H1.27C.46 8.2 0 10.04 0 12s.46 3.8 1.27 5.42l4.01-3.13z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.37 0 3.31 2.56 1.27 6.58l4.01 3.13c.95-2.83 3.6-4.96 6.72-4.96z"/>
+          </svg>
+          <span class="group-hover:text-slate-900 transition">Masuk dengan Akun Google</span>
+        </button>
+      </div>
+  
+      <!-- FORM 2: REGISTER -->
+      <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="hidden space-y-3.5 text-xs text-left">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+          <input type="text" id="reg-name" placeholder="Nama lengkap Anda" required 
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Alamat Email</label>
+          <input type="email" id="reg-email" placeholder="nama@email.com" required 
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Nomor WhatsApp</label>
+            <input type="tel" id="reg-phone" placeholder="08xxxxxxxxxx" required 
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Daftar Sebagai</label>
+            <select id="reg-role" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500 focus:bg-white transition">
+              <option value="user">Tamu (Wisatawan)</option>
+              <option value="owner">Pemilik Akomodasi</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Buat Kata Sandi</label>
+          <input type="password" id="reg-password" placeholder="Minimal 6 karakter" required 
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white transition">
+        </div>
+
+        <button type="submit" id="btn-register-submit" 
+                class="w-full py-3 px-4 btn-gold rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer">
+          <span>Daftar Akun Baru</span>
+          <i class="fa-solid fa-user-plus text-xs"></i>
+        </button>
+
+        <!-- Masuk Akun di bawah tombol register -->
+        <div class="pt-2 text-center text-xs text-slate-600">
+          <span>Sudah memiliki akun?</span>
+          <button type="button" onclick="switchAuthTab('login')" class="text-amber-700 hover:text-amber-800 font-bold hover:underline ml-1 cursor-pointer">
+            Masuk ke Akun
+          </button>
+        </div>
+      </form>
+
+      <!-- Direct Guest Link -->
+      <div class="mt-5 pt-3 border-t border-slate-100 text-center">
+        <a href="/tamu" class="text-xs text-blue-900 hover:text-amber-700 font-semibold underline inline-flex items-center gap-1">
+          <span>Langsung ke Halaman Katalog Tamu (Tanpa Login)</span>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="w-full px-6 lg:px-12 py-4 bg-black/80 border-t border-white/10 text-xs text-slate-400 relative z-30">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>
+        <span class="text-white font-bold tracking-wider">StayJogja</span> &bull; 
+        <span>Akomodasi & Reservasi Terintegrasi D.I. Yogyakarta &copy; 2026</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-400 text-xs">
+        <a href="/tamu" class="hover:text-amber-400 transition">Katalog Tamu</a>
+        <a href="/owner" class="hover:text-amber-400 transition">Mitra Pemilik</a>
+        <a href="/admin" class="hover:text-amber-400 transition">Administrator</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>
