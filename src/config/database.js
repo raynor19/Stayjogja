@@ -14,12 +14,36 @@ class Database {
     this.propertyColumns = new Set();
     this.notificationColumns = new Set();
     this.supabaseConnected = false;
-    this.init();
+    this.initPromise = this.initFromSupabase();
+  }
+
+  async ensureInitialized() {
+    if (this.initPromise) {
+      await this.initPromise;
+    }
+    return this;
+  }
+
+  async refreshReservations() {
+    try {
+      const { data, error } = await supabase
+        .from('reservations')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!error && Array.isArray(data)) {
+        this.reservations = data;
+        if (data.length > 0 && data[0]) {
+          this.reservationColumns = new Set(Object.keys(data[0]));
+        }
+      }
+    } catch (e) {
+      console.warn('[DB] refreshReservations error:', e.message);
+    }
+    return this.reservations;
   }
 
   async init() {
-    // Fetch directly and exclusively from Supabase cloud
-    await this.initFromSupabase();
+    return this.ensureInitialized();
   }
 
   async initFromSupabase() {
@@ -231,8 +255,8 @@ class Database {
     return false;
   }
 
-  saveReservations() {
-    if (this.supabaseConnected && this.reservations.length > 0) {
+  async saveReservations() {
+    if (this.reservations.length > 0) {
       const allowedCols = this.reservationColumns && this.reservationColumns.size > 0 ? this.reservationColumns : null;
 
       const cleanRows = this.reservations.map(r => {
@@ -295,9 +319,12 @@ class Database {
         return full;
       });
 
-      supabase.from('reservations').upsert(cleanRows, { onConflict: 'booking_code' }).then(({ error }) => {
+      try {
+        const { error } = await supabase.from('reservations').upsert(cleanRows, { onConflict: 'booking_code' });
         if (error) console.error('[Supabase] Error saving reservations:', error.message);
-      });
+      } catch (err) {
+        console.error('[Supabase] Exception saving reservations:', err.message);
+      }
 
       // Backup rich metadata to Supabase Storage so no custom field (KTP, QR, special requests) is ever lost
       try {

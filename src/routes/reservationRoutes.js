@@ -22,8 +22,10 @@ function generateBookingCode() {
 }
 
 // GET /api/reservations - List All Reservations (Global)
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
+    await db.ensureInitialized();
+    await db.refreshReservations();
     res.json({ success: true, data: db.reservations });
   } catch (err) {
     console.error('Error fetching reservations:', err);
@@ -32,8 +34,10 @@ router.get('/', (req, res) => {
 });
 
 // GET /api/reservations/owner - List Reservations for Owner (All incoming guest bookings)
-router.get('/owner', (req, res) => {
+router.get('/owner', async (req, res) => {
   try {
+    await db.ensureInitialized();
+    await db.refreshReservations();
     res.json({ success: true, data: db.reservations });
   } catch (err) {
     console.error('Error fetching owner reservations:', err);
@@ -179,7 +183,7 @@ router.post('/', async (req, res) => {
     }
 
     db.reservations.unshift(newReservation);
-    db.saveReservations();
+    await db.saveReservations();
 
     res.status(201).json({
       success: true,
@@ -193,8 +197,10 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/reservations/user/:userId - List User Reservations
-router.get('/user/:userId', (req, res) => {
+router.get('/user/:userId', async (req, res) => {
   try {
+    await db.ensureInitialized();
+    await db.refreshReservations();
     const requestedId = req.params.userId;
     const emailQuery = req.query.email ? req.query.email.trim().toLowerCase() : null;
 
@@ -213,8 +219,10 @@ router.get('/user/:userId', (req, res) => {
 });
 
 // GET /api/reservations/code/:bookingCode - Get Booking Detail / Invoice Resmi
-router.get('/code/:bookingCode', (req, res) => {
+router.get('/code/:bookingCode', async (req, res) => {
   try {
+    await db.ensureInitialized();
+    await db.refreshReservations();
     const resv = db.reservations.find(r => r.booking_code.toUpperCase() === req.params.bookingCode.toUpperCase());
     if (!resv) {
       return res.status(404).json({ success: false, message: 'Kode reservasi tidak ditemukan.' });
@@ -227,8 +235,10 @@ router.get('/code/:bookingCode', (req, res) => {
 });
 
 // POST /api/reservations/:id/acc - Owner Approves Booking
-router.post('/:id/acc', (req, res) => {
+router.post('/:id/acc', async (req, res) => {
   try {
+    await db.ensureInitialized();
+    await db.refreshReservations();
     const resv = db.reservations.find(r => r.id === req.params.id);
     if (!resv) {
       return res.status(404).json({ success: false, message: 'Reservasi tidak ditemukan.' });
@@ -243,7 +253,7 @@ router.post('/:id/acc', (req, res) => {
 
     resv.status = 'terkonfirmasi';
     resv.acc_at = new Date().toISOString();
-    db.saveReservations();
+    await db.saveReservations();
 
     // Kirim email secara asynchronous
     const { sendInvoiceEmail } = require('../utils/mailer');
@@ -336,8 +346,10 @@ router.post('/:id/reject', (req, res) => {
 });
 
 // POST /api/reservations/:id/checkin - Resepsionis Selesaikan Check-In Tamu
-router.post('/:id/checkin', (req, res) => {
+router.post('/:id/checkin', async (req, res) => {
   try {
+    await db.ensureInitialized();
+    await db.refreshReservations();
     const resv = db.reservations.find(r => r.id === req.params.id || r.booking_code.toUpperCase() === req.params.id.toUpperCase());
     if (!resv) {
       return res.status(404).json({ success: false, message: 'Reservasi tidak ditemukan.' });
@@ -345,7 +357,7 @@ router.post('/:id/checkin', (req, res) => {
 
     resv.status = 'selesai_checkin';
     resv.checked_in_at = new Date().toISOString();
-    db.saveReservations();
+    await db.saveReservations();
 
     res.json({
       success: true,

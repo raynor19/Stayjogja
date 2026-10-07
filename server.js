@@ -17,6 +17,16 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Serve Static Frontend (HTML, CSS, JS) - disable automatic index.html so '/' routes to login.html
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
+// Database Initialization Middleware for Serverless
+app.use(async (req, res, next) => {
+  try {
+    await db.ensureInitialized();
+  } catch (err) {
+    console.warn('[DB Middleware] Initialization warning:', err.message);
+  }
+  next();
+});
+
 // API Routes
 app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api/properties', require('./src/routes/propertyRoutes'));

@@ -3,13 +3,16 @@ const router = express.Router();
 const db = require('../config/database');
 
 // POST /api/payments/simulate - Simulate Payment Success (Sandbox)
-router.post('/simulate', (req, res) => {
+router.post('/simulate', async (req, res) => {
   try {
     const { reservation_id, method } = req.body;
 
     if (!reservation_id) {
       return res.status(400).json({ success: false, message: 'Reservation ID dibutuhkan.' });
     }
+
+    await db.ensureInitialized();
+    await db.refreshReservations();
 
     const resv = db.reservations.find(r => r.id === reservation_id);
     if (!resv) {
@@ -44,7 +47,7 @@ router.post('/simulate', (req, res) => {
     resv.payment_method = paymentRecord.method;
     resv.payment_transaction_id = paymentRecord.transaction_id;
     resv.paid_at = paymentRecord.payment_time;
-    db.saveReservations();
+    await db.saveReservations();
 
     // Kirim email invoice resmi, voucher QR Code & rute Google Maps secara OTOMATIS ke email tamu
     const { sendInvoiceEmail } = require('../utils/mailer');
