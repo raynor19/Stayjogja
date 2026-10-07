@@ -153,7 +153,7 @@ async function loadPendingModeration() {
             <p class="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap">
               <i class="fa-solid fa-map-pin text-red-500 text-[11px]"></i>
               <span>${p.area} • ${p.address}</span>
-              <a href="${p.gmaps_url || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(p.name + ' ' + p.address + ' Yogyakarta'))}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 font-bold underline inline-flex items-center gap-1 ml-1 text-[11px]">
+              <a href="${p.gmaps_url || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(p.name + ' Yogyakarta'))}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 font-bold underline inline-flex items-center gap-1 ml-1 text-[11px]">
                 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> Cek Google Maps
               </a>
             </p>

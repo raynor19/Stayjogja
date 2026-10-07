@@ -207,7 +207,8 @@ async function loadPropertyDetail(propId) {
     document.getElementById('detail-review-count').textContent = `${p.review_count || 88} ulasan tamu`;
 
     // Google Maps link & iframe
-    const mapsQuery = encodeURIComponent(`${p.name}, ${p.address}, Yogyakarta`);
+    const cleanHotelName = p.name.includes('Bladok') ? 'Bladok Hotel & Restaurant' : p.name;
+    const mapsQuery = encodeURIComponent(`${cleanHotelName}, Yogyakarta`);
     const fallbackMapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
     const mapsUrl = (p.gmaps_url && p.gmaps_url.trim().length > 0) ? p.gmaps_url.trim() : fallbackMapsUrl;
     
@@ -217,7 +218,7 @@ async function loadPropertyDetail(propId) {
 
     const mapsIframe = document.getElementById('detail-maps-iframe');
     if (mapsIframe) {
-      mapsIframe.src = `https://maps.google.com/maps?q=${mapsQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+      mapsIframe.src = `https://maps.google.com/maps?q=${mapsQuery}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
     }
 
     // Photos Gallery
