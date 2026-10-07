@@ -395,7 +395,8 @@ router.get('/qrcode/:bookingCode', async (req, res) => {
     const textPayload = buildQrPayload(resv, ktpData);
 
     // Use public tunnel URL if active or dynamic request host
-    const publicBase = tunnel.getPublicUrl();
+    const vercelDomain = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null);
+    const publicBase = vercelDomain || tunnel.getPublicUrl();
     const hostHeader = req.get('host') || 'localhost:3000';
     const protocol = req.protocol || 'http';
     const checkinUrl = publicBase ? `${publicBase}/checkin/${resv.booking_code}` : `${protocol}://${hostHeader}/checkin/${resv.booking_code}`;
