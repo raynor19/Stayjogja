@@ -33,6 +33,7 @@ router.post('/login', async (req, res) => {
     let redirectTo = '/tamu';
     if (user.role === 'owner') redirectTo = '/owner';
     else if (user.role === 'admin') redirectTo = '/admin';
+    else if (user.role === 'resepsionis' || user.role === 'receptionist') redirectTo = '/resepsionis';
 
     const userData = {
       id: user.id,
@@ -72,7 +73,9 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email sudah terdaftar. Silakan login.' });
     }
 
-    const validRole = (role === 'owner') ? 'owner' : 'user';
+    let validRole = 'user';
+    if (role === 'owner') validRole = 'owner';
+    else if (role === 'resepsionis' || role === 'receptionist') validRole = 'resepsionis';
 
     const newUser = {
       id: `usr-${Date.now()}`,
@@ -88,11 +91,13 @@ router.post('/register', async (req, res) => {
     db.users.push(newUser);
     db.saveUsers(); // Simpan ke Supabase
 
-    let redirectTo = validRole === 'owner' ? '/owner' : '/tamu';
+    let redirectTo = '/tamu';
+    if (validRole === 'owner') redirectTo = '/owner';
+    else if (validRole === 'resepsionis') redirectTo = '/resepsionis';
 
     res.status(201).json({
       success: true,
-      message: `Registrasi berhasil! Akun Anda aktif sebagai ${validRole === 'owner' ? 'Pemilik Akomodasi' : 'Tamu'}.`,
+      message: `Registrasi berhasil! Akun Anda aktif sebagai ${validRole === 'owner' ? 'Pemilik Akomodasi' : (validRole === 'resepsionis' ? 'Resepsionis' : 'Tamu')}.`,
       user: {
         id: newUser.id,
         name: newUser.name,

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Resepsionis — Penerimaan Tamu, Scan QR & Alokasi Kamar | StayJogja</title>
+  <link rel="icon" type="image/svg+xml" href="/images/logo-stayjogja.png">
+
+  <!-- Google Fonts: DM Sans & Lora -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eff6ff', 100: '#dbeafe', 600: '#1e3a8a', 700: '#172554', 800: '#1e40af', 900: '#0f172a' },
+            accent: { 50: '#fffbeb', 100: '#fef3c7', 500: '#f59e0b', 600: '#d97706', 700: '#b45309' }
+          },
+          fontFamily: {
+            sans: ['"DM Sans"', 'sans-serif'],
+            display: ['"Lora"', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- QR Code Scanner Library -->
+  <script src="/js/html5-qrcode.min.js"></script>
+
+  <style>
+    @keyframes laserSweep {
+      0% { top: 12%; opacity: 0.7; }
+      50% { top: 88%; opacity: 1; }
+      100% { top: 12%; opacity: 0.7; }
+    }
+    .scanner-laser-sweep { animation: laserSweep 2s ease-in-out infinite; }
+
+    #resepsionis-qr-reader { border: none !important; width: 100% !important; height: 100% !important; }
+    #resepsionis-qr-reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 1rem !important; }
+    #resepsionis-qr-reader__scan_region { min-height: 240px !important; }
+    #resepsionis-qr-reader img { display: none !important; }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      color: white;
+    }
+    .btn-gold:hover {
+      background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+  <!-- ================= TOP NAVBAR RESEPSIONIS ================= -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20 gap-3">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3.5">
+          <a href="/resepsionis" class="flex items-center gap-2.5 hover:opacity-95 transition">
+            <img src="/images/logo-stayjogja.png" alt="StayJogja" class="w-9 h-9 sm:w-10 sm:h-10 object-contain rounded-xl border border-amber-500/40 shadow-sm">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-black text-sm sm:text-base tracking-wider font-display block leading-none">STAYJOGJA</span>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">FRONT DESK</span>
+              </div>
+              <span class="text-[10px] text-amber-400 font-semibold tracking-wide block mt-0.5">Portal Resepsionis & Check-In Tamu</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Filter Hotel & Resepsionis Profile -->
+        <div class="flex items-center gap-2.5 sm:gap-4">
+          
+          <!-- Dropdown Pemilihan Hotel Tempat Resepsionis Bertugas -->
+          <div class="hidden md:flex items-center gap-2 bg-slate-800/90 border border-slate-700 rounded-xl px-3 py-1.5">
+            <i class="fa-solid fa-hotel text-amber-400 text-xs"></i>
+            <span class="text-[11px] text-slate-400 font-medium">Hotel Tugas:</span>
+            <select id="select-property-filter" onchange="handlePropertyFilterChange(this.value)" class="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer max-w-[200px]">
+              <option value="all" class="bg-slate-900 text-white">Semua Hotel / Akomodasi</option>
+            </select>
+          </div>
+
+          <!-- User Resepsionis Info -->
+          <div class="flex items-center gap-2 bg-slate-800/60 border border-slate-700/80 rounded-xl px-2.5 sm:px-3 py-1.5">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-600/30 text-emerald-400 flex items-center justify-center font-bold text-xs">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="text-left hidden sm:block">
+              <span id="receptionist-name" class="font-bold text-xs text-slate-100 block leading-tight">Resepsionis</span>
+              <span class="text-[10px] text-emerald-400 font-semibold block leading-tight">Petugas Front Desk</span>
+            </div>
+          </div>
+
+          <!-- Logout Button -->
+          <button onclick="handleLogout()" class="px-3 py-2 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/50 text-rose-300 text-xs font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer" title="Keluar dari akun">
+            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+            <span class="hidden sm:inline">Keluar</span>
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN FRONT DESK WORKSPACE ================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full flex-1 space-y-6 sm:space-y-8">
+
+    <!-- Mobile Dropdown Hotel Selector -->
+    <div class="md:hidden bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-2">
+      <span class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+        <i class="fa-solid fa-hotel text-amber-500"></i> Hotel Tugas:
+      </span>
+      <select id="select-property-filter-mobile" onchange="handlePropertyFilterChange(this.value)" class="bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 px-3 py-1.5 focus:outline-none flex-1 max-w-[230px]">
+        <option value="all">Semua Hotel / Akomodasi</option>
+      </select>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tamu Siap Check-In</span>
+          <span class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs"><i class="fa-solid fa-bell-concierge"></i></span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="stat-ready-count" class="text-2xl font-black text-slate-900">0</span>
+          <span class="text-[11px] text-amber-600 font-bold">Reservasi</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sudah Check-In</span>
+          <span class="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs"><i class="fa-solid fa-key"></i></span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="stat-checkedin-count" class="text-2xl font-black text-emerald-700">0</span>
+          <span class="text-[11px] text-emerald-600 font-bold">Kamar Terisi</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Reservasi</span>
+          <span class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs"><i class="fa-solid fa-list-check"></i></span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="stat-total-count" class="text-2xl font-black text-blue-900">0</span>
+          <span class="text-[11px] text-slate-500 font-semibold">Tamu</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Validasi Dukcapil</span>
+          <span class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs"><i class="fa-solid fa-shield-halved"></i></span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-black text-indigo-900">100%</span>
+          <span class="text-[11px] text-indigo-600 font-bold">Sah KTP</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION SCANNER QR & VERIFIKASI ================= -->
+    <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-950 rounded-3xl p-5 sm:p-7 text-white shadow-xl border border-slate-800">
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
+        
+        <!-- Left: Briefing & Scanner Toggle -->
+        <div class="space-y-3 max-w-xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
+            <i class="fa-solid fa-qrcode"></i>
+            <span>Fast Check-In Scanner Resepsionis</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black font-display tracking-tight text-white leading-tight">
+            Penerimaan Tamu & Scan Barcode Tamu
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Arahkan kamera ke QR Code tamu pada invoice HP tamu untuk verifikasi instan KTP Dukcapil, status lunas, dan langsung <strong>tetapkan nomor kamar tamu</strong>.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <button type="button" onclick="openReceptionistScannerModal()" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg transition flex items-center gap-2.5 cursor-pointer">
+              <i class="fa-solid fa-camera text-base"></i>
+              <span>Buka Kamera Scan Barcode / QR</span>
+            </button>
+            <span class="text-xs text-slate-400 font-medium">atau ketik kode booking di sebelah kanan 👉</span>
+          </div>
+        </div>
+
+        <!-- Right: Manual Booking Code Input -->
+        <div class="bg-slate-800/80 backdrop-blur-md p-5 rounded-2xl border border-slate-700/80 w-full lg:max-w-md shadow-inner space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <i class="fa-solid fa-keyboard text-amber-400"></i> Verifikasi Manual Kode Booking
+            </span>
+            <span class="text-[10px] text-slate-400">Jika barcode buram</span>
+          </div>
+          <form onsubmit="handleManualVerify(event)" class="flex gap-2">
+            <input type="text" id="manual-booking-input" placeholder="Contoh: SJ-C4CRZ" class="flex-1 px-4 py-2.5 bg-slate-950/70 border border-slate-600 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400">
+            <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition cursor-pointer flex items-center gap-1.5">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>Cari Tamu</span>
+            </button>
+          </form>
+          <p class="text-[11px] text-slate-400">
+            Tekan Enter atau klik Cari Tamu untuk memeriksa data dan mengalokasikan kamar.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================= SECTION DAFTAR RESERVASI TAMU ================= -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+      
+      <!-- Table Filter Bar -->
+      <div class="p-5 sm:p-6 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h3 class="font-black text-lg text-slate-900 font-display">Daftar Tamu Menginap & Check-In</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Kelola alokasi nomor kamar dan penyerahan kunci tamu di front desk.</p>
+        </div>
+
+        <!-- Filter Tabs & Search Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          
+          <!-- Search input -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+            <input type="text" id="search-guest-input" onkeyup="filterGuestTable()" placeholder="Cari nama, NIK, kode booking..." class="w-full sm:w-60 pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-blue-900">
+          </div>
+
+          <!-- Filter Tab Buttons -->
+          <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+            <button type="button" onclick="switchFilterTab('all')" id="tab-btn-all" class="px-3 py-1.5 rounded-lg bg-white shadow-2xs text-blue-950 transition cursor-pointer">
+              Semua
+            </button>
+            <button type="button" onclick="switchFilterTab('ready')" id="tab-btn-ready" class="px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1">
+              <span>Siap Check-In</span>
+              <span id="badge-tab-ready" class="px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded-full text-[10px] font-extrabold">0</span>
+            </button>
+            <button type="button" onclick="switchFilterTab('checkedin')" id="tab-btn-checkedin" class="px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer flex items-center gap-1">
+              <span>Sudah Check-In</span>
+              <span id="badge-tab-checkedin" class="px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-extrabold">0</span>
+            </button>
+          </div>
+
+          <!-- Refresh Button -->
+          <button onclick="loadReservationsList()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-arrows-rotate"></i>
+            <span class="hidden sm:inline">Refresh</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Table Container -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
+              <th class="py-3.5 px-4">Kode Booking</th>
+              <th class="py-3.5 px-4">Tamu & Validasi KTP</th>
+              <th class="py-3.5 px-4">Hotel & Tipe Unit</th>
+              <th class="py-3.5 px-4">Jadwal Menginap</th>
+              <th class="py-3.5 px-4 text-center">Nomor Kamar</th>
+              <th class="py-3.5 px-4">Status</th>
+              <th class="py-3.5 px-4 text-right">Aksi Front Desk</th>
+            </tr>
+          </thead>
+          <tbody id="reservations-table-body" class="divide-y divide-slate-100">
+            <tr>
+              <td colspan="7" class="py-12 text-center text-slate-400">
+                <i class="fa-solid fa-spinner fa-spin text-lg mr-2 text-blue-900"></i>
+                Memuat daftar reservasi tamu...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ================= MODAL: SCANNER KAMERA RESEPSIONIS ================= -->
+  <div id="receptionist-scanner-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
+            <i class="fa-solid fa-camera"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm font-display tracking-tight">Scanner Barcode & QR Tamu</h3>
+            <p class="text-[10px] text-slate-400">Verifikasi instan reservasi tamu StayJogja</p>
+          </div>
+        </div>
+        <button onclick="closeReceptionistScannerModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Scanner Active View -->
+      <div id="receptionist-scanner-view" class="p-4 sm:p-5 space-y-4">
+        
+        <!-- Video Viewport -->
+        <div class="relative bg-black rounded-2xl overflow-hidden aspect-square flex items-center justify-center shadow-inner">
+          <div id="resepsionis-qr-reader" class="w-full h-full"></div>
+          
+          <!-- Animated Laser Sweep -->
+          <div id="receptionist-laser-line" class="pointer-events-none absolute inset-x-8 top-1/4 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_rgba(52,211,153,0.8)] scanner-laser-sweep hidden"></div>
+
+          <!-- Targeting Corner Box -->
+          <div class="pointer-events-none absolute inset-8 border-2 border-dashed border-emerald-400/60 rounded-2xl flex items-center justify-center">
+            <div class="text-[10px] font-bold text-emerald-300 bg-slate-950/75 px-3 py-1 rounded-full backdrop-blur-xs">
+              Posisikan Barcode / QR di dalam kotak
+            </div>
+          </div>
+        </div>
+
+        <!-- Camera Status Message -->
+        <div id="receptionist-scanner-status" class="text-center text-xs text-slate-600 font-medium min-h-[20px]">
+          Menghubungkan ke kamera perangkat...
+        </div>
+
+        <!-- Controls: Flip Camera -->
+        <div class="flex items-center justify-center gap-2 pt-1 border-t border-slate-100">
+          <button type="button" onclick="switchReceptionistCamera()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-camera-rotate"></i>
+            <span>Ganti Kamera</span>
+          </button>
+        </div>
+
+        <!-- Manual Code Fallback inside modal -->
+        <div class="pt-2 border-t border-slate-100">
+          <p class="text-[11px] text-slate-400 mb-1.5 text-center">Atau ketik kode booking jika kamera terhalang:</p>
+          <form onsubmit="handleModalManualVerify(event)" class="flex gap-2">
+            <input type="text" id="modal-scanner-manual-code" placeholder="Contoh: SJ-C4CRZ" class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs uppercase font-bold focus:bg-white focus:outline-none focus:border-emerald-600">
+            <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer">
+              Verifikasi
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ATUR NOMOR KAMAR & KONFIRMASI CHECK-IN ================= -->
+  <div id="room-assignment-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-6">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base font-display tracking-tight text-white">Alokasi Kamar Tamu</h3>
+            <p class="text-[11px] text-slate-400">Atur nomor kamar & selesaikan proses check-in</p>
+          </div>
+        </div>
+        <button onclick="closeRoomAssignmentModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-5 text-xs text-slate-700">
+
+        <!-- Booking & Guest Quick Card -->
+        <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span id="assign-hotel-name" class="font-extrabold text-sm text-slate-900 block leading-tight">—</span>
+              <span id="assign-unit-name" class="text-xs text-amber-700 font-semibold block mt-0.5">—</span>
+            </div>
+            <span id="assign-code-badge" class="px-2.5 py-1 rounded-lg bg-blue-900 text-white font-mono font-bold text-xs shrink-0">SJ-XXXX</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/80 text-[11px]">
+            <div>
+              <span class="text-slate-400 block font-medium">Nama Tamu:</span>
+              <span id="assign-guest-name" class="font-bold text-slate-800 text-xs">—</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block font-medium">NIK KTP (Dukcapil):</span>
+              <span id="assign-guest-nik" class="font-mono font-bold text-slate-800 text-xs">—</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block font-medium">Jadwal Menginap:</span>
+              <span id="assign-dates" class="font-semibold text-slate-800">—</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block font-medium">Status Pembayaran:</span>
+              <span class="font-black text-emerald-700">LUNAS 100%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM INPUT NOMOR KAMAR -->
+        <div class="bg-amber-50/70 border-2 border-amber-300 rounded-2xl p-4.5 space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-door-open"></i>
+            </span>
+            <div>
+              <label for="assign-room-input" class="font-black text-slate-900 text-xs uppercase tracking-wide block">
+                Tentukan Nomor Kamar Menginap:
+              </label>
+              <span class="text-[10px] text-amber-800">Ketikkan nomor kamar atau villa yang diberikan kepada tamu.</span>
+            </div>
+          </div>
+
+          <div class="relative">
+            <input type="text" id="assign-room-input" placeholder="Contoh: Kamar 102, 204, Villa Melati 1..." 
+                   class="w-full px-4 py-3 bg-white border-2 border-amber-400 focus:border-amber-600 rounded-xl font-black text-base text-slate-900 focus:outline-none shadow-xs transition uppercase">
+          </div>
+
+          <!-- Quick Suggestions Pills -->
+          <div class="flex items-center flex-wrap gap-1.5 pt-1">
+            <span class="text-[10px] text-slate-400 font-semibold mr-1">Contoh Cepat:</span>
+            <button type="button" onclick="setQuickRoom('101')" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-bold hover:bg-amber-100 transition">101</button>
+            <button type="button" onclick="setQuickRoom('102')" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-bold hover:bg-amber-100 transition">102</button>
+            <button type="button" onclick="setQuickRoom('201')" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-bold hover:bg-amber-100 transition">201</button>
+            <button type="button" onclick="setQuickRoom('205')" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-bold hover:bg-amber-100 transition">205</button>
+            <button type="button" onclick="setQuickRoom('302')" class="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-bold hover:bg-amber-100 transition">302</button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-3 pt-2">
+          <button type="button" onclick="closeRoomAssignmentModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition cursor-pointer text-center">
+            Batal
+          </button>
+          <button type="button" id="btn-save-assignment" onclick="saveRoomAssignment()" class="flex-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm">
+            <i class="fa-solid fa-key"></i>
+            <span id="btn-save-assignment-text">Konfirmasi Check-In & Simpan Kamar</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+    <p>© 2026 StayJogja Hospitality Platform. Portal Front Desk Resepsionis Terintegrasi Dukcapil Kemendagri RI.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/resepsionis.js"></script>
+</body>
+</html>

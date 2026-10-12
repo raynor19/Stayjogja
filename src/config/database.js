@@ -78,6 +78,25 @@ class Database {
         this.users = usersData;
       }
 
+      // Ensure demo resepsionis user exists
+      const hasReceptionist = this.users.some(u => u.email && u.email.toLowerCase() === 'resepsionis@stayjogja.id');
+      if (!hasReceptionist) {
+        const demoReceptionist = {
+          id: 'usr-resepsionis-demo',
+          name: 'Resepsionis Front Desk',
+          email: 'resepsionis@stayjogja.id',
+          password: 'password123',
+          role: 'resepsionis',
+          phone: '081234567899',
+          status: 'active',
+          created_at: new Date().toISOString()
+        };
+        this.users.push(demoReceptionist);
+        if (this.supabaseConnected) {
+          supabase.from('users').upsert([demoReceptionist]).then(() => {});
+        }
+      }
+
       // 4. Reservations
       const { data: resData, error: resErr } = await supabase
         .from('reservations')
@@ -104,7 +123,7 @@ class Database {
             const metaMap = new Map(metaList.map(m => [m.id, m]));
             this.reservations = this.reservations.map(r => {
               const meta = metaMap.get(r.id);
-              return meta ? { ...meta, ...r, verified_by_qr: r.verified_by_qr ?? meta.verified_by_qr, ktp_data: r.ktp_data ?? meta.ktp_data } : r;
+              return meta ? { ...meta, ...r, room_number: r.room_number ?? meta.room_number, verified_by_qr: r.verified_by_qr ?? meta.verified_by_qr, ktp_data: r.ktp_data ?? meta.ktp_data } : r;
             });
           }
         }
@@ -302,6 +321,7 @@ class Database {
           refund_status: r.refund_status || null,
           acc_at: r.acc_at || null,
           checked_in_at: r.checked_in_at || null,
+          room_number: r.room_number || null,
           verified_by_qr: r.verified_by_qr || false,
           invoice_number: r.invoice_number || r.booking_code,
           qr_payload: r.qr_payload || null,

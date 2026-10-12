@@ -101,8 +101,13 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Portal Resepsionis Fast Check-in (Scan Barcode Tamu)
-app.get(['/checkin', '/checkin/:code', '/verify/:code', '/receptionist/:code', '/frontdesk/:code'], (req, res) => {
+// Portal Resepsionis Front Desk (Terima Tamu, Scan Barcode Tamu, & Atur Nomor Kamar)
+app.get(['/resepsionis', '/resepsionis.html', '/receptionist', '/frontdesk'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'resepsionis.html'));
+});
+
+// Lembar Verifikasi Resepsionis & Fast Check-In QR Link Tamu
+app.get(['/checkin', '/checkin/:code', '/verify/:code'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'checkin.html'));
 });
 

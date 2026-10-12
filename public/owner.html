@@ -58,11 +58,6 @@
 
       <!-- Owner Info & CTA -->
       <div class="flex items-center gap-2.5 sm:gap-3">
-        <!-- Scan QR Button -->
-        <button type="button" onclick="openOwnerQrScannerModal()" class="px-3 sm:px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md transition flex items-center gap-1.5 cursor-pointer" title="Buka Kamera untuk Scan QR Tamu">
-          <i class="fa-solid fa-camera"></i>
-          <span class="hidden sm:inline">Scan QR Tamu</span>
-        </button>
 
         <!-- Bell Notification Icon -->
         <button type="button" onclick="openOwnerNotificationModal()" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white hover:bg-amber-50 text-slate-700 hover:text-amber-700 flex items-center justify-center transition cursor-pointer border border-slate-200 shadow-xs" title="Notifikasi Hotel & Penghapusan">
@@ -208,17 +203,13 @@
     <div id="owner-section-checkin" class="hidden space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 class="text-base font-bold text-slate-900 font-display">Manajemen Check-In Tamu</h2>
-          <p class="text-xs text-slate-500">Daftar reservasi siap check-in dan yang sudah check-in. Scan QR tamu untuk verifikasi instan.</p>
+          <h2 class="text-base font-bold text-slate-900 font-display">Status Reservasi & Tamu Menginap</h2>
+          <p class="text-xs text-slate-500">Pemantauan reservasi tamu yang siap check-in dan menginap. Penerimaan tamu dan scan barcode ditangani oleh Resepsionis.</p>
         </div>
         <div class="flex items-center flex-wrap gap-2">
-          <button onclick="openOwnerQrScannerModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer">
-            <i class="fa-solid fa-camera"></i>
-            <span>Buka Kamera Scan QR</span>
-          </button>
-          <a href="/checkin" target="_blank" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-sm transition flex items-center gap-1.5">
-            <i class="fa-solid fa-desktop text-[11px]"></i>
-            <span class="hidden sm:inline">Portal Resepsionis</span>
+          <a href="/resepsionis" target="_blank" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-headset text-[11px]"></i>
+            <span>Portal Resepsionis Front Desk</span>
           </a>
           <button onclick="loadCheckinList()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-arrows-rotate"></i> Refresh
@@ -702,82 +693,6 @@
           Tutup
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- ================= MODAL: CAMERA SCANNER QR OWNER ================= -->
-  <div id="owner-qr-scanner-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-6">
-    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
-      
-      <!-- Modal Header -->
-      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
-            <i class="fa-solid fa-camera"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-sm font-display tracking-tight">Scanner Kamera QR Tamu</h3>
-            <p class="text-[10px] text-slate-400">Verifikasi instan reservasi & proses check-in</p>
-          </div>
-        </div>
-        <button onclick="closeOwnerQrScannerModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition cursor-pointer">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <!-- Scanner Active View -->
-      <div id="owner-scanner-view" class="p-4 sm:p-5 space-y-4">
-        
-        <!-- Video Viewport -->
-        <div class="relative bg-black rounded-2xl overflow-hidden aspect-square flex items-center justify-center shadow-inner">
-          <div id="owner-qr-reader" class="w-full h-full"></div>
-          
-          <!-- Animated Laser Sweep -->
-          <div id="scanner-laser-line" class="pointer-events-none absolute inset-x-8 top-1/4 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_rgba(52,211,153,0.8)] scanner-laser-sweep hidden"></div>
-
-          <!-- Targeting Corner Box -->
-          <div class="pointer-events-none absolute inset-8 border-2 border-dashed border-emerald-400/60 rounded-2xl flex items-center justify-center">
-            <div class="text-[10px] font-bold text-emerald-300 bg-slate-950/75 px-3 py-1 rounded-full backdrop-blur-xs">
-              Posisikan QR di dalam kotak
-            </div>
-          </div>
-        </div>
-
-        <!-- Camera Status Message -->
-        <div id="scanner-status-msg" class="text-center text-xs text-slate-600 font-medium min-h-[20px]">
-          Menghubungkan ke kamera perangkat...
-        </div>
-
-        <!-- Controls: Flip Camera & Flash -->
-        <div class="flex items-center justify-center gap-2 pt-1 border-t border-slate-100">
-          <button type="button" onclick="switchOwnerScannerCamera()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
-            <i class="fa-solid fa-camera-rotate"></i>
-            <span>Ganti Kamera</span>
-          </button>
-          <button type="button" id="btn-toggle-torch" onclick="toggleOwnerScannerTorch()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer hidden">
-            <i class="fa-solid fa-bolt"></i>
-            <span>Lampu Flash</span>
-          </button>
-        </div>
-
-        <!-- Manual Code Fallback -->
-        <div class="pt-2 border-t border-slate-100">
-          <p class="text-[11px] text-slate-400 mb-1.5 text-center">Atau ketik kode booking jika kamera terhalang:</p>
-          <form onsubmit="handleOwnerManualCodeScan(event)" class="flex gap-2">
-            <input type="text" id="owner-scanner-manual-code" placeholder="Contoh: SJ-C4CRZ" class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs uppercase font-bold focus:bg-white focus:outline-none focus:border-emerald-600">
-            <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer">
-              Verifikasi
-            </button>
-          </form>
-        </div>
-
-      </div>
-
-      <!-- Scanned Result View (Shown on Successful Scan) -->
-      <div id="owner-scanner-result" class="p-5 hidden space-y-4">
-        <!-- Rendered dynamically via owner.js -->
-      </div>
-
     </div>
   </div>
 

@@ -345,7 +345,7 @@ router.post('/:id/reject', (req, res) => {
   }
 });
 
-// POST /api/reservations/:id/checkin - Resepsionis Selesaikan Check-In Tamu
+// POST /api/reservations/:id/checkin - Resepsionis Selesaikan Check-In Tamu & Alokasikan Kamar
 router.post('/:id/checkin', async (req, res) => {
   try {
     await db.ensureInitialized();
@@ -355,17 +355,47 @@ router.post('/:id/checkin', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Reservasi tidak ditemukan.' });
     }
 
+    const { room_number } = req.body || {};
+    if (room_number) {
+      resv.room_number = String(room_number).trim();
+    }
+
     resv.status = 'selesai_checkin';
     resv.checked_in_at = new Date().toISOString();
     await db.saveReservations();
 
     res.json({
       success: true,
-      message: 'Check-In Berhasil! Kunci kamar dapat diserahkan kepada tamu.',
+      message: `Check-In Berhasil! Tamu ditempatkan di ${resv.room_number ? 'Kamar ' + resv.room_number : 'kamar'}. Kunci siap diserahkan.`,
       data: resv
     });
   } catch (err) {
     console.error('Error completing check-in:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+// PUT /api/reservations/:id/assign-room - Resepsionis Atur/Ubah Nomor Kamar Tamu
+router.put('/:id/assign-room', async (req, res) => {
+  try {
+    await db.ensureInitialized();
+    await db.refreshReservations();
+    const resv = db.reservations.find(r => r.id === req.params.id || r.booking_code.toUpperCase() === req.params.id.toUpperCase());
+    if (!resv) {
+      return res.status(404).json({ success: false, message: 'Reservasi tidak ditemukan.' });
+    }
+
+    const { room_number } = req.body || {};
+    resv.room_number = room_number ? String(room_number).trim() : null;
+    await db.saveReservations();
+
+    res.json({
+      success: true,
+      message: `Nomor kamar tamu ${resv.guest_name} berhasil diatur ke "${resv.room_number || '-'}"`,
+      data: resv
+    });
+  } catch (err) {
+    console.error('Error assigning room:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
@@ -488,6 +518,10 @@ router.post('/verify-qr/:bookingCode', async (req, res) => {
     }
 
     // Check-In sekaligus verifikasi
+    const { room_number } = req.body || {};
+    if (room_number) {
+      resv.room_number = String(room_number).trim();
+    }
     resv.status = 'selesai_checkin';
     resv.checked_in_at = new Date().toISOString();
     resv.verified_by_qr = true;
@@ -497,7 +531,7 @@ router.post('/verify-qr/:bookingCode', async (req, res) => {
       success: true,
       verified: true,
       alreadyCheckedIn: false,
-      message: `Verifikasi berhasil! Tamu ${resv.guest_name} telah di-check-in. Kunci kamar siap diserahkan.`,
+      message: `Verifikasi berhasil! Tamu ${resv.guest_name} telah di-check-in ${resv.room_number ? 'ke Kamar ' + resv.room_number : ''}. Kunci kamar siap diserahkan.`,
       data: resv
     });
   } catch (err) {
@@ -506,12 +540,17 @@ router.post('/verify-qr/:bookingCode', async (req, res) => {
   }
 });
 
-// GET /api/reservations/checkin-ready - Semua booking yang siap atau sudah check-in (untuk panel hotel)
+// GET /api/reservations/checkin-ready - Semua booking yang siap atau sudah check-in (untuk panel resepsionis/hotel)
 router.get('/checkin-ready', (req, res) => {
   try {
-    const list = db.reservations.filter(r =>
+    const { property_id } = req.query;
+    let list = db.reservations.filter(r =>
       r.status === 'terkonfirmasi' || r.status === 'selesai_checkin' || r.status === 'checked_in'
-    ).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    );
+    if (property_id && property_id !== 'all') {
+      list = list.filter(r => r.property_id === property_id);
+    }
+    list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     res.json({ success: true, data: list });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Internal server error' });

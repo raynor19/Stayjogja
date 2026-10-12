@@ -53,6 +53,10 @@ function quickFillDemo(role) {
     emailInput.value = 'owner@stayjogja.id';
     passwordInput.value = 'password123';
     showAlert('Akun Pemilik (Ibu Kartika) terisi otomatis. Klik tombol Masuk.', 'info');
+  } else if (role === 'resepsionis' || role === 'receptionist') {
+    emailInput.value = 'resepsionis@stayjogja.id';
+    passwordInput.value = 'password123';
+    showAlert('Akun Resepsionis (Front Desk) terisi otomatis. Klik tombol Masuk.', 'info');
   } else if (role === 'admin') {
     emailInput.value = 'admin@stayjogja.id';
     passwordInput.value = 'password123';
@@ -104,7 +108,8 @@ async function handleLoginSubmit(e) {
 
     // Save session in localStorage
     localStorage.setItem('stayjogja_user', JSON.stringify(data.user));
-    showAlert(`Login berhasil! Mengalihkan ke ${data.user.role === 'owner' ? 'Dashboard Mitra' : (data.user.role === 'admin' ? 'Dashboard Admin' : 'Katalog Penginapan')}...`, 'success');
+    const roleDestName = data.user.role === 'owner' ? 'Dashboard Mitra' : (data.user.role === 'resepsionis' ? 'Portal Resepsionis' : (data.user.role === 'admin' ? 'Dashboard Admin' : 'Katalog Penginapan'));
+    showAlert(`Login berhasil! Mengalihkan ke ${roleDestName}...`, 'success');
 
     // Redirect after brief delay (respect redirect_after_login if user clicked Book Now)
     setTimeout(() => {

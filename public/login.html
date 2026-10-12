@@ -179,6 +179,27 @@
         <p id="auth-subtitle" class="text-xs text-slate-500 mt-1">Silakan masuk ke akun Anda untuk melanjutkan:</p>
       </div>
 
+      <!-- Quick Demo Account Chips -->
+      <div class="mb-4 p-2.5 bg-slate-50 border border-slate-200 rounded-2xl">
+        <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold mb-1.5 px-0.5">
+          <span><i class="fa-solid fa-bolt text-amber-500 mr-1"></i>Akun Demo (1-Klik Isi):</span>
+        </div>
+        <div class="grid grid-cols-4 gap-1.5 text-[11px]">
+          <button type="button" onclick="quickFillDemo('user')" class="py-1 px-1 bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-700 rounded-lg font-bold text-center transition cursor-pointer">
+            Tamu
+          </button>
+          <button type="button" onclick="quickFillDemo('owner')" class="py-1 px-1 bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-700 rounded-lg font-bold text-center transition cursor-pointer">
+            Owner
+          </button>
+          <button type="button" onclick="quickFillDemo('resepsionis')" class="py-1 px-1 bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100 rounded-lg font-bold text-center transition cursor-pointer shadow-2xs">
+            Resepsionis
+          </button>
+          <button type="button" onclick="quickFillDemo('admin')" class="py-1 px-1 bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-700 rounded-lg font-bold text-center transition cursor-pointer">
+            Admin
+          </button>
+        </div>
+      </div>
+
       <!-- Alert Box -->
       <div id="auth-alert" class="hidden mb-4 p-3 rounded-xl text-xs flex items-center gap-2"></div>
 
@@ -280,6 +301,7 @@
             <select id="reg-role" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500 focus:bg-white transition">
               <option value="user">Tamu (Wisatawan)</option>
               <option value="owner">Pemilik Akomodasi</option>
+              <option value="resepsionis">Resepsionis (Front Desk)</option>
             </select>
           </div>
         </div>
@@ -326,6 +348,7 @@
       <div class="flex items-center gap-4 text-slate-400 text-xs">
         <a href="/tamu" class="hover:text-amber-400 transition">Katalog Tamu</a>
         <a href="/owner" class="hover:text-amber-400 transition">Mitra Pemilik</a>
+        <a href="/resepsionis" class="hover:text-amber-400 transition">Resepsionis</a>
         <a href="/admin" class="hover:text-amber-400 transition">Administrator</a>
       </div>
     </div>
