@@ -4,11 +4,11 @@ const db = require('../config/database');
 const recommendationsCache = new Map();
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000; // 12 jam
 
-// Model resmi Google Gemini aktif (tanpa parameter thinkingConfig agar tidak memicu INVALID_ARGUMENT)
+// Model resmi Google Gemini aktif
 const GEMINI_MODELS = [
-  'gemini-3.5-flash-lite',
-  'gemini-3.8-flash',
-  'gemini-flash-lite-latest'
+  'gemini-1.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-pro'
 ];
 
 /**
@@ -67,6 +67,7 @@ Hanya kembalikan JSON murni tanpa markdown pembuka/penutup agar dapat di-parse l
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(5000),
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
@@ -452,6 +453,7 @@ function generateFallbackItinerary(property, days = 2) {
 }
 
 module.exports = {
+  recommendationsCache,
   getNearbyRecommendations,
   getFallbackNearbySpots,
   answerChatbotWithGemini,

@@ -135,9 +135,10 @@ router.get('/:id', async (req, res) => {
 
     const units = db.units.filter(u => u.property_id === prop.id);
     
-    // Ambil rekomendasi cerdas tempat sekitar hotel menggunakan Gemini AI (dengan fallback aman)
-    const { getNearbyRecommendations } = require('../services/geminiService');
-    const nearbySpots = await getNearbyRecommendations(prop);
+    // Gunakan rekomendasi tempat sekitar hotel dari cache / database agar respon instan (<10ms)
+    const { getFallbackNearbySpots, recommendationsCache } = require('../services/geminiService');
+    const cached = recommendationsCache && recommendationsCache.get(prop.id);
+    const nearbySpots = (cached && cached.data) || getFallbackNearbySpots(prop);
 
     res.json({
       success: true,

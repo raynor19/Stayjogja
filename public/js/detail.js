@@ -17,12 +17,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupDefaultDates();
 
   const urlParams = new URLSearchParams(window.location.search);
-  const propId = urlParams.get('id');
+  let propId = urlParams.get('id');
 
   if (!propId) {
-    alert('ID akomodasi tidak ditemukan. Mengalihkan ke katalog...');
-    window.location.href = '/tamu';
-    return;
+    propId = sessionStorage.getItem('selected_property_id') || 'prop-h1-02';
   }
 
   await loadPropertyDetail(propId);
@@ -157,14 +155,25 @@ async function loadPropertyDetail(propId) {
   const contentEl = document.getElementById('detail-content');
 
   try {
-    const res = await API.getPropertyDetail(propId);
-    if (!res.success) {
-      alert(res.message || 'Properti tidak ditemukan.');
+    let p = null;
+    let res = await API.getPropertyDetail(propId);
+    if (res && res.success && res.data) {
+      p = res.data;
+    } else {
+      // Fallback: coba ambil daftar properti dan gunakan yang pertama
+      console.warn('Properti dengan ID', propId, 'tidak ditemukan, mencoba fallback...');
+      const fallbackList = await API.getProperties();
+      if (fallbackList && fallbackList.success && fallbackList.data && fallbackList.data.length > 0) {
+        p = fallbackList.data[0];
+      }
+    }
+
+    if (!p) {
+      alert('Data akomodasi tidak dapat dimuat. Mengalihkan ke katalog...');
       window.location.href = '/tamu';
       return;
     }
 
-    const p = res.data;
     currentProperty = p;
     State.currentProperty = p;
 
@@ -172,39 +181,50 @@ async function loadPropertyDetail(propId) {
     document.title = `${p.name} — StayJogja`;
 
     // Breadcrumbs
-    document.getElementById('breadcrumb-area').textContent = p.area || 'Yogyakarta';
-    document.getElementById('breadcrumb-name').textContent = p.name;
+    const bcArea = document.getElementById('breadcrumb-area');
+    if (bcArea) bcArea.textContent = p.area || 'Yogyakarta';
+    const bcName = document.getElementById('breadcrumb-name');
+    if (bcName) bcName.textContent = p.name;
 
     // Header info
-    document.getElementById('detail-name').textContent = p.name;
-    document.getElementById('detail-address').textContent = `${p.address} (${p.area})`;
-    document.getElementById('detail-desc').textContent = p.description || 'Akomodasi berkualitas dengan pelayanan ramah dan fasilitas lengkap di Yogyakarta.';
+    const nameEl = document.getElementById('detail-name');
+    if (nameEl) nameEl.textContent = p.name;
+    const addrEl = document.getElementById('detail-address');
+    if (addrEl) addrEl.textContent = `${p.address} (${p.area})`;
+    const descEl = document.getElementById('detail-desc');
+    if (descEl) descEl.textContent = p.description || 'Akomodasi berkualitas dengan pelayanan ramah dan fasilitas lengkap di Yogyakarta.';
 
     // Stars & Type
     const typeBadge = document.getElementById('detail-type-badge');
     const starsContainer = document.getElementById('detail-stars-container');
 
-    if (p.type === 'hotel') {
-      typeBadge.textContent = `Hotel Bintang ${p.stars || 1}`;
-      typeBadge.className = 'px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-blue-100 text-blue-900 border border-blue-200';
-      starsContainer.textContent = '★'.repeat(p.stars || 3) + '☆'.repeat(5 - (p.stars || 3));
-      starsContainer.classList.remove('hidden');
-    } else if (p.type === 'homestay') {
-      typeBadge.textContent = 'Homestay Keluarga';
-      typeBadge.className = 'px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-900 border border-emerald-200';
-      starsContainer.classList.add('hidden');
-    } else {
-      typeBadge.textContent = 'Apartemen Harian';
-      typeBadge.className = 'px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-purple-100 text-purple-900 border border-purple-200';
-      starsContainer.classList.add('hidden');
+    if (typeBadge && starsContainer) {
+      if (p.type === 'hotel') {
+        typeBadge.textContent = `Hotel Bintang ${p.stars || 1}`;
+        typeBadge.className = 'px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-blue-100 text-blue-900 border border-blue-200';
+        starsContainer.textContent = '★'.repeat(p.stars || 3) + '☆'.repeat(5 - (p.stars || 3));
+        starsContainer.classList.remove('hidden');
+      } else if (p.type === 'homestay') {
+        typeBadge.textContent = 'Homestay Keluarga';
+        typeBadge.className = 'px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-900 border border-emerald-200';
+        starsContainer.classList.add('hidden');
+      } else {
+        typeBadge.textContent = 'Apartemen Harian';
+        typeBadge.className = 'px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-purple-100 text-purple-900 border border-purple-200';
+        starsContainer.classList.add('hidden');
+      }
     }
 
     // Rating & Price
     const minPrice = (p.units && p.units.length > 0) ? Math.min(...p.units.map(u => u.price)) : 350000;
-    document.getElementById('detail-starting-price').textContent = formatRupiah(minPrice);
-    document.getElementById('mobile-price-val').textContent = formatRupiah(minPrice);
-    document.getElementById('detail-rating-score').textContent = p.rating || 9.2;
-    document.getElementById('detail-review-count').textContent = `${p.review_count || 88} ulasan tamu`;
+    const startPriceEl = document.getElementById('detail-starting-price');
+    if (startPriceEl) startPriceEl.textContent = formatRupiah(minPrice);
+    const mobPriceEl = document.getElementById('mobile-price-val');
+    if (mobPriceEl) mobPriceEl.textContent = formatRupiah(minPrice);
+    const ratingEl = document.getElementById('detail-rating-score');
+    if (ratingEl) ratingEl.textContent = p.rating || 9.2;
+    const reviewEl = document.getElementById('detail-review-count');
+    if (reviewEl) reviewEl.textContent = `${p.review_count || 88} ulasan tamu`;
 
     // Google Maps link & iframe
     const cleanHotelName = p.name.includes('Bladok') ? 'Bladok Hotel & Restaurant' : p.name;
@@ -212,17 +232,20 @@ async function loadPropertyDetail(propId) {
     const fallbackMapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
     const mapsUrl = (p.gmaps_url && p.gmaps_url.trim().length > 0) ? p.gmaps_url.trim() : fallbackMapsUrl;
     
-    document.getElementById('detail-maps-link').href = mapsUrl;
-    document.getElementById('detail-maps-btn-large').href = mapsUrl;
-    document.getElementById('detail-maps-address-text').textContent = `${p.address}, ${p.area}, Daerah Istimewa Yogyakarta`;
+    const mapsLink = document.getElementById('detail-maps-link');
+    if (mapsLink) mapsLink.href = mapsUrl;
+    const mapsBtnLarge = document.getElementById('detail-maps-btn-large');
+    if (mapsBtnLarge) mapsBtnLarge.href = mapsUrl;
+    const mapsAddr = document.getElementById('detail-maps-address-text');
+    if (mapsAddr) mapsAddr.textContent = `${p.address}, ${p.area}, Daerah Istimewa Yogyakarta`;
 
     const mapsIframe = document.getElementById('detail-maps-iframe');
     if (mapsIframe) {
       mapsIframe.src = `https://maps.google.com/maps?q=${mapsQuery}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
     }
 
-    // Photos Gallery
-    const photos = (Array.isArray(p.photos) && p.photos.length > 0) ? p.photos : [
+    // Photos Gallery (Airbnb 5-mosaic)
+    const fallbackPhotos = [
       'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80',
@@ -230,37 +253,53 @@ async function loadPropertyDetail(propId) {
       'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80'
     ];
 
+    let photos = (Array.isArray(p.photos) && p.photos.length > 0) ? p.photos.filter(Boolean) : [];
+    if (photos.length === 0) photos = fallbackPhotos;
+
     const mainPhotoEl = document.getElementById('detail-main-photo');
     if (mainPhotoEl) {
       mainPhotoEl.src = photos[0];
-      mainPhotoEl.onerror = () => { mainPhotoEl.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'; };
+      mainPhotoEl.onerror = () => { mainPhotoEl.src = fallbackPhotos[0]; };
     }
 
     for (let i = 1; i <= 4; i++) {
       const subPhotoEl = document.getElementById(`detail-sub-photo-${i}`);
       if (subPhotoEl) {
-        subPhotoEl.src = photos[i] || photos[0];
-        subPhotoEl.onerror = () => { subPhotoEl.src = 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80'; };
+        subPhotoEl.src = photos[i] || photos[0] || fallbackPhotos[i % fallbackPhotos.length];
+        subPhotoEl.onerror = () => { subPhotoEl.src = fallbackPhotos[i % fallbackPhotos.length]; };
       }
     }
 
-    // Facilities
-    renderFacilities(p.facilities || ['WiFi Gratis', 'AC', 'Parkir Gratis', 'Resepsionis 24 Jam']);
-
-    // Room Units
-    renderRoomUnits(p);
-
-    // Nearby tourist spots
-    renderNearbySpots(p.nearby_spots || []);
-
-    // Switch view
+    // Tampilkan konten dan sembunyikan skeleton loading segera setelah data utama & gambar terpasang!
     if (loadingEl) loadingEl.classList.add('hidden');
     if (contentEl) contentEl.classList.remove('hidden');
 
+    // Facilities
+    try {
+      renderFacilities(p.facilities || ['WiFi Gratis', 'AC', 'Parkir Gratis', 'Resepsionis 24 Jam']);
+    } catch (eFac) {
+      console.warn('Error renderFacilities:', eFac);
+    }
+
+    // Room Units
+    try {
+      renderRoomUnits(p);
+    } catch (eRooms) {
+      console.warn('Error renderRoomUnits:', eRooms);
+    }
+
+    // Nearby tourist spots
+    try {
+      renderNearbySpots(p.nearby_spots || []);
+    } catch (eSpots) {
+      console.warn('Error renderNearbySpots:', eSpots);
+    }
+
   } catch (err) {
     console.error('Error loading property detail:', err);
-    alert('Terjadi kesalahan memuat data properti.');
-    window.location.href = '/tamu';
+    // Sembunyikan skeleton agar user tidak melihat kotak abu-abu terus menerus
+    if (loadingEl) loadingEl.classList.add('hidden');
+    if (contentEl) contentEl.classList.remove('hidden');
   }
 }
 
