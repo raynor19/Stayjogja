@@ -56,6 +56,39 @@ function switchDocType(type) {
   }
 }
 
+// Kompresi & penyesuaian resolusi gambar KTP untuk OCR optimal (< 300KB)
+function resizeImageForOcr(dataUrl, maxDimension = 1280) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width;
+      let h = img.height;
+      if (w <= maxDimension && h <= maxDimension) {
+        return resolve(dataUrl);
+      }
+      if (w > h) {
+        if (w > maxDimension) {
+          h = Math.round((h * maxDimension) / w);
+          w = maxDimension;
+        }
+      } else {
+        if (h > maxDimension) {
+          w = Math.round((w * maxDimension) / h);
+          h = maxDimension;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.88));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
 // Handler saat foto dipilih dari kamera / file
 async function handleKtpPhotoSelected(event) {
   const file = event.target.files && event.target.files[0];
@@ -70,8 +103,8 @@ async function handleKtpPhotoSelected(event) {
   // Baca file gambar sebagai Data URL
   const reader = new FileReader();
   reader.onload = async (e) => {
-    const imageUrl = e.target.result;
-    if (previewImg) previewImg.src = imageUrl;
+    const rawDataUrl = e.target.result;
+    if (previewImg) previewImg.src = rawDataUrl;
 
     // Tampilkan loading scanning
     if (uploadBox) uploadBox.classList.add('hidden');
@@ -79,8 +112,11 @@ async function handleKtpPhotoSelected(event) {
     if (loader) loader.classList.remove('hidden');
 
     try {
-      // Jalankan OCR & Ekstraksi Data
-      const extracted = await scanKtpOrSimImage(imageUrl);
+      // Optimasi resolusi agar pemrosesan instan & tidak timeout
+      const optimizedUrl = await resizeImageForOcr(rawDataUrl, 1280);
+
+      // Jalankan OCR & Ekstraksi Data (AI Vision + Tesseract)
+      const extracted = await scanKtpOrSimImage(optimizedUrl);
       
       // Selesai memindai -> Tampilkan hasil formulir Shopee SPinjam style
       if (loader) loader.classList.add('hidden');
@@ -93,27 +129,7 @@ async function handleKtpPhotoSelected(event) {
       console.error('OCR Error:', err);
       if (loader) loader.classList.add('hidden');
       if (resultCard) resultCard.classList.remove('hidden');
-      
-      let loggedUser = null;
-      try {
-        const raw = localStorage.getItem('stayjogja_user');
-        if (raw) loggedUser = JSON.parse(raw);
-      } catch (e) {}
-
-      const isUserRaynor = loggedUser && /raynor|athaillah/i.test(loggedUser.name || '');
-
-      applyScannedDataToForm({
-        nama: isUserRaynor ? 'MUHAMMAD RAYNOR ATHAILLAH' : '',
-        nik: isUserRaynor ? '3275081903050005' : '',
-        tempat_lahir: isUserRaynor ? 'YOGYAKARTA' : '',
-        tanggal_lahir: isUserRaynor ? '19-03-2005' : '',
-        jenis_kelamin: 'Laki-laki',
-        alamat: isUserRaynor ? 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT' : '',
-        agama: 'Islam',
-        status_kawin: 'Belum Kawin',
-        pekerjaan: 'Karyawan Swasta',
-        kewarganegaraan: 'Indonesia'
-      });
+      if (previewThumb) previewThumb.classList.remove('hidden');
     }
   };
 
@@ -132,7 +148,7 @@ async function scanKtpOrSimImage(imageUrl) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image: imageUrl }),
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(25000)
     });
 
     if (apiRes.ok) {
@@ -162,7 +178,7 @@ async function scanKtpOrSimImage(imageUrl) {
       return result.data.text || '';
     })();
 
-    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(''), 6000));
+    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(''), 25000));
     rawText = await Promise.race([ocrPromise, timeoutPromise]);
   } catch (ocrErr) {
     console.warn('Tesseract fallback notice:', ocrErr.message);
@@ -369,9 +385,28 @@ function parseKtpText(text) {
   // 2. Ekstrak Nama
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
-    if (/nama\s*[:;]?/i.test(l)) {
-      nama = l.replace(/^.*?nama\s*[:;]?\s*/i, '').replace(/[:;]/g, '').trim();
+    if (/\bnama\b\s*[:;]?/i.test(l)) {
+      let candidate = l.replace(/^.*?\bnama\b\s*[:;]?\s*/i, '').replace(/[:;]/g, '').trim();
+      if (!candidate && i + 1 < lines.length) {
+        candidate = lines[i + 1].trim();
+      }
+      nama = candidate;
       break;
+    }
+  }
+
+  // Jika nama belum ketemu, cari baris antara baris NIK dan Tempat Lahir
+  if (!nama) {
+    const nikIdx = lines.findIndex(l => /\bnik\b/i.test(l) || /\d{16}/.test(l));
+    const ttlIdx = lines.findIndex(l => /tempat|lahir|ttl/i.test(l));
+    if (nikIdx !== -1 && ttlIdx !== -1 && ttlIdx > nikIdx + 1) {
+      for (let k = nikIdx + 1; k < ttlIdx; k++) {
+        const candidate = lines[k].replace(/[^A-Za-z\s]/g, '').trim();
+        if (candidate.length >= 3 && !/PROVINSI|KABUPATEN|KOTA|NIK/i.test(candidate)) {
+          nama = candidate;
+          break;
+        }
+      }
     }
   }
 
@@ -436,20 +471,25 @@ function parseKtpText(text) {
       jenisKelamin = 'Laki-laki';
     } else {
       // Deteksi nama wanita Indonesia umum
-      const isFemaleName = /janet|julvianti|putri|ayu|siti|dewi|nur|sarah|maria|lestari|wati|bella|anisa|rini|tika|cantika|fitri|diah|intan|anggie|anggun|melinda|sheila/i.test(nama);
+      const isFemaleName = /janet|julvianti|putri|ayu|siti|dewi|nur|sarah|maria|lestari|wati|bella|anisa|rini|tika|cantika|fitri|diah|intan|anggie|anggun|melinda|sheila|sarce|seleng/i.test(nama);
       jenisKelamin = isFemaleName ? 'Perempuan' : 'Laki-laki';
     }
   }
 
   // 6. Ekstrak Alamat
-  const alamatIdx = lines.findIndex(l => /alamat/i.test(l));
+  let alamatIdx = lines.findIndex(l => /\balamat\b/i.test(l));
+  if (alamatIdx === -1) {
+    alamatIdx = lines.findIndex(l => /\b(JL|JALAN|RT|RW|DUSUN|DESA|KELURAHAN|KECAMATAN)\b/i.test(l) && !/PROVINSI|KABUPATEN|KOTA|NIK|NAMA|TEMPAT|LAHIR|AGAMA/i.test(l));
+  }
+
   if (alamatIdx !== -1) {
     const addrParts = [];
-    addrParts.push(lines[alamatIdx].replace(/^.*?alamat\s*[:;]?\s*/i, '').trim());
+    const firstLine = lines[alamatIdx].replace(/^.*?\balamat\b\s*[:;]?\s*/i, '').trim();
+    if (firstLine) addrParts.push(firstLine);
     for (let j = alamatIdx + 1; j < Math.min(alamatIdx + 5, lines.length); j++) {
       const line = lines[j];
-      if (/agama|status|pekerjaan|kewarganegaraan/i.test(line)) break;
-      addrParts.push(line.replace(/^(RT\/RW|Kel\/Desa|Kecamatan)\s*[:;]?\s*/i, '').trim());
+      if (/agama|status|pekerjaan|kewarganegaraan|berlaku/i.test(line)) break;
+      addrParts.push(line.replace(/^(RT\/RW|Kel\/Desa|Kecamatan|Desa|Kel)\s*[:;]?\s*/i, '').trim());
     }
     alamat = addrParts.filter(Boolean).join(', ');
   }

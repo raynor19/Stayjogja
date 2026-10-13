@@ -463,12 +463,11 @@ async function extractKtpWithVision(imageData) {
 
   let base64Data = imageData;
   let mimeType = 'image/jpeg';
-  if (imageData.startsWith('data:')) {
-    const matches = imageData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-    if (matches) {
-      mimeType = matches[1];
-      base64Data = matches[2];
-    }
+  if (typeof imageData === 'string' && imageData.includes(',')) {
+    const parts = imageData.split(',');
+    base64Data = parts[1];
+    const mimeMatch = parts[0].match(/:(.*?);/);
+    if (mimeMatch) mimeType = mimeMatch[1];
   }
 
   const prompt = `Anda adalah sistem OCR KTP & SIM Indonesia profesional tingkat tinggi (standar verifikasi e-KYC seperti Shopee SPinjam).
@@ -487,7 +486,7 @@ Format JSON murni persis:
   "kewarganegaraan": "Indonesia"
 }`;
 
-  const VISION_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-flash'];
+  const VISION_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.7-flash', 'gemini-3.8-flash'];
 
   for (const model of VISION_MODELS) {
     try {
@@ -495,7 +494,7 @@ Format JSON murni persis:
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(8000),
+        signal: AbortSignal.timeout(20000),
         body: JSON.stringify({
           contents: [{
             parts: [
@@ -522,7 +521,15 @@ Format JSON murni persis:
             parsed.tempat_lahir = t;
           }
           if (parsed.nama) parsed.nama = parsed.nama.toUpperCase().trim();
-          if (parsed.alamat) parsed.alamat = parsed.alamat.toUpperCase().trim();
+          if (parsed.alamat) {
+            let a = parsed.alamat
+              .replace(/[“”"\'`«»©®™\[\]{}()_—~|\\*^$#@!<>?=`:%]/g, ' ')
+              .replace(/\s+/g, ' ')
+              .replace(/\s*,\s*/g, ', ')
+              .trim()
+              .toUpperCase();
+            parsed.alamat = a;
+          }
           return parsed;
         }
       }
