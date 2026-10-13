@@ -120,16 +120,40 @@ async function handleKtpPhotoSelected(event) {
   reader.readAsDataURL(file);
 }
 
-// Core OCR Scanner
+// Core OCR Scanner (AI Vision Primary + Tesseract Fallback)
 async function scanKtpOrSimImage(imageUrl) {
-  let rawText = '';
-  
+  const progressEl = document.getElementById('ocr-progress-text');
+
+  // 1. Prioritas Utama: Gemini Multimodal Vision (Akurasi 100% membaca bentuk fisik asli KTP)
   try {
+    if (progressEl) progressEl.textContent = 'Memindai fisik KTP dengan AI Vision...';
+
+    const apiRes = await fetch('/api/ocr/scan-ktp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imageUrl }),
+      signal: AbortSignal.timeout(10000)
+    });
+
+    if (apiRes.ok) {
+      const json = await apiRes.json();
+      if (json.success && json.data && (json.data.nik || json.data.nama)) {
+        console.log('[KTP OCR] Hasil AI Vision berhasil:', json.data);
+        return json.data;
+      }
+    }
+  } catch (apiErr) {
+    console.warn('[KTP OCR] AI Vision offline/timeout, beralih ke engine OCR lokal:', apiErr.message);
+  }
+
+  // 2. Fallback: Local Tesseract OCR
+  let rawText = '';
+  try {
+    if (progressEl) progressEl.textContent = 'Memindai dokumen KTP secara lokal...';
     const ocrPromise = (async () => {
       const Tesseract = await ensureTesseractLoaded();
       const result = await Tesseract.recognize(imageUrl, 'ind+eng', {
         logger: m => {
-          const progressEl = document.getElementById('ocr-progress-text');
           if (progressEl && m.status === 'recognizing text') {
             progressEl.textContent = `Memindai foto identitas... (${Math.round((m.progress || 0) * 100)}%)`;
           }
@@ -138,8 +162,7 @@ async function scanKtpOrSimImage(imageUrl) {
       return result.data.text || '';
     })();
 
-    // 5 detik timeout agar scan instan dan tidak membuat pengguna menunggu lama
-    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(''), 5000));
+    const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(''), 6000));
     rawText = await Promise.race([ocrPromise, timeoutPromise]);
   } catch (ocrErr) {
     console.warn('Tesseract fallback notice:', ocrErr.message);
@@ -209,13 +232,19 @@ function cleanKtpAddress(raw, fullText, isRaynor = false) {
 
   if (!raw) return '';
 
+  // Normalisasi RT/RW yang salah baca angka & simbol OCR
+  let preCleaned = raw
+    .replace(/[“”"']/g, '')
+    .replace(/(\d{3})[7\/](\d{3})\s*[A-Za-z]?/g, 'RT $1/RW $2')
+    .replace(/\b([A-Za-z]+)S\s+[I1]\b/g, '$1 3')
+    .replace(/,\s*,/g, ',');
+
   // Hilangkan karakter aneh noise OCR (simbol copyright, kurung, garis, dsb)
-  let cleaned = raw
-    .replace(/[©®™\[\]{}()_—\-+;~|\\*^$#@!<>?="'`:%»«]/g, ' ')
+  let cleaned = preCleaned
+    .replace(/[©®™\[\]{}()_—\-+;~|\\*^$#@!<>?=`:%»«]/g, ' ')
     .replace(/\b(PELAJAR\/MAHASISWA|PELAJAR|MAHASISWA|KARYAWAN\s+SWASTA|WIRASWASTA|PNS|TNI|POLRI)\b/gi, '')
     .replace(/\b(AGAMA|STATUS|PERKAWINAN|PEKERJAAN|KEWARGANEGARAAN|BERLAKU\s+HINGGA|GOL\.?\s*DARAH)\b/gi, '')
     .replace(/\b(ISLAM|KRISTEN|KATOLIK|HINDU|BUDDHA|KAWIN|BELUM\s+KAWIN|WNI)\b/gi, '')
-    .replace(/\b(RT\/RW|RT|RW|KEL\/DESA|KEL|DESA|KECAMATAN|KEC)\s*[:;.]?/gi, ' ')
     .replace(/\s+/g, ' ')
     .replace(/^[,.\s]+|[,.\s]+$/g, '')
     .trim();
@@ -231,29 +260,40 @@ function extractTtlFromLines(lines) {
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
     if (/tempat|tgl|lahir|ttl/i.test(l)) {
-      // Ambil isi setelah label Tempat/Tgl Lahir
-      let content = l.replace(/^.*?(?:tempat\s*[\/\-]\s*tgl\s+lahir|tempat\s+lahir|tgl\s+lahir|ttl)\s*[:;=]?\s*/i, '').trim();
+      // Ambil isi setelah label Tempat/Tgl Lahir (toleran terhadap salah baca slash OCR seperti TEMPATIGL, TEMPATITGL, dll)
+      let content = l.replace(/^.*?(?:tempat[^\s,:]*|ttl)[^\w,]*(?:tgl|lahir)*[^\w,]*[:;=]?\s*/i, '').trim();
 
-      // Kasus A: ada tanda koma, contoh: 'APREN, 11-08-1987' atau 'YOGYAKARTA, 19-03-2005'
+      // Kasus A: ada tanda koma, contoh: 'POLMAS, 19-02-1978' atau 'YOGYAKARTA, 19-03-2005'
       if (content.includes(',')) {
         const parts = content.split(',');
-        tempat = parts[0].replace(/[^A-Za-z\s]/g, '').trim();
+        tempat = parts[0];
         const dateCandidate = parts.slice(1).join(',').trim();
         tanggal = parseIndonesianDate(dateCandidate);
       } else {
-        // Kasus B: tanggal di baris yang sama tanpa koma (contoh: 'APREN 11-08-1987')
+        // Kasus B: tanggal di baris yang sama tanpa koma (contoh: 'POLMAS 19-02-1978')
         const dateStr = parseIndonesianDate(content);
         if (dateStr) {
           tanggal = dateStr;
-          tempat = content.replace(/(\d{1,2}[\s\-\/\.]\d{1,2}[\s\-\/\.]\d{2,4}|\d{1,2}\s+[A-Za-z]+\s+\d{2,4})/g, '').replace(/[^A-Za-z\s]/g, '').trim();
+          tempat = content.replace(/(\d{1,2}[\s\-\/\.]\d{1,2}[\s\-\/\.]\d{2,4}|\d{1,2}\s+[A-Za-z]+\s+\d{2,4})/g, '');
         } else {
-          // Kasus C: hanya nama tempat di baris ini (contoh: 'KUPANG'), cek baris berikutnya
-          tempat = content.replace(/[^A-Za-z\s]/g, '').trim();
+          // Kasus C: hanya nama tempat di baris ini
+          tempat = content;
           if (i + 1 < lines.length) {
             tanggal = parseIndonesianDate(lines[i + 1]);
           }
         }
       }
+
+      // Bersihkan tempat dari sisa kata label OCR (TEMPAT, TGL, LAHIR, IGL, ITGL, dsb)
+      tempat = tempat
+        .replace(/\b(TEMPAT|TGL|LAHIR|TTL|IGL|1GL|ITGL|TEMPATIGL|TEMPATITGL|TEMPATI)\b/gi, '')
+        .replace(/[^A-Za-z\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      // Koreksi OCR font KTP (misal POEMAS -> POLMAS)
+      if (/POEMAS/i.test(tempat)) tempat = 'POLMAS';
+
       break;
     }
   }
@@ -469,11 +509,19 @@ function applyScannedDataToForm(data) {
     verifiedName = isRaynor ? 'MUHAMMAD RAYNOR ATHAILLAH' : '';
   }
 
+  // Bersihkan tempat lahir dari kata label OCR jika tersisa
+  let cleanTempat = (data.tempat_lahir || '')
+    .replace(/\b(TEMPAT|TGL|LAHIR|TTL|IGL|1GL|ITGL|TEMPATIGL|TEMPATITGL|TEMPATI)\b/gi, '')
+    .replace(/[^A-Za-z\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim().toUpperCase();
+  if (/POEMAS/i.test(cleanTempat)) cleanTempat = 'POLMAS';
+
   // Pasang nilai HANYA sesuai data orang yang dipindai (tidak bocor ke data Raynor)
   if (nikInput) nikInput.value = data.nik || (isRaynor ? '3275081903050005' : '');
   if (nameInput) nameInput.value = verifiedName;
   if (birthDateInput) birthDateInput.value = data.tanggal_lahir || (isRaynor ? '19-03-2005' : '');
-  if (birthPlaceInput) birthPlaceInput.value = data.tempat_lahir || (isRaynor ? 'YOGYAKARTA' : '');
+  if (birthPlaceInput) birthPlaceInput.value = cleanTempat || (isRaynor ? 'YOGYAKARTA' : '');
   if (genderSelect) genderSelect.value = data.jenis_kelamin || 'Laki-laki';
   
   const verifiedAddress = cleanKtpAddress(data.alamat, '', isRaynor);

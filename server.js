@@ -35,6 +35,7 @@ app.use('/api/payments', require('./src/routes/paymentRoutes'));
 app.use('/api/admin', require('./src/routes/adminRoutes'));
 app.use('/api/chatbot', require('./src/routes/chatbotRoutes'));
 app.use('/api/itineraries', require('./src/routes/itineraryRoutes'));
+app.use('/api/ocr', require('./src/routes/ocrRoutes'));
 
 // Notifications API (Status Hotel & Status Penghapusan)
 app.get('/api/notifications', (req, res) => {

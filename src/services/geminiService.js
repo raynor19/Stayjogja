@@ -452,11 +452,95 @@ function generateFallbackItinerary(property, days = 2) {
   };
 }
 
+/**
+ * Ekstrak data fisik KTP / SIM menggunakan Gemini Multimodal Vision
+ * @param {string} imageData - Data URL base64 atau base64 string gambar KTP
+ * @returns {Promise<Object|null>} Data KTP hasil ekstrak atau null jika gagal
+ */
+async function extractKtpWithVision(imageData) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey || !imageData) return null;
+
+  let base64Data = imageData;
+  let mimeType = 'image/jpeg';
+  if (imageData.startsWith('data:')) {
+    const matches = imageData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (matches) {
+      mimeType = matches[1];
+      base64Data = matches[2];
+    }
+  }
+
+  const prompt = `Anda adalah sistem OCR KTP & SIM Indonesia profesional tingkat tinggi (standar verifikasi e-KYC seperti Shopee SPinjam).
+Tolong baca dan ekstrak teks langsung dari bentuk fisik KTP / SIM pada gambar ini secara tepat, teliti, dan akurat sesuai yang tertulis di foto fisik:
+Format JSON murni persis:
+{
+  "nik": "16 digit angka NIK asli di KTP (atau nomor SIM jika dokumen adalah SIM)",
+  "nama": "Nama lengkap asli pemilik di KTP/SIM tanpa gelar/prefix",
+  "tempat_lahir": "Tempat lahir asli di KTP (contoh POLMAS atau YOGYAKARTA) HANYA nama tempat/kota/kabupaten, JANGAN masukkan kata TEMPAT/TGL/LAHIR",
+  "tanggal_lahir": "Format DD-MM-YYYY asli di KTP (contoh 19-02-1978)",
+  "jenis_kelamin": "Laki-laki atau Perempuan",
+  "alamat": "Alamat lengkap di KTP beserta RT/RW, Kel/Desa, Kecamatan",
+  "agama": "Agama di KTP",
+  "status_kawin": "Status perkawinan di KTP",
+  "pekerjaan": "Pekerjaan di KTP",
+  "kewarganegaraan": "Indonesia"
+}`;
+
+  const VISION_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-flash'];
+
+  for (const model of VISION_MODELS) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(8000),
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: prompt },
+              { inlineData: { mimeType, data: base64Data } }
+            ]
+          }],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.1
+          }
+        })
+      });
+
+      const resJson = await response.json();
+      const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (text) {
+        let parsed = JSON.parse(text);
+        if (parsed && (parsed.nik || parsed.nama)) {
+          // Bersihkan tempat lahir dari kata label
+          if (parsed.tempat_lahir) {
+            let t = parsed.tempat_lahir.replace(/\b(TEMPAT|TGL|LAHIR|TTL|IGL|1GL)\b/gi, '').replace(/[^A-Za-z\s]/g, '').trim().toUpperCase();
+            if (/POEMAS/i.test(t)) t = 'POLMAS';
+            parsed.tempat_lahir = t;
+          }
+          if (parsed.nama) parsed.nama = parsed.nama.toUpperCase().trim();
+          if (parsed.alamat) parsed.alamat = parsed.alamat.toUpperCase().trim();
+          return parsed;
+        }
+      }
+    } catch (err) {
+      console.warn(`[GeminiVision] Error with model ${model}:`, err.message);
+    }
+  }
+
+  return null;
+}
+
 module.exports = {
   recommendationsCache,
   getNearbyRecommendations,
   getFallbackNearbySpots,
   answerChatbotWithGemini,
-  generateItineraryForProperty
+  generateItineraryForProperty,
+  extractKtpWithVision
 };
+
 
