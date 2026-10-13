@@ -425,6 +425,10 @@ router.put('/:id/assign-room', async (req, res) => {
     });
   } catch (err) {
     console.error('Error assigning room:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
 // POST /api/reservations/:code/ktp-photo - Update atau simpan foto KTP tamu
 router.post('/:code/ktp-photo', async (req, res) => {
   try {
