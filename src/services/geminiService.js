@@ -474,7 +474,7 @@ async function extractKtpWithVision(imageData) {
 Tolong baca dan ekstrak teks langsung dari bentuk fisik KTP / SIM pada gambar ini secara tepat, teliti, dan akurat sesuai yang tertulis di foto fisik:
 Format JSON murni persis:
 {
-  "nik": "16 digit angka NIK asli di KTP (atau nomor SIM jika dokumen adalah SIM)",
+  "nik": "16 digit angka NIK asli di KTP, atau nomor SIM (biasanya 12 digit) jika dokumen adalah SIM. HANYA digit angka tanpa titik/spasi",
   "nama": "Nama lengkap asli pemilik di KTP/SIM tanpa gelar/prefix",
   "tempat_lahir": "Tempat lahir asli di KTP (contoh POLMAS atau YOGYAKARTA) HANYA nama tempat/kota/kabupaten, JANGAN masukkan kata TEMPAT/TGL/LAHIR",
   "tanggal_lahir": "Format DD-MM-YYYY asli di KTP (contoh 19-02-1978)",

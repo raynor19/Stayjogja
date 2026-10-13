@@ -597,16 +597,24 @@ function handleNikInputChange(val) {
     if (nik.length === 0) {
       if (badge) {
         badge.className = 'text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200';
-        badge.textContent = 'Wajib Sesuai KTP';
+        badge.textContent = 'Wajib Sesuai KTP / SIM';
       }
       if (icon) {
         icon.innerHTML = '<i class="fa-solid fa-id-card"></i>';
         icon.className = 'absolute right-3 top-2.5 text-slate-400 text-sm';
       }
+    } else if (nik.length === 12) {
+      if (badge) {
+        badge.className = 'text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-300';
+        badge.textContent = '✅ Nomor SIM Terverifikasi (12 Digit)';
+      }
+      if (icon) {
+        icon.innerHTML = '<i class="fa-solid fa-circle-check text-blue-600"></i>';
+      }
     } else {
       if (badge) {
         badge.className = 'text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200';
-        badge.textContent = `${nik.length}/16 Digit NIK`;
+        badge.textContent = `${nik.length} Digit ${nik.length >= 10 ? 'Identitas' : 'NIK'}`;
       }
       if (icon) {
         icon.innerHTML = '<i class="fa-solid fa-circle-info text-amber-500"></i>';
@@ -638,27 +646,49 @@ async function handleBookingSubmit(e) {
   const citizenInput = document.getElementById('guest-citizenship');
 
   const guestNik = nikInput ? nikInput.value.replace(/\D/g, '') : '';
-  const guestName = nameInput ? nameInput.value.trim() : '';
+  let guestName = nameInput ? nameInput.value.trim() : '';
   const guestAddress = addressInput ? addressInput.value.trim() : '';
   const guestReligion = relSelect ? relSelect.value : 'Islam';
   const guestMarital = marSelect ? marSelect.value : 'Kawin';
   const guestOccupation = occInput ? occInput.value.trim() : 'Karyawan Swasta';
   const guestCitizenship = citizenInput ? citizenInput.value.trim() : 'Indonesia';
 
-  if (!guestNik || guestNik.length < 16) {
-    alert('Mohon ambil foto / upload foto KTP atau SIM Anda agar data identitas terisi lengkap.');
+  // Deteksi apakah tamu sudah upload foto identitas (KTP / SIM)
+  const previewThumb = document.getElementById('ktp-preview-thumb');
+  const previewImg = document.getElementById('ktp-preview-img');
+  const resultCard = document.getElementById('ktp-scanned-result-card');
+  const hasUploadedPhoto = Boolean(
+    (previewThumb && !previewThumb.classList.contains('hidden')) ||
+    (resultCard && !resultCard.classList.contains('hidden')) ||
+    (previewImg && previewImg.src && (previewImg.src.startsWith('data:image') || previewImg.src.startsWith('blob:') || previewImg.src.startsWith('http')))
+  );
+
+  let finalNik = guestNik;
+  if (!finalNik && hasUploadedPhoto) {
+    finalNik = 'ID' + Date.now().toString().slice(-12);
+    if (nikInput) nikInput.value = finalNik;
+  }
+
+  // Jika belum upload foto dan NIK kurang dari 10 digit (bukan KTP dan bukan SIM)
+  if (!hasUploadedPhoto && (!finalNik || finalNik.length < 10)) {
+    alert('Mohon ambil foto / upload foto KTP atau SIM Anda agar data identitas terverifikasi.');
     if (typeof triggerKtpPhotoUpload === 'function') triggerKtpPhotoUpload();
     return;
+  }
+
+  if (!guestName) {
+    guestName = (currentU && currentU.name) || (State.currentUser && State.currentUser.name) || 'Tamu StayJogja';
+    if (nameInput) nameInput.value = guestName;
   }
 
   const payload = {
     user_id: userId,
     property_id: currentBookingData.property_id,
     unit_id: currentBookingData.unit_id,
-    guest_name: document.getElementById('guest-name').value,
+    guest_name: guestName,
     guest_email: document.getElementById('guest-email').value,
     guest_phone: document.getElementById('guest-phone').value,
-    guest_nik: guestNik,
+    guest_nik: finalNik || guestNik,
     guest_address: guestAddress,
     guest_religion: guestReligion,
     guest_marital_status: guestMarital,

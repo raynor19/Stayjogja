@@ -42,17 +42,23 @@ function switchDocType(type) {
   const btnSim = document.getElementById('doc-type-btn-sim');
   const docLabel = document.getElementById('doc-upload-title');
   const docSubtitle = document.getElementById('doc-upload-subtitle');
+  const nikInput = document.getElementById('guest-nik');
+  const nikLabel = document.getElementById('guest-nik-label');
 
   if (type === 'sim') {
     if (btnSim) btnSim.className = 'flex-1 py-2 px-3 text-xs font-bold rounded-xl bg-orange-500 text-white shadow-xs transition';
     if (btnKtp) btnKtp.className = 'flex-1 py-2 px-3 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition';
     if (docLabel) docLabel.textContent = 'Bagian depan SIM';
     if (docSubtitle) docSubtitle.textContent = 'Pastikan foto SIM jelas & tulisan terbaca';
+    if (nikInput) nikInput.placeholder = 'Nomor SIM (12 Digit)';
+    if (nikLabel) nikLabel.textContent = 'NOMOR SIM';
   } else {
     if (btnKtp) btnKtp.className = 'flex-1 py-2 px-3 text-xs font-bold rounded-xl bg-orange-500 text-white shadow-xs transition';
     if (btnSim) btnSim.className = 'flex-1 py-2 px-3 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition';
     if (docLabel) docLabel.textContent = 'Bagian depan KTP';
     if (docSubtitle) docSubtitle.textContent = 'Pastikan foto KTP jelas & tulisan terbaca';
+    if (nikInput) nikInput.placeholder = 'Nomor NIK KTP (16 Digit)';
+    if (nikLabel) nikLabel.textContent = 'NIK';
   }
 }
 
@@ -391,6 +397,26 @@ function parseKtpText(text) {
   if (!nik) {
     const nikMatch = clean.match(/\b([1-9][0-9]{15})\b/);
     if (nikMatch) nik = nikMatch[1];
+  }
+
+  // Cara D (Nomor SIM 12 digit jika 16 digit KTP tidak ditemukan)
+  if (!nik) {
+    const simLine = lines.find(l => /\b(sim|surat\s*izin\s*mengemudi|no(?:\.|\s)+sim)\b/i.test(l));
+    if (simLine) {
+      const simDigits = simLine.replace(/\D/g, '');
+      if (simDigits.length >= 10 && simDigits.length <= 14) {
+        nik = simDigits;
+      }
+    }
+  }
+  if (!nik) {
+    for (const l of lines) {
+      const d = l.replace(/\D/g, '');
+      if (d.length === 12) {
+        nik = d;
+        break;
+      }
+    }
   }
 
   // 2. Ekstrak Nama
