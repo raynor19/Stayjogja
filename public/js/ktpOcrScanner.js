@@ -251,18 +251,29 @@ function cleanKtpAddress(raw, fullText, isRaynor = false) {
   let cleaned = String(raw)
     // 1. Bersihkan semua tanda kutip lurus & lengkung, tanda kurung, simbol noise OCR
     .replace(/[“”"\'`«»©®™\[\]{}()_—~|\\*^$#@!<>?=`:%]/g, ' ')
-    // 2. Normalisasi RT/RW (misal 0027007 A, 002/007, atau 002-007)
+    // 2. Pisahkan jika nomor RT/RW menempel langsung dengan kata KEL/DESA atau huruf berikutnya (misal: 001EL/DESA -> 001, DESA)
+    .replace(/(\d{3})\s*(?:K?EL\/DESA|K?EL|DESA)\s*/gi, '$1, DESA ')
+    .replace(/(\d{3})([A-Za-z])/g, '$1 $2')
+    // 3. Normalisasi RT/RW (misal 0027007 A, 002/007, atau 002-007)
+    .replace(/(\d{3})[7\/\-](\d{3})\b/g, 'RT $1/RW $2')
     .replace(/(\d{3})[7\/\-](\d{3})\s*[A-Za-z]?/g, 'RT $1/RW $2')
-    // 3. Normalisasi tipikal OCR: angka 3 terbaca S I atau S 1 (contoh: KESADARANS I -> KESADARAN 3)
+    // 4. Normalisasi sisa label EL/DESA atau KEL/DESA menjadi DESA
+    .replace(/\bK?EL\/DESA\b/gi, 'DESA')
+    // 5. Tambahkan koma sebelum RT jika didahului nama jalan/dusun
+    .replace(/([A-Za-z0-9]+)\s+RT\b/gi, '$1, RT')
+    // 6. Tambahkan koma sebelum DESA, KELURAHAN, KECAMATAN
+    .replace(/([0-9A-Za-z]+)\s+(DESA|KELURAHAN|KECAMATAN|KEC)\b/gi, '$1, $2')
+    // 7. Jika ada nama kecamatan di akhir setelah desa (contoh: DESA APREN AMARASI -> DESA APREN, KEC. AMARASI)
+    .replace(/DESA\s+([A-Za-z]+)\s+([A-Za-z]+)$/i, 'DESA $1, KEC. $2')
+    // 8. Normalisasi tipikal OCR: angka 3 terbaca S I atau S 1 (contoh: KESADARANS I -> KESADARAN 3)
     .replace(/\b([A-Za-z]+)S\s+[I1]\b/g, '$1 3')
-    // 4. Koreksi tipikal nama kecamatan (PANAEKUKANG -> PANAKKUKANG)
+    // 9. Koreksi tipikal nama kecamatan (PANAEKUKANG -> PANAKKUKANG)
     .replace(/PANAEKUKANG/gi, 'PANAKKUKANG')
-    // 5. Bersihkan label pengenal jika masih tersisa
-    .replace(/\b(?:RT\/RW|KEL\/DESA|KECAMATAN|PROVINSI|KABUPATEN|KOTA)\s*[:;=]?\s*/gi, '')
+    // 10. Bersihkan label pengenal jika masih tersisa
     .replace(/\b(PELAJAR\/MAHASISWA|PELAJAR|MAHASISWA|KARYAWAN\s+SWASTA|WIRASWASTA|PNS|TNI|POLRI)\b/gi, '')
     .replace(/\b(AGAMA|STATUS|PERKAWINAN|PEKERJAAN|KEWARGANEGARAAN|BERLAKU\s+HINGGA|GOL\.?\s*DARAH)\b/gi, '')
     .replace(/\b(ISLAM|KRISTEN|KATOLIK|HINDU|BUDDHA|KAWIN|BELUM\s+KAWIN|WNI)\b/gi, '')
-    // 6. Rapikan spasi dan koma
+    // 11. Rapikan karakter dan koma
     .replace(/[^A-Za-z0-9\s,\.\-\/]/g, ' ')
     .replace(/\s+/g, ' ')
     .replace(/\s*,\s*/g, ', ')

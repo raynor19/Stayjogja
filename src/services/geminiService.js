@@ -524,8 +524,17 @@ Format JSON murni persis:
           if (parsed.alamat) {
             let a = parsed.alamat
               .replace(/[“”"\'`«»©®™\[\]{}()_—~|\\*^$#@!<>?=`:%]/g, ' ')
+              .replace(/(\d{3})\s*(?:K?EL\/DESA|K?EL|DESA)\s*/gi, '$1, DESA ')
+              .replace(/(\d{3})([A-Za-z])/g, '$1 $2')
+              .replace(/(\d{3})[7\/\-](\d{3})\b/g, 'RT $1/RW $2')
+              .replace(/\bK?EL\/DESA\b/gi, 'DESA')
+              .replace(/([A-Za-z0-9]+)\s+RT\b/gi, '$1, RT')
+              .replace(/([0-9A-Za-z]+)\s+(DESA|KELURAHAN|KECAMATAN|KEC)\b/gi, '$1, $2')
+              .replace(/DESA\s+([A-Za-z]+)\s+([A-Za-z]+)$/i, 'DESA $1, KEC. $2')
               .replace(/\s+/g, ' ')
               .replace(/\s*,\s*/g, ', ')
+              .replace(/(?:,\s*)+/g, ', ')
+              .replace(/^[,.\s]+|[,.\s]+$/g, '')
               .trim()
               .toUpperCase();
             parsed.alamat = a;
