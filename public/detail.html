@@ -593,91 +593,157 @@
           </div>
         </div>
 
-        <!-- Guest Contact Form -->
-        <div class="space-y-3">
-          <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Informasi Kontak & Tamu</h4>
+        <!-- Guest Contact Form: Shopee SPinjam Style KTP / SIM Photo Scanner -->
+        <div class="space-y-4">
           
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap Tamu (Sesuai KTP/Paspor)</label>
-            <input type="text" id="guest-name" placeholder="Nama Lengkap Tamu" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500">
+          <!-- Header & Tipe Identitas -->
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-600 block">Verifikasi Identitas Tamu</span>
+              <h4 class="font-black text-slate-900 text-sm font-display">Scan Foto KTP / SIM</h4>
+            </div>
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+              <button type="button" id="doc-type-btn-ktp" onclick="switchDocType('ktp')" class="py-1 px-3 text-xs font-bold rounded-lg bg-orange-500 text-white shadow-2xs transition">
+                KTP
+              </button>
+              <button type="button" id="doc-type-btn-sim" onclick="switchDocType('sim')" class="py-1 px-3 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+                SIM
+              </button>
+            </div>
           </div>
 
-          <!-- NIK KTP Field & Auto-Detect Dukcapil -->
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="block text-xs font-semibold text-slate-700">Nomor Induk Kependudukan (NIK KTP 16 Digit)</label>
-              <span id="nik-badge" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                Wajib Sesuai KTP
+          <!-- AREA 1: KOTAK UPLOAD / AMBIL FOTO KTP (Tampilan Shopee) -->
+          <div id="ktp-upload-dashed-box" class="space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-800">
+              <span id="doc-upload-title">Bagian depan KTP</span>
+              <span class="text-[11px] text-slate-400 font-normal" id="doc-upload-subtitle">Pastikan foto kartu jelas & terbaca</span>
+            </div>
+
+            <div onclick="triggerKtpPhotoUpload()" class="relative border-2 border-dashed border-orange-400 hover:border-orange-500 bg-orange-50/20 hover:bg-orange-50/40 rounded-2xl p-6 sm:p-8 text-center cursor-pointer transition group">
+              <!-- Hidden File Input (supports Camera & Gallery/File) -->
+              <input type="file" id="ktp-photo-input" accept="image/*" capture="environment" class="hidden" onchange="handleKtpPhotoSelected(event)">
+
+              <div class="w-14 h-14 mx-auto rounded-full bg-orange-500 text-white flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition">
+                <i class="fa-solid fa-camera"></i>
+              </div>
+              <span class="mt-2.5 font-bold text-xs sm:text-sm text-slate-800 block">Ambil foto / Upload Dokumen</span>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Ketuk untuk memotret atau memilih foto KTP/SIM dari galeri</span>
+
+              <!-- Badge Panduan di Kanan Bawah -->
+              <div class="absolute right-3 bottom-3 hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/90 border border-slate-200 text-[10px] text-slate-600 font-semibold shadow-2xs">
+                <i class="fa-solid fa-id-card text-orange-500"></i>
+                <span>Panduan Foto</span>
+                <i class="fa-solid fa-chevron-right text-[8px] text-slate-400"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- AREA 2: LOADING SCANNING (Animasi Laser Scanner) -->
+          <div id="ktp-scanning-loader" class="hidden p-6 bg-slate-900 text-white rounded-2xl text-center space-y-3 relative overflow-hidden shadow-md">
+            <div class="w-10 h-10 mx-auto rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center text-lg animate-pulse">
+              <i class="fa-solid fa-id-card"></i>
+            </div>
+            <div>
+              <p class="font-bold text-sm text-white" id="ocr-progress-text">Memindai foto identitas...</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Sistem sedang mendeteksi NIK, Nama Lengkap, dan Alamat Anda</p>
+            </div>
+            <div class="w-48 h-1.5 bg-slate-800 rounded-full mx-auto overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-orange-500 to-amber-400 animate-pulse w-full"></div>
+            </div>
+          </div>
+
+          <!-- AREA 3: HASIL SCAN OTOMATIS (Persis Screenshot Shopee SPinjam) -->
+          <div id="ktp-scanned-result-card" class="space-y-3 hidden">
+            
+            <!-- Banner Kuning / Oranye Shopee -->
+            <div class="p-3 bg-amber-50 border border-amber-200/90 rounded-2xl flex items-start gap-2.5 text-xs text-amber-950">
+              <span class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                <i class="fa-solid fa-bell"></i>
               </span>
-            </div>
-            <div class="relative">
-              <input type="text" id="guest-nik" maxlength="16" value="" placeholder="Masukkan 16 digit NIK KTP" required
-                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 font-mono tracking-wider focus:outline-none focus:border-amber-500 pr-10"
-                oninput="handleNikInputChange(this.value)">
-              <div id="nik-icon-status" class="absolute right-3 top-2.5 text-slate-400 text-sm">
-                <i class="fa-solid fa-id-card"></i>
+              <div class="leading-relaxed text-[11px]">
+                <strong>Identitasmu didapatkan dari foto kartu identitas</strong> & kamu dapat meng-upload lagi atau mengeditnya secara manual.
               </div>
             </div>
 
-            <!-- Live Dukcapil Auto-Detection Card -->
-            <div id="nik-detect-card" class="mt-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50/70 border border-blue-200 rounded-xl text-xs space-y-2 transition-all hidden">
-              <div class="flex items-center justify-between text-[11px] font-bold text-blue-900 border-b border-blue-100 pb-1.5">
-                <span class="flex items-center gap-1.5">
-                  <i class="fa-solid fa-id-card text-blue-600"></i>
-                  <span>Data KTP Terverifikasi (Dukcapil Standar)</span>
+            <!-- List Form Shopee SPinjam Style -->
+            <div class="space-y-2.5">
+              
+              <!-- NIK -->
+              <div class="bg-slate-50 hover:bg-white p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">NIK</span>
+                <input type="text" id="guest-nik" maxlength="16" placeholder="Nomor Induk Kependudukan 16 Digit" required 
+                       class="w-full bg-transparent font-mono font-black text-sm text-slate-900 focus:outline-none tracking-wider mt-0.5">
+              </div>
+
+              <!-- Nama Lengkap -->
+              <div class="bg-slate-50 hover:bg-white p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nama Lengkap</span>
+                <input type="text" id="guest-name" placeholder="Nama Lengkap Sesuai KTP" required 
+                       class="w-full bg-transparent font-bold text-sm text-slate-900 uppercase focus:outline-none mt-0.5">
+              </div>
+
+              <!-- Tanggal Lahir & Tempat Lahir (Grid 2 kolom) -->
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-slate-50 hover:bg-white p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
+                  <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tanggal Lahir</span>
+                  <input type="text" id="guest-birth-date" placeholder="DD-MM-YYYY" 
+                         class="w-full bg-transparent font-bold text-xs text-slate-900 focus:outline-none mt-0.5">
+                </div>
+                <div class="bg-slate-50 hover:bg-white p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
+                  <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tempat Lahir</span>
+                  <input type="text" id="guest-birth-place" placeholder="Kota / Kabupaten" 
+                         class="w-full bg-transparent font-bold text-xs text-slate-900 uppercase focus:outline-none mt-0.5">
+                </div>
+              </div>
+
+              <!-- Kewarganegaraan & Jenis Kelamin (Grid 2 kolom) -->
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-slate-50 hover:bg-white p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
+                  <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kewarganegaraan</span>
+                  <input type="text" id="guest-citizenship" value="Indonesia" 
+                         class="w-full bg-transparent font-bold text-xs text-slate-900 focus:outline-none mt-0.5">
+                </div>
+                <div class="bg-slate-50 hover:bg-white p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
+                  <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Jenis Kelamin</span>
+                  <select id="guest-gender-select" class="w-full bg-transparent font-bold text-xs text-slate-900 focus:outline-none mt-0.5 cursor-pointer">
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Alamat Lengkap Sesuai KTP -->
+              <div class="bg-slate-50 hover:bg-white p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Alamat Lengkap</span>
+                <textarea id="guest-address" rows="2" placeholder="Alamat lengkap sesuai identitas" required 
+                          class="w-full bg-transparent font-medium text-xs text-slate-900 focus:outline-none resize-none mt-0.5"></textarea>
+              </div>
+
+            </div>
+
+            <!-- Tombol Ganti Foto / Upload Ulang -->
+            <div class="flex items-center justify-between pt-1">
+              <div id="ktp-preview-thumb" class="hidden flex items-center gap-2">
+                <img id="ktp-preview-img" src="" alt="Thumbnail" class="w-8 h-8 rounded-lg object-cover border border-slate-300">
+                <span class="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-xs"></i> Foto Berhasil Di-scan
                 </span>
-                <span id="nik-detect-gender" class="px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-bold">Laki-laki</span>
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-2 text-[11px] text-slate-700 pt-0.5">
-                <div>
-                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Tempat / Tgl Lahir:</span>
-                  <span id="nik-detect-birth" class="font-semibold text-slate-900">-</span>
-                </div>
-                <div>
-                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Asal Wilayah KTP:</span>
-                  <span id="nik-detect-region" class="font-semibold text-slate-900">-</span>
-                </div>
-                <div>
-                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Agama:</span>
-                  <select id="guest-religion" class="w-full mt-0.5 bg-white border border-blue-200 rounded-lg px-2 py-1 text-[11px] font-semibold text-slate-800 focus:outline-none focus:border-blue-500">
-                    <option value="Islam" selected>Islam</option>
-                    <option value="Kristen">Kristen</option>
-                    <option value="Katolik">Katolik</option>
-                    <option value="Hindu">Hindu</option>
-                    <option value="Buddha">Buddha</option>
-                    <option value="Khonghucu">Khonghucu</option>
-                  </select>
-                </div>
-                <div>
-                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Status Perkawinan:</span>
-                  <select id="guest-marital" class="w-full mt-0.5 bg-white border border-blue-200 rounded-lg px-2 py-1 text-[11px] font-semibold text-slate-800 focus:outline-none focus:border-blue-500">
-                    <option value="Belum Kawin" selected>Belum Kawin</option>
-                    <option value="Kawin">Kawin</option>
-                    <option value="Cerai Hidup">Cerai Hidup</option>
-                    <option value="Cerai Mati">Cerai Mati</option>
-                  </select>
-                </div>
-                <div>
-                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Pekerjaan:</span>
-                  <input type="text" id="guest-occupation" value="Pelajar / Mahasiswa" placeholder="Contoh: Karyawan Swasta" class="w-full mt-0.5 bg-white border border-blue-200 rounded-lg px-2 py-1 text-[11px] font-semibold text-slate-800 focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                  <span class="text-slate-400 block text-[9px] uppercase font-bold">Kewarganegaraan:</span>
-                  <div class="mt-1 flex items-center gap-1.5 font-bold text-slate-900">
-                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[10px]">WNI (Indonesia)</span>
-                    <span class="text-[10px] text-slate-500 font-medium">• Seumur Hidup</span>
-                  </div>
-                </div>
-              </div>
+              <button type="button" onclick="resetKtpPhotoScan()" class="text-xs font-bold text-orange-600 hover:text-orange-700 hover:underline flex items-center gap-1 cursor-pointer ml-auto">
+                <i class="fa-solid fa-camera-rotate"></i>
+                <span>Ganti / Ambil Ulang Foto</span>
+              </button>
             </div>
+
+            <!-- Hidden Fields for Compatibility -->
+            <input type="hidden" id="guest-religion" value="Islam">
+            <input type="hidden" id="guest-marital" value="Kawin">
+            <input type="hidden" id="guest-occupation" value="Karyawan Swasta">
+
           </div>
 
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Domisili Sesuai KTP (Jalan/Blok/No/RT/RW)</label>
-            <input type="text" id="guest-address" value="" placeholder="Contoh: Jl. Malioboro Blok D4 No. 18, RT 003/008" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Email & Nomor WhatsApp -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-slate-100">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Email Aktif (Untuk Pengiriman Invoice Resmi)</label>
               <input type="email" id="guest-email" value="user@stayjogja.id" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-amber-500">
@@ -692,6 +758,7 @@
             <label class="block text-xs font-semibold text-slate-700 mb-1">Permintaan Khusus (Opsional)</label>
             <input type="text" id="special-requests" placeholder="Contoh: Non-smoking room, check-in lebih awal jika memungkinkan" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
           </div>
+
         </div>
 
         <!-- Price Breakdown -->
@@ -767,6 +834,7 @@
   <script src="/js/api.js"></script>
   <script src="/js/state.js"></script>
   <script src="/js/nikParser.js"></script>
+  <script src="/js/ktpOcrScanner.js"></script>
   <script src="/js/detail.js"></script>
 </body>
 </html>

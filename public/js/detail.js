@@ -556,29 +556,14 @@ function startBookingRoom(unitId) {
     } catch (e) {}
   }
 
-  // Reset NIK and Dukcapil fields so it starts empty
+  // Reset KTP scan state
+  if (typeof resetKtpPhotoScan === 'function') {
+    resetKtpPhotoScan();
+  }
   const nikInput = document.getElementById('guest-nik');
   const addressInput = document.getElementById('guest-address');
-  const nikCard = document.getElementById('nik-detect-card');
-  const nikBadge = document.getElementById('nik-badge');
-  const nikIcon = document.getElementById('nik-icon-status');
-  const relSelect = document.getElementById('guest-religion');
-  const marSelect = document.getElementById('guest-marital');
-  const occInput = document.getElementById('guest-occupation');
   if (nikInput) nikInput.value = '';
   if (addressInput) addressInput.value = '';
-  if (nikCard) nikCard.classList.add('hidden');
-  if (relSelect) relSelect.value = 'Islam';
-  if (marSelect) marSelect.value = 'Belum Kawin';
-  if (occInput) occInput.value = 'Pelajar / Mahasiswa';
-  if (nikBadge) {
-    nikBadge.className = 'text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200';
-    nikBadge.textContent = 'Wajib Sesuai KTP';
-  }
-  if (nikIcon) {
-    nikIcon.innerHTML = '<i class="fa-solid fa-id-card"></i>';
-    nikIcon.className = 'absolute right-3 top-2.5 text-slate-400 text-sm';
-  }
 
   document.getElementById('booking-modal').classList.remove('hidden');
 }
@@ -675,21 +660,24 @@ async function handleBookingSubmit(e) {
   if (!currentBookingData) return;
 
   const nikInput = document.getElementById('guest-nik');
+  const nameInput = document.getElementById('guest-name');
   const addressInput = document.getElementById('guest-address');
   const relSelect = document.getElementById('guest-religion');
   const marSelect = document.getElementById('guest-marital');
   const occInput = document.getElementById('guest-occupation');
+  const citizenInput = document.getElementById('guest-citizenship');
 
   const guestNik = nikInput ? nikInput.value.replace(/\D/g, '') : '';
+  const guestName = nameInput ? nameInput.value.trim() : '';
   const guestAddress = addressInput ? addressInput.value.trim() : '';
   const guestReligion = relSelect ? relSelect.value : 'Islam';
-  const guestMarital = marSelect ? marSelect.value : 'Belum Kawin';
+  const guestMarital = marSelect ? marSelect.value : 'Kawin';
   const guestOccupation = occInput ? occInput.value.trim() : 'Karyawan Swasta';
-  const guestCitizenship = 'WNI';
+  const guestCitizenship = citizenInput ? citizenInput.value.trim() : 'Indonesia';
 
   if (!guestNik || guestNik.length < 16) {
-    alert('Mohon masukkan 16 digit NIK KTP Anda yang valid sebelum melanjutkan pemesanan.');
-    if (nikInput) nikInput.focus();
+    alert('Mohon ambil foto / upload foto KTP atau SIM Anda agar data identitas terisi lengkap.');
+    if (typeof triggerKtpPhotoUpload === 'function') triggerKtpPhotoUpload();
     return;
   }
 
