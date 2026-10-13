@@ -600,6 +600,14 @@ function applyScannedDataToForm(data) {
   if (marSelect && data.status_kawin) marSelect.value = data.status_kawin;
   if (occInput && data.pekerjaan) occInput.value = data.pekerjaan;
 
+  // Sinkronkan validasi NIK UI
+  if (data.nik && typeof handleNikInputChange === 'function') {
+    handleNikInputChange(data.nik);
+    if (addressInput && verifiedAddress) {
+      addressInput.value = verifiedAddress;
+    }
+  }
+
   // Sinkronkan nama profil user aktif HANYA jika yang discan adalah akun Raynor sendiri
   if (isRaynor && verifiedName) {
     try {
