@@ -223,6 +223,47 @@ function cleanKtpAddress(raw, fullText, isRaynor = false) {
   return cleaned.toUpperCase();
 }
 
+// Pembersih & Pengekstrak Tempat & Tanggal Lahir Langsung dari Fisik KTP
+function extractTtlFromLines(lines) {
+  let tempat = '';
+  let tanggal = '';
+
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (/tempat|tgl|lahir|ttl/i.test(l)) {
+      // Ambil isi setelah label Tempat/Tgl Lahir
+      let content = l.replace(/^.*?(?:tempat\s*[\/\-]\s*tgl\s+lahir|tempat\s+lahir|tgl\s+lahir|ttl)\s*[:;=]?\s*/i, '').trim();
+
+      // Kasus A: ada tanda koma, contoh: 'APREN, 11-08-1987' atau 'YOGYAKARTA, 19-03-2005'
+      if (content.includes(',')) {
+        const parts = content.split(',');
+        tempat = parts[0].replace(/[^A-Za-z\s]/g, '').trim();
+        const dateCandidate = parts.slice(1).join(',').trim();
+        tanggal = parseIndonesianDate(dateCandidate);
+      } else {
+        // Kasus B: tanggal di baris yang sama tanpa koma (contoh: 'APREN 11-08-1987')
+        const dateStr = parseIndonesianDate(content);
+        if (dateStr) {
+          tanggal = dateStr;
+          tempat = content.replace(/(\d{1,2}[\s\-\/\.]\d{1,2}[\s\-\/\.]\d{2,4}|\d{1,2}\s+[A-Za-z]+\s+\d{2,4})/g, '').replace(/[^A-Za-z\s]/g, '').trim();
+        } else {
+          // Kasus C: hanya nama tempat di baris ini (contoh: 'KUPANG'), cek baris berikutnya
+          tempat = content.replace(/[^A-Za-z\s]/g, '').trim();
+          if (i + 1 < lines.length) {
+            tanggal = parseIndonesianDate(lines[i + 1]);
+          }
+        }
+      }
+      break;
+    }
+  }
+
+  return {
+    tempat: tempat ? tempat.toUpperCase() : '',
+    tanggal: tanggal || ''
+  };
+}
+
 // Smart Parser Khusus Format KTP & SIM Indonesia
 function parseKtpText(text) {
   const clean = text.replace(/\r/g, '\n');
@@ -309,12 +350,21 @@ function parseKtpText(text) {
   // Cek apakah pemilik KTP adalah Raynor
   const isRaynor = /raynor|athaillah/i.test(nama) || /raynor|athaillah/i.test(clean);
 
-  // 3. Integrasi dengan NIK Decoder lokal StayJogja jika NIK ditemukan
+  // 3. Ekstrak Tempat & Tanggal Lahir LANGSUNG dari teks fisik KTP (Prioritas Utama)
+  const ttlFromPhoto = extractTtlFromLines(lines);
+  if (ttlFromPhoto.tempat) {
+    tempatLahir = ttlFromPhoto.tempat;
+  }
+  if (ttlFromPhoto.tanggal) {
+    tanggalLahir = ttlFromPhoto.tanggal;
+  }
+
+  // 4. Integrasi dengan NIK Decoder lokal StayJogja jika NIK ditemukan
   if (nik && nik.length === 16 && typeof window.decodeNik === 'function') {
     const nikInfo = window.decodeNik(nik);
     if (nikInfo && nikInfo.isValid) {
-      // Ambil tgl lahir dari NIK (Dukcapil otomatis membedakan pria & wanita)
-      if (nikInfo.birthDay && nikInfo.birthMonth && nikInfo.birthYear) {
+      // Gunakan tgl lahir dari NIK jika belum terbaca dari foto KTP
+      if (!tanggalLahir && nikInfo.birthDay && nikInfo.birthMonth && nikInfo.birthYear) {
         const d = String(nikInfo.birthDay).padStart(2, '0');
         const m = String(nikInfo.birthMonth).padStart(2, '0');
         const y = String(nikInfo.birthYear);
@@ -323,22 +373,9 @@ function parseKtpText(text) {
       if (nikInfo.gender) {
         jenisKelamin = nikInfo.gender;
       }
-      if (nikInfo.regency) {
+      // Gunakan kabupaten NIK sebagai Tempat Lahir HANYA jika fisik KTP tidak memuat Tempat Lahir
+      if (!tempatLahir && nikInfo.regency) {
         tempatLahir = nikInfo.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim().toUpperCase();
-      }
-    }
-  }
-
-  // 4. Ekstrak Tempat / Tanggal Lahir dari teks KTP jika belum terisi dari NIK
-  const ttlLine = lines.find(l => /tempat|tgl|lahir|ttl/i.test(l));
-  if (ttlLine) {
-    if (!tanggalLahir) {
-      tanggalLahir = parseIndonesianDate(ttlLine);
-    }
-    if (!tempatLahir) {
-      const placeMatch = ttlLine.match(/(?:Tempat\s*[\/\-]\s*Tgl\s+Lahir|Tempat|Tgl|Lahir|TTL)\s*[:;]?\s*([A-Za-z\s]+?)[,]/i);
-      if (placeMatch) {
-        tempatLahir = placeMatch[1].replace(/^(Tempat|Tgl|Lahir|TTL|[:;,\s])+/gi, '').trim().toUpperCase();
       }
     }
   }
