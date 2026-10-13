@@ -565,11 +565,18 @@ function handleNikInputChange(val) {
         : 'px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-bold';
     }
     if (birthEl) {
-      const bPlace = result.birthPlace || (result.regency ? result.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim() : '') || 'Yogyakarta';
+      let bPlace = result.birthPlace || (result.regency ? result.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim() : '') || 'Yogyakarta';
+      if (/^\d+$/.test(bPlace) || /Kab\/Kota/i.test(bPlace)) {
+        bPlace = result.province || 'Indonesia';
+      }
       birthEl.textContent = `${bPlace}, ${result.birthDateFormatted} (${result.age} Th)`;
     }
     if (regionEl) {
-      regionEl.textContent = `${result.district ? 'Kec. ' + result.district + ', ' : ''}${result.regency}`;
+      let regName = result.regency || '';
+      if (/Kab\/Kota\s*\d+/i.test(regName) || /^\d+$/.test(regName)) {
+        regName = result.province || '';
+      }
+      regionEl.textContent = `${result.district ? 'Kec. ' + result.district + ', ' : ''}${regName}`;
     }
     if (relSelect && result.religion) {
       relSelect.value = result.religion;

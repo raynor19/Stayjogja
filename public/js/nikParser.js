@@ -577,13 +577,53 @@ function decodeNik(nikInput) {
   const regCode = nik.substring(0, 4);
   const distCode = nik.substring(0, 6);
 
+  function formatTitleCaseName(str) {
+    if (!str) return '';
+    return str.toLowerCase().replace(/(?:^|\s|\/|\-)\S/g, a => a.toUpperCase())
+      .replace(/^Kab\.\s*/i, 'Kab. ')
+      .replace(/^Kota\s*/i, 'Kota ');
+  }
+
   let province = NIK_PROVINCES[provCode] || `Provinsi ${provCode}`;
-  const regencyObj = NIK_REGENCIES[regCode];
-  let regency = regencyObj ? regencyObj.name : `Kab/Kota ${regCode}`;
-  
-  // Format nama kecamatan rapi tanpa "Kec. Kecamatan (08)"
-  const rawDistrict = NIK_DISTRICTS[distCode];
-  let districtName = rawDistrict || '';
+  let regency = '';
+  let districtName = '';
+
+  // 1. Cek dari database lengkap window.NIK_WILAYAH_DATA (514 Kab/Kota & 7030 Kecamatan)
+  const wilayahDb = (typeof window !== 'undefined' && window.NIK_WILAYAH_DATA) ? window.NIK_WILAYAH_DATA : null;
+  if (wilayahDb) {
+    if (wilayahDb.provinsi && wilayahDb.provinsi[provCode]) {
+      province = formatTitleCaseName(wilayahDb.provinsi[provCode]);
+    }
+    if (wilayahDb.kabkot && wilayahDb.kabkot[regCode]) {
+      regency = formatTitleCaseName(wilayahDb.kabkot[regCode]);
+    }
+    if (wilayahDb.kecamatan && wilayahDb.kecamatan[distCode]) {
+      const rawKec = wilayahDb.kecamatan[distCode];
+      districtName = formatTitleCaseName(rawKec.split('--')[0].trim());
+    }
+  }
+
+  // 2. Fallback jika belum termuat dari wilayahDb
+  if (!regency) {
+    const regencyObj = NIK_REGENCIES[regCode];
+    if (regencyObj) {
+      regency = regencyObj.name;
+    }
+  }
+  if (!districtName) {
+    districtName = NIK_DISTRICTS[distCode] || '';
+  }
+
+  // Khusus kode 3514 (Kab. Pasuruan, Jawa Timur)
+  if (regCode === '3514') {
+    regency = 'Kab. Pasuruan';
+    province = 'Jawa Timur';
+  }
+
+  // Pastikan TIDAK PERNAH menampilkan kode angka seperti "Kab/Kota 3514"
+  if (!regency || /Kab\/Kota\s*\d+/i.test(regency) || /^\d+$/.test(regency)) {
+    regency = province || 'Indonesia';
+  }
 
   let rawDay = parseInt(nik.substring(6, 8), 10);
   const rawMonth = parseInt(nik.substring(8, 10), 10);
@@ -627,7 +667,6 @@ function decodeNik(nikInput) {
     districtName = 'Jatinegara';
     regency = 'Kota Jakarta Timur';
     province = 'DKI Jakarta';
-    postalCode = '';
     blockPart = 'Jl. Mawar Merah Blok Z No. 44, RT 004/002, Kel. Jatinegara';
   }
 
@@ -638,6 +677,9 @@ function decodeNik(nikInput) {
   let cleanBirthPlace = regency ? regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim() : (province || 'Indonesia');
   if (province.includes('Yogyakarta') || regency.includes('Yogyakarta') || nik === '3275081903050005') {
     cleanBirthPlace = 'Yogyakarta';
+  }
+  if (regCode === '3514' || cleanBirthPlace.includes('3514')) {
+    cleanBirthPlace = 'Pasuruan';
   }
 
   return {
