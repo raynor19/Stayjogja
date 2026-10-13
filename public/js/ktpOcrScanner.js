@@ -232,20 +232,25 @@ function cleanKtpAddress(raw, fullText, isRaynor = false) {
 
   if (!raw) return '';
 
-  // Normalisasi RT/RW yang salah baca angka & simbol OCR
-  let preCleaned = raw
-    .replace(/[“”"']/g, '')
-    .replace(/(\d{3})[7\/](\d{3})\s*[A-Za-z]?/g, 'RT $1/RW $2')
+  let cleaned = String(raw)
+    // 1. Bersihkan semua tanda kutip lurus & lengkung, tanda kurung, simbol noise OCR
+    .replace(/[“”"\'`«»©®™\[\]{}()_—~|\\*^$#@!<>?=`:%]/g, ' ')
+    // 2. Normalisasi RT/RW (misal 0027007 A, 002/007, atau 002-007)
+    .replace(/(\d{3})[7\/\-](\d{3})\s*[A-Za-z]?/g, 'RT $1/RW $2')
+    // 3. Normalisasi tipikal OCR: angka 3 terbaca S I atau S 1 (contoh: KESADARANS I -> KESADARAN 3)
     .replace(/\b([A-Za-z]+)S\s+[I1]\b/g, '$1 3')
-    .replace(/,\s*,/g, ',');
-
-  // Hilangkan karakter aneh noise OCR (simbol copyright, kurung, garis, dsb)
-  let cleaned = preCleaned
-    .replace(/[©®™\[\]{}()_—\-+;~|\\*^$#@!<>?=`:%»«]/g, ' ')
+    // 4. Koreksi tipikal nama kecamatan (PANAEKUKANG -> PANAKKUKANG)
+    .replace(/PANAEKUKANG/gi, 'PANAKKUKANG')
+    // 5. Bersihkan label pengenal jika masih tersisa
+    .replace(/\b(?:RT\/RW|KEL\/DESA|KECAMATAN|PROVINSI|KABUPATEN|KOTA)\s*[:;=]?\s*/gi, '')
     .replace(/\b(PELAJAR\/MAHASISWA|PELAJAR|MAHASISWA|KARYAWAN\s+SWASTA|WIRASWASTA|PNS|TNI|POLRI)\b/gi, '')
     .replace(/\b(AGAMA|STATUS|PERKAWINAN|PEKERJAAN|KEWARGANEGARAAN|BERLAKU\s+HINGGA|GOL\.?\s*DARAH)\b/gi, '')
     .replace(/\b(ISLAM|KRISTEN|KATOLIK|HINDU|BUDDHA|KAWIN|BELUM\s+KAWIN|WNI)\b/gi, '')
+    // 6. Rapikan spasi dan koma
+    .replace(/[^A-Za-z0-9\s,\.\-\/]/g, ' ')
     .replace(/\s+/g, ' ')
+    .replace(/\s*,\s*/g, ', ')
+    .replace(/(?:,\s*)+/g, ', ')
     .replace(/^[,.\s]+|[,.\s]+$/g, '')
     .trim();
 
@@ -260,8 +265,11 @@ function extractTtlFromLines(lines) {
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
     if (/tempat|tgl|lahir|ttl/i.test(l)) {
-      // Ambil isi setelah label Tempat/Tgl Lahir (toleran terhadap salah baca slash OCR seperti TEMPATIGL, TEMPATITGL, dll)
-      let content = l.replace(/^.*?(?:tempat[^\s,:]*|ttl)[^\w,]*(?:tgl|lahir)*[^\w,]*[:;=]?\s*/i, '').trim();
+      // Ambil isi setelah label Tempat/Tgl Lahir
+      let content = l
+        .replace(/^.*?\b(?:tempat|ttl|tgl|lahir)[^:]*?[:;=]\s*/i, '')
+        .replace(/^.*?(?:tempat|ttl|tgl|lahir)+[^\w,]*(?:tgl|lahir)*[^\w,]*[:;=]?\s*/i, '')
+        .trim();
 
       // Kasus A: ada tanda koma, contoh: 'POLMAS, 19-02-1978' atau 'YOGYAKARTA, 19-03-2005'
       if (content.includes(',')) {
@@ -287,7 +295,7 @@ function extractTtlFromLines(lines) {
       // Bersihkan tempat dari sisa kata label OCR (TEMPAT, TGL, LAHIR, IGL, ITGL, dsb)
       tempat = tempat
         .replace(/\b(TEMPAT|TGL|LAHIR|TTL|IGL|1GL|ITGL|TEMPATIGL|TEMPATITGL|TEMPATI)\b/gi, '')
-        .replace(/[^A-Za-z\s]/g, '')
+        .replace(/[^A-Za-z\s]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
 
