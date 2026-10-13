@@ -223,7 +223,7 @@ function renderReservationsTable() {
           <div class="font-bold text-slate-900">${r.guest_name}</div>
           <div class="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
             <span class="font-mono">${r.guest_nik || '-'}</span>
-            <span class="text-emerald-600 font-bold" title="Terverifikasi Dukcapil Kemendagri"><i class="fa-solid fa-shield-check"></i></span>
+            <span class="text-emerald-600 font-bold" title="Identitas Terverifikasi"><i class="fa-solid fa-shield-check"></i></span>
           </div>
         </td>
         <td class="py-3.5 px-4">

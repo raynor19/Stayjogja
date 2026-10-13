@@ -61,7 +61,7 @@ function buildQrPayload(resv, ktpData) {
   const birthStr = ktpData && ktpData.birthDateFormatted ? `${bPlace ? bPlace + ', ' : ''}${ktpData.birthDateFormatted}${ktpData.age ? ` (${ktpData.age} Th)` : ''}` : '-';
 
   return [
-    '=== DUKCAPIL & STAYJOGJA ===',
+    '=== RESERVASI STAYJOGJA ===',
     `INVOICE : ${resv.booking_code}`,
     `STATUS  : LUNAS & TERKONFIRMASI`,
     '---------------------------',
@@ -80,7 +80,7 @@ function buildQrPayload(resv, ktpData) {
     `TANGGAL : ${resv.check_in} s/d ${resv.check_out}`,
     `TOTAL   : Rp ${(resv.total_price || 0).toLocaleString('id-ID')}`,
     '===========================',
-    'TERDAFTAR RESMI DUKCAPIL RI'
+    'TERVERIFIKASI RESMI STAYJOGJA'
   ].join('\n');
 }
 

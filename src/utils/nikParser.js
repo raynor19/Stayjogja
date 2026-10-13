@@ -701,7 +701,7 @@ function parseNik(nikInput) {
     validUntil,
     addressKtp,
     serialNumber: nik.substring(12, 16),
-    source: 'Ditjen Kependudukan dan Pencatatan Sipil (Dukcapil Kemendagri RI)'
+    source: 'Sistem Terverifikasi StayJogja'
   };
 }
 

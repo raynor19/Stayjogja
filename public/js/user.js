@@ -394,7 +394,7 @@ async function viewVoucherModal(code) {
     const qrImg = document.getElementById('voucher-qr-image');
     const birthStr = `${bPlace}, ${ktp.birthDateFormatted ? `${ktp.birthDateFormatted} (${ktp.age || 28} Th)` : '15 Agustus 1998'}`;
     const qrPayload = [
-      '=== DUKCAPIL & STAYJOGJA ===',
+      '=== RESERVASI STAYJOGJA ===',
       `INVOICE : ${resv.booking_code}`,
       `STATUS  : LUNAS & TERKONFIRMASI`,
       '---------------------------',
@@ -413,7 +413,7 @@ async function viewVoucherModal(code) {
       `TANGGAL : ${resv.check_in} s/d ${resv.check_out}`,
       `TOTAL   : Rp ${(resv.total_price || 0).toLocaleString('id-ID')}`,
       '===========================',
-      'TERDAFTAR RESMI DUKCAPIL RI'
+      'TERVERIFIKASI RESMI STAYJOGJA'
     ].join('\n');
 
     window.currentBookingCode = resv.booking_code;
@@ -455,7 +455,7 @@ async function viewVoucherModal(code) {
     if (resv.status === 'selesai_checkin') {
       banner.className = 'p-3 rounded-xl flex items-center justify-between text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
       statusText.textContent = 'STATUS: SELESAI CHECK-IN (SUDAH DI HOTEL)';
-      statusDesc.textContent = 'Tamu telah terverifikasi KTP Dukcapil dan berhasil check-in di frontdesk';
+      statusDesc.textContent = 'Tamu telah terverifikasi identitas dan berhasil check-in di frontdesk';
     } else if (resv.status === 'terkonfirmasi') {
       banner.className = 'p-3 rounded-xl flex items-center justify-between text-xs font-bold badge-terkonfirmasi border border-green-200';
       statusText.textContent = 'STATUS: PESANAN TELAH DIKONFIRMASI (TELAH DI-ACC)';
