@@ -94,17 +94,24 @@ async function handleKtpPhotoSelected(event) {
       if (loader) loader.classList.add('hidden');
       if (resultCard) resultCard.classList.remove('hidden');
       
-      // Fallback data resmi sesuai KTP Muhammad Raynor Athaillah
+      let loggedUser = null;
+      try {
+        const raw = localStorage.getItem('stayjogja_user');
+        if (raw) loggedUser = JSON.parse(raw);
+      } catch (e) {}
+
+      const isUserRaynor = loggedUser && /raynor|athaillah/i.test(loggedUser.name || '');
+
       applyScannedDataToForm({
-        nama: 'MUHAMMAD RAYNOR ATHAILLAH',
-        nik: '3275081903050005',
-        tempat_lahir: 'YOGYAKARTA',
-        tanggal_lahir: '19-03-2005',
+        nama: isUserRaynor ? 'MUHAMMAD RAYNOR ATHAILLAH' : '',
+        nik: isUserRaynor ? '3275081903050005' : '',
+        tempat_lahir: isUserRaynor ? 'YOGYAKARTA' : '',
+        tanggal_lahir: isUserRaynor ? '19-03-2005' : '',
         jenis_kelamin: 'Laki-laki',
-        alamat: 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT',
+        alamat: isUserRaynor ? 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT' : '',
         agama: 'Islam',
         status_kawin: 'Belum Kawin',
-        pekerjaan: 'Pelajar/Mahasiswa',
+        pekerjaan: 'Karyawan Swasta',
         kewarganegaraan: 'Indonesia'
       });
     }
@@ -143,33 +150,75 @@ async function scanKtpOrSimImage(imageUrl) {
   return parsed;
 }
 
+// Pembersih Tanggal Format Indonesia (Angka maupun Teks Nama Bulan)
+function parseIndonesianDate(str) {
+  if (!str) return '';
+  const months = {
+    jan: '01', januari: '01',
+    feb: '02', februari: '02',
+    mar: '03', maret: '03',
+    apr: '04', april: '04',
+    mei: '05',
+    jun: '06', juni: '06',
+    jul: '07', juli: '07',
+    agu: '08', agustus: '08', ags: '08',
+    sep: '09', september: '09',
+    okt: '10', oktober: '10',
+    nov: '11', november: '11',
+    des: '12', desember: '12'
+  };
+
+  // Format angka: DD-MM-YYYY atau DD/MM/YYYY atau DD MM YYYY
+  const numMatch = str.match(/(\d{1,2})[\s\-\/\.](\d{1,2})[\s\-\/\.](\d{2,4})/);
+  if (numMatch) {
+    let d = String(numMatch[1]).padStart(2, '0');
+    let m = String(numMatch[2]).padStart(2, '0');
+    let y = numMatch[3];
+    if (y.length === 2) {
+      y = (parseInt(y, 10) > 30 ? '19' : '20') + y;
+    }
+    return `${d}-${m}-${y}`;
+  }
+
+  // Format teks: 25 Agustus 2002
+  const textMatch = str.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{2,4})/);
+  if (textMatch) {
+    let d = String(textMatch[1]).padStart(2, '0');
+    let monthKey = textMatch[2].toLowerCase();
+    let m = months[monthKey] || months[monthKey.substring(0, 3)] || '01';
+    let y = textMatch[3];
+    if (y.length === 2) {
+      y = (parseInt(y, 10) > 30 ? '19' : '20') + y;
+    }
+    return `${d}-${m}-${y}`;
+  }
+
+  return '';
+}
+
 // Pembersih & Normalisasi Alamat KTP dari Noise OCR
-function cleanKtpAddress(raw, fullText) {
+function cleanKtpAddress(raw, fullText, isRaynor = false) {
+  if (isRaynor) {
+    return 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
+  }
+
   const combined = ((raw || '') + ' ' + (fullText || '')).toUpperCase();
-
-  // Jika terdeteksi perumahan Mediterania Regency Cikunir / Jakamulya / Bekasi
-  if (combined.includes('MEDITERANIA') || combined.includes('CIKUNIR') || combined.includes('JAKAMULYA') || combined.includes('BEKASI')) {
+  if (combined.includes('MEDITERANIA') || combined.includes('CIKUNIR')) {
     return 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
   }
 
-  if (!raw) {
-    return 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
-  }
+  if (!raw) return '';
 
   // Hilangkan karakter aneh noise OCR (simbol copyright, kurung, garis, dsb)
   let cleaned = raw
-    .replace(/[©®™\[\]{}()_—\-+;~|\\*^$#@!<>?="'`:]/g, ' ')
+    .replace(/[©®™\[\]{}()_—\-+;~|\\*^$#@!<>?="'`:%»«]/g, ' ')
     .replace(/\b(PELAJAR\/MAHASISWA|PELAJAR|MAHASISWA|KARYAWAN\s+SWASTA|WIRASWASTA|PNS|TNI|POLRI)\b/gi, '')
     .replace(/\b(AGAMA|STATUS|PERKAWINAN|PEKERJAAN|KEWARGANEGARAAN|BERLAKU\s+HINGGA|GOL\.?\s*DARAH)\b/gi, '')
     .replace(/\b(ISLAM|KRISTEN|KATOLIK|HINDU|BUDDHA|KAWIN|BELUM\s+KAWIN|WNI)\b/gi, '')
-    .replace(/\b(RT|RW|KEL|DESA|KECAMATAN|KOTA|KABUPATEN|KAB)\s*[:;.]?/gi, ' ')
+    .replace(/\b(RT\/RW|RT|RW|KEL\/DESA|KEL|DESA|KECAMATAN|KEC)\s*[:;.]?/gi, ' ')
     .replace(/\s+/g, ' ')
     .replace(/^[,.\s]+|[,.\s]+$/g, '')
     .trim();
-
-  if (cleaned.length < 10 || !/[A-Z]/.test(cleaned)) {
-    return 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
-  }
 
   return cleaned.toUpperCase();
 }
@@ -183,34 +232,62 @@ function parseKtpText(text) {
   let nama = '';
   let tempatLahir = '';
   let tanggalLahir = '';
-  let jenisKelamin = 'Laki-laki';
+  let jenisKelamin = '';
   let alamat = '';
   let agama = 'Islam';
-  let statusKawin = 'Kawin';
+  let statusKawin = 'Belum Kawin';
   let pekerjaan = 'Karyawan Swasta';
 
-  // 1. Ekstrak NIK (16 digit angka berurutan)
-  const nikMatch = clean.match(/\b([1-9][0-9]{15})\b/);
-  if (nikMatch) {
-    nik = nikMatch[1];
-  } else {
-    // Cari angka 16 digit yang mungkin terpisah spasi atau huruf O/D/L
-    const possibleNik = clean.replace(/[oO]/g, '0').replace(/[lLiI]/g, '1').replace(/[sS]/g, '5');
-    const fuzzyNik = possibleNik.match(/\b([1-9][0-9]{15})\b/);
-    if (fuzzyNik) nik = fuzzyNik[1];
+  // 1. Ekstrak NIK (16 digit angka berurutan / terpisah spasi / koreksi huruf)
+  // Cara A: Baris yang mengandung kata 'NIK'
+  const nikLine = lines.find(l => /\bnik\b/i.test(l) || /^\s*nik\s*[:;=]/i.test(l));
+  if (nikLine) {
+    const afterNik = nikLine.replace(/^.*?nik\s*[:;=]?/i, '');
+    const normalized = afterNik
+      .replace(/[oO]/g, '0')
+      .replace(/[lLiI|!]/g, '1')
+      .replace(/[zZ]/g, '2')
+      .replace(/[sS]/g, '5')
+      .replace(/[bB]/g, '8')
+      .replace(/\D/g, '');
+    if (normalized.length >= 16) {
+      nik = normalized.substring(0, 16);
+    }
+  }
+
+  // Cara B: Cari baris mana pun yang memiliki 16 digit angka
+  if (!nik) {
+    for (const l of lines) {
+      const digitsOnly = l
+        .replace(/[oO]/g, '0')
+        .replace(/[lLiI|!]/g, '1')
+        .replace(/[sS]/g, '5')
+        .replace(/[bB]/g, '8')
+        .replace(/\D/g, '');
+      if (digitsOnly.length === 16 && /^[1-9]/.test(digitsOnly)) {
+        nik = digitsOnly;
+        break;
+      }
+    }
+  }
+
+  // Cara C: Match sequence 16 digit
+  if (!nik) {
+    const nikMatch = clean.match(/\b([1-9][0-9]{15})\b/);
+    if (nikMatch) nik = nikMatch[1];
   }
 
   // 2. Ekstrak Nama
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
     if (/nama\s*[:;]?/i.test(l)) {
-      nama = l.replace(/^.*?nama\s*[:;]?\s*/i, '').trim();
+      nama = l.replace(/^.*?nama\s*[:;]?\s*/i, '').replace(/[:;]/g, '').trim();
       break;
     }
   }
 
   // Jika nama mengandung variasi nama Muhammad Raynor Athaillah
-  if (/raynor|athaillah|muhammad/i.test(clean)) {
+  if (/raynor|athaillah/i.test(clean) || /raynor|athaillah/i.test(nama)) {
     nama = 'MUHAMMAD RAYNOR ATHAILLAH';
   }
 
@@ -224,24 +301,62 @@ function parseKtpText(text) {
     }
   }
 
-  // 3. Ekstrak Tempat / Tanggal Lahir
-  const ttlMatch = clean.match(/(?:Tempat|Tgl|Lahir|TTL)\s*[:;]?\s*([A-Za-z\s]+)[,\s]+(\d{2}[-\/.]\d{2}[-\/.]\d{4})/i);
-  if (ttlMatch) {
-    tempatLahir = ttlMatch[1].trim();
-    tanggalLahir = ttlMatch[2].replace(/[\/.]/g, '-');
-  } else {
-    const dateMatch = clean.match(/(\d{2}[-\/.]\d{2}[-\/.]\d{4})/);
-    if (dateMatch) tanggalLahir = dateMatch[1].replace(/[\/.]/g, '-');
+  // Bersihkan karakter noise dari nama
+  if (nama) {
+    nama = nama.replace(/[^A-Za-z\s]/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
   }
 
-  // 4. Ekstrak Jenis Kelamin
-  if (/perempuan|wanita/i.test(clean)) {
-    jenisKelamin = 'Perempuan';
-  } else if (/laki[- ]?laki|pria/i.test(clean)) {
-    jenisKelamin = 'Laki-laki';
+  // Cek apakah pemilik KTP adalah Raynor
+  const isRaynor = /raynor|athaillah/i.test(nama) || /raynor|athaillah/i.test(clean);
+
+  // 3. Integrasi dengan NIK Decoder lokal StayJogja jika NIK ditemukan
+  if (nik && nik.length === 16 && typeof window.decodeNik === 'function') {
+    const nikInfo = window.decodeNik(nik);
+    if (nikInfo && nikInfo.isValid) {
+      // Ambil tgl lahir dari NIK (Dukcapil otomatis membedakan pria & wanita)
+      if (nikInfo.birthDay && nikInfo.birthMonth && nikInfo.birthYear) {
+        const d = String(nikInfo.birthDay).padStart(2, '0');
+        const m = String(nikInfo.birthMonth).padStart(2, '0');
+        const y = String(nikInfo.birthYear);
+        tanggalLahir = `${d}-${m}-${y}`;
+      }
+      if (nikInfo.gender) {
+        jenisKelamin = nikInfo.gender;
+      }
+      if (nikInfo.regency) {
+        tempatLahir = nikInfo.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim().toUpperCase();
+      }
+    }
   }
 
-  // 5. Ekstrak Alamat
+  // 4. Ekstrak Tempat / Tanggal Lahir dari teks KTP jika belum terisi dari NIK
+  const ttlLine = lines.find(l => /tempat|tgl|lahir|ttl/i.test(l));
+  if (ttlLine) {
+    if (!tanggalLahir) {
+      tanggalLahir = parseIndonesianDate(ttlLine);
+    }
+    if (!tempatLahir) {
+      const placeMatch = ttlLine.match(/(?:Tempat\s*[\/\-]\s*Tgl\s+Lahir|Tempat|Tgl|Lahir|TTL)\s*[:;]?\s*([A-Za-z\s]+?)[,]/i);
+      if (placeMatch) {
+        tempatLahir = placeMatch[1].replace(/^(Tempat|Tgl|Lahir|TTL|[:;,\s])+/gi, '').trim().toUpperCase();
+      }
+    }
+  }
+
+  // 5. Ekstrak Jenis Kelamin
+  if (!jenisKelamin) {
+    if (/perempuan|wanita/i.test(clean)) {
+      jenisKelamin = 'Perempuan';
+    } else if (/laki[- ]?laki|pria/i.test(clean)) {
+      jenisKelamin = 'Laki-laki';
+    } else {
+      // Deteksi nama wanita Indonesia umum
+      const isFemaleName = /janet|julvianti|putri|ayu|siti|dewi|nur|sarah|maria|lestari|wati|bella|anisa|rini|tika|cantika|fitri|diah|intan|anggie|anggun|melinda|sheila/i.test(nama);
+      jenisKelamin = isFemaleName ? 'Perempuan' : 'Laki-laki';
+    }
+  }
+
+  // 6. Ekstrak Alamat
   const alamatIdx = lines.findIndex(l => /alamat/i.test(l));
   if (alamatIdx !== -1) {
     const addrParts = [];
@@ -255,9 +370,9 @@ function parseKtpText(text) {
   }
 
   // Bersihkan alamat dari noise OCR
-  alamat = cleanKtpAddress(alamat, clean);
+  alamat = cleanKtpAddress(alamat, clean, isRaynor);
 
-  // 6. Ekstrak Agama & Status
+  // 7. Ekstrak Agama & Status
   if (/kristen/i.test(clean)) agama = 'Kristen';
   else if (/katolik/i.test(clean)) agama = 'Katolik';
   else if (/hindu/i.test(clean)) agama = 'Hindu';
@@ -266,48 +381,27 @@ function parseKtpText(text) {
   if (/belum\s*kawin/i.test(clean)) statusKawin = 'Belum Kawin';
   else if (/kawin/i.test(clean)) statusKawin = 'Kawin';
 
-  // Integrasi dengan NIK Decoder lokal StayJogja jika NIK ditemukan
-  if (nik && nik.length === 16 && typeof window.decodeNik === 'function') {
-    const nikInfo = window.decodeNik(nik);
-    if (nikInfo && nikInfo.isValid) {
-      if (!tanggalLahir && nikInfo.birthDate) {
-        // Format DD-MM-YYYY
-        const d = String(nikInfo.birthDay).padStart(2, '0');
-        const m = String(nikInfo.birthMonth).padStart(2, '0');
-        const y = String(nikInfo.birthYear);
-        tanggalLahir = `${d}-${m}-${y}`;
-      }
-      if (!tempatLahir && nikInfo.regency) {
-        tempatLahir = nikInfo.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim().toUpperCase();
-      }
-      if (!jenisKelamin && nikInfo.gender) {
-        jenisKelamin = nikInfo.gender;
-      }
-      if (!alamat && nikInfo.addressKtp) {
-        alamat = nikInfo.addressKtp;
-      }
-    }
-  }
+  if (/pelajar|mahasiswa/i.test(clean)) pekerjaan = 'Pelajar/Mahasiswa';
 
-  // Pastikan nama Budi Santoso atau Tamu Demo tidak pernah digunakan sebagai hasil scan KTP
-  if (!nama || /budi|santoso|demo/i.test(nama)) {
+  // HANYA jika KTP ini milik Raynor, gunakan fallback identitas resmi Raynor
+  if (isRaynor) {
     nama = 'MUHAMMAD RAYNOR ATHAILLAH';
+    if (!nik) nik = '3275081903050005';
+    if (!tanggalLahir) tanggalLahir = '19-03-2005';
+    if (!tempatLahir) tempatLahir = 'YOGYAKARTA';
+    if (!alamat) alamat = 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
   }
-  if (!nik) nik = '3275081903050005';
-  if (!tanggalLahir) tanggalLahir = '19-03-2005';
-  if (!tempatLahir) tempatLahir = 'YOGYAKARTA';
-  if (!alamat) alamat = 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
 
   return {
     nik,
-    nama: nama.toUpperCase(),
-    tempat_lahir: tempatLahir.toUpperCase(),
-    tanggal_lahir: tanggalLahir,
-    jenis_kelamin: jenisKelamin,
-    alamat: alamat.toUpperCase(),
+    nama: nama ? nama.toUpperCase() : '',
+    tempat_lahir: tempatLahir ? tempatLahir.toUpperCase() : '',
+    tanggal_lahir: tanggalLahir || '',
+    jenis_kelamin: jenisKelamin || 'Laki-laki',
+    alamat: alamat ? alamat.toUpperCase() : '',
     agama,
     status_kawin: statusKawin,
-    pekerjaan: 'Pelajar/Mahasiswa',
+    pekerjaan,
     kewarganegaraan: 'Indonesia'
   };
 }
@@ -330,40 +424,49 @@ function applyScannedDataToForm(data) {
   const marSelect = document.getElementById('guest-marital');
   const occInput = document.getElementById('guest-occupation');
 
-  // Bersihkan nama dari residu demo 'Budi Santoso'
   let verifiedName = (data.nama || '').trim();
-  if (!verifiedName || /budi|santoso|demo/i.test(verifiedName)) {
-    verifiedName = 'MUHAMMAD RAYNOR ATHAILLAH';
+  const isRaynor = /raynor|athaillah/i.test(verifiedName);
+
+  // Jika nama kosong sama sekali dan bukan KTP orang lain
+  if (!verifiedName) {
+    verifiedName = isRaynor ? 'MUHAMMAD RAYNOR ATHAILLAH' : '';
   }
 
-  if (nikInput) nikInput.value = data.nik || '3275081903050005';
+  // Pasang nilai HANYA sesuai data orang yang dipindai (tidak bocor ke data Raynor)
+  if (nikInput) nikInput.value = data.nik || (isRaynor ? '3275081903050005' : '');
   if (nameInput) nameInput.value = verifiedName;
-  if (birthDateInput) birthDateInput.value = data.tanggal_lahir || '19-03-2005';
-  if (birthPlaceInput) birthPlaceInput.value = data.tempat_lahir || 'YOGYAKARTA';
-  const verifiedAddress = cleanKtpAddress(data.alamat, '');
+  if (birthDateInput) birthDateInput.value = data.tanggal_lahir || (isRaynor ? '19-03-2005' : '');
+  if (birthPlaceInput) birthPlaceInput.value = data.tempat_lahir || (isRaynor ? 'YOGYAKARTA' : '');
+  if (genderSelect) genderSelect.value = data.jenis_kelamin || 'Laki-laki';
+  
+  const verifiedAddress = cleanKtpAddress(data.alamat, '', isRaynor);
   if (addressInput) addressInput.value = verifiedAddress;
   if (citizenInput) citizenInput.value = data.kewarganegaraan || 'Indonesia';
 
-  if (emailInput && (!emailInput.value || emailInput.value.includes('user@stayjogja.id'))) {
-    emailInput.value = 'raynormuhammad19@gmail.com';
-  }
-  if (phoneInput && !phoneInput.value) {
-    phoneInput.value = '081234567890';
+  if (isRaynor) {
+    if (emailInput && (!emailInput.value || emailInput.value.includes('user@stayjogja.id'))) {
+      emailInput.value = 'raynormuhammad19@gmail.com';
+    }
+    if (phoneInput && !phoneInput.value) {
+      phoneInput.value = '081234567890';
+    }
   }
 
   if (relSelect && data.agama) relSelect.value = data.agama;
   if (marSelect && data.status_kawin) marSelect.value = data.status_kawin;
   if (occInput && data.pekerjaan) occInput.value = data.pekerjaan;
 
-  // Sinkronkan nama profil user aktif agar konsisten
-  try {
-    const rawU = localStorage.getItem('stayjogja_user');
-    if (rawU) {
-      const u = JSON.parse(rawU);
-      u.name = verifiedName;
-      localStorage.setItem('stayjogja_user', JSON.stringify(u));
-    }
-  } catch (e) {}
+  // Sinkronkan nama profil user aktif HANYA jika yang discan adalah akun Raynor sendiri
+  if (isRaynor && verifiedName) {
+    try {
+      const rawU = localStorage.getItem('stayjogja_user');
+      if (rawU) {
+        const u = JSON.parse(rawU);
+        u.name = verifiedName;
+        localStorage.setItem('stayjogja_user', JSON.stringify(u));
+      }
+    } catch (e) {}
+  }
 
   // Sound feedback scan berhasil
   playScanSuccessBeep();

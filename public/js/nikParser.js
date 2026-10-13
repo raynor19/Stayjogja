@@ -155,7 +155,15 @@ const NIK_REGENCIES = {
   '5103': { name: 'Kab. Badung', prov: 'Bali' },
   '5104': { name: 'Kab. Gianyar', prov: 'Bali' },
   '5171': { name: 'Kota Denpasar', prov: 'Bali' },
-  '5271': { name: 'Kota Mataram', prov: 'Nusa Tenggara Barat' }
+  '5271': { name: 'Kota Mataram', prov: 'Nusa Tenggara Barat' },
+  '5371': { name: 'Kota Kupang', prov: 'Nusa Tenggara Timur' },
+  '5301': { name: 'Kab. Kupang', prov: 'Nusa Tenggara Timur' },
+  '5302': { name: 'Kab. Timor Tengah Selatan', prov: 'Nusa Tenggara Timur' },
+  '5303': { name: 'Kab. Timor Tengah Utara', prov: 'Nusa Tenggara Timur' },
+  '5304': { name: 'Kab. Belu', prov: 'Nusa Tenggara Timur' },
+  '5307': { name: 'Kab. Sikka', prov: 'Nusa Tenggara Timur' },
+  '5308': { name: 'Kab. Ende', prov: 'Nusa Tenggara Timur' },
+  '5315': { name: 'Kab. Manggarai Barat (Labuan Bajo)', prov: 'Nusa Tenggara Timur' }
 };
 
 const NIK_DISTRICTS = {
