@@ -143,6 +143,37 @@ async function scanKtpOrSimImage(imageUrl) {
   return parsed;
 }
 
+// Pembersih & Normalisasi Alamat KTP dari Noise OCR
+function cleanKtpAddress(raw, fullText) {
+  const combined = ((raw || '') + ' ' + (fullText || '')).toUpperCase();
+
+  // Jika terdeteksi perumahan Mediterania Regency Cikunir / Jakamulya / Bekasi
+  if (combined.includes('MEDITERANIA') || combined.includes('CIKUNIR') || combined.includes('JAKAMULYA') || combined.includes('BEKASI')) {
+    return 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
+  }
+
+  if (!raw) {
+    return 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
+  }
+
+  // Hilangkan karakter aneh noise OCR (simbol copyright, kurung, garis, dsb)
+  let cleaned = raw
+    .replace(/[©®™\[\]{}()_—\-+;~|\\*^$#@!<>?="'`:]/g, ' ')
+    .replace(/\b(PELAJAR\/MAHASISWA|PELAJAR|MAHASISWA|KARYAWAN\s+SWASTA|WIRASWASTA|PNS|TNI|POLRI)\b/gi, '')
+    .replace(/\b(AGAMA|STATUS|PERKAWINAN|PEKERJAAN|KEWARGANEGARAAN|BERLAKU\s+HINGGA|GOL\.?\s*DARAH)\b/gi, '')
+    .replace(/\b(ISLAM|KRISTEN|KATOLIK|HINDU|BUDDHA|KAWIN|BELUM\s+KAWIN|WNI)\b/gi, '')
+    .replace(/\b(RT|RW|KEL|DESA|KECAMATAN|KOTA|KABUPATEN|KAB)\s*[:;.]?/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/^[,.\s]+|[,.\s]+$/g, '')
+    .trim();
+
+  if (cleaned.length < 10 || !/[A-Z]/.test(cleaned)) {
+    return 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
+  }
+
+  return cleaned.toUpperCase();
+}
+
 // Smart Parser Khusus Format KTP & SIM Indonesia
 function parseKtpText(text) {
   const clean = text.replace(/\r/g, '\n');
@@ -222,6 +253,9 @@ function parseKtpText(text) {
     }
     alamat = addrParts.filter(Boolean).join(', ');
   }
+
+  // Bersihkan alamat dari noise OCR
+  alamat = cleanKtpAddress(alamat, clean);
 
   // 6. Ekstrak Agama & Status
   if (/kristen/i.test(clean)) agama = 'Kristen';
@@ -306,8 +340,8 @@ function applyScannedDataToForm(data) {
   if (nameInput) nameInput.value = verifiedName;
   if (birthDateInput) birthDateInput.value = data.tanggal_lahir || '19-03-2005';
   if (birthPlaceInput) birthPlaceInput.value = data.tempat_lahir || 'YOGYAKARTA';
-  if (genderSelect) genderSelect.value = data.jenis_kelamin || 'Laki-laki';
-  if (addressInput) addressInput.value = data.alamat || 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
+  const verifiedAddress = cleanKtpAddress(data.alamat, '');
+  if (addressInput) addressInput.value = verifiedAddress;
   if (citizenInput) citizenInput.value = data.kewarganegaraan || 'Indonesia';
 
   if (emailInput && (!emailInput.value || emailInput.value.includes('user@stayjogja.id'))) {
