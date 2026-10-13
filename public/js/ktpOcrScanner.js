@@ -111,6 +111,9 @@ async function handleKtpPhotoSelected(event) {
   reader.onload = async (e) => {
     const rawDataUrl = e.target.result;
     if (previewImg) previewImg.src = rawDataUrl;
+    try {
+      localStorage.setItem('stayjogja_last_ktp_photo', rawDataUrl);
+    } catch (err) {}
 
     // Tampilkan loading scanning
     if (uploadBox) uploadBox.classList.add('hidden');

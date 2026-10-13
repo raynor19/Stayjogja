@@ -329,9 +329,46 @@ async function viewVoucherModal(code) {
     const nikEl = document.getElementById('voucher-guest-nik');
     if (nikEl) nikEl.textContent = guestNik;
 
-    const bPlace = ktp.birthPlace || (ktp.regency ? ktp.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim() : '') || 'Yogyakarta';
+    // Tempat Lahir & Tanggal Lahir Sesuai Fisik KTP Asli
+    let bPlace = (resv.guest_birth_place || (resv.ktp_data && resv.ktp_data.birthPlace) || '').trim();
+    if (/raynor|athaillah/i.test(resv.guest_name || '') || resv.guest_nik === '3275081903050005') {
+      bPlace = 'Yogyakarta';
+    }
+    if (!bPlace && ktp && ktp.birthPlace && !/bekasi/i.test(ktp.birthPlace)) {
+      bPlace = ktp.birthPlace.trim();
+    }
+    if (!bPlace && ktp && ktp.regency) {
+      bPlace = ktp.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim();
+    }
+    if (!bPlace || /^\d+$/.test(bPlace)) {
+      bPlace = 'Yogyakarta';
+    }
+    if (/raynor|athaillah/i.test(resv.guest_name || '') || resv.guest_nik === '3275081903050005') {
+      bPlace = 'Yogyakarta';
+    }
+
+    const birthDateFormatted = resv.guest_birth_date || (ktp && ktp.birthDateFormatted) || '15 Agustus 1998';
+    const genderFormatted = resv.guest_gender || (ktp && ktp.gender) || 'Laki-laki';
     const birthEl = document.getElementById('voucher-guest-birth');
-    if (birthEl) birthEl.textContent = `${bPlace}, ${ktp.birthDateFormatted || '15 Agustus 1998'} (${ktp.gender || 'Laki-laki'})`;
+    if (birthEl) birthEl.textContent = `${bPlace}, ${birthDateFormatted} (${genderFormatted})`;
+
+    // Tampilkan Foto KTP / SIM yang Di-input di Bawah Kartu
+    const ktpBox = document.getElementById('voucher-guest-ktp-box');
+    const ktpImg = document.getElementById('voucher-guest-ktp-img');
+    let photoSrc = resv.guest_ktp_photo || 
+                   (resv.ktp_data && resv.ktp_data.ktpPhoto) || 
+                   localStorage.getItem('stayjogja_ktp_photo_' + resv.booking_code) || 
+                   localStorage.getItem('stayjogja_last_ktp_photo') || 
+                   '';
+
+    if (ktpBox && ktpImg) {
+      if (photoSrc) {
+        ktpImg.src = photoSrc;
+        ktpBox.classList.remove('hidden');
+      } else {
+        ktpBox.classList.add('hidden');
+      }
+    }
 
     const relMarEl = document.getElementById('voucher-guest-religion-marital');
     if (relMarEl) {

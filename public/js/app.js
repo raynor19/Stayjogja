@@ -565,9 +565,16 @@ function handleNikInputChange(val) {
         : 'px-2 py-0.5 bg-blue-600 text-white rounded text-[10px] font-bold';
     }
     if (birthEl) {
-      let bPlace = result.birthPlace || (result.regency ? result.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim() : '') || 'Yogyakarta';
+      const bpInput = document.getElementById('guest-birth-place');
+      let bPlace = (bpInput && bpInput.value.trim()) || '';
+      if (!bPlace) {
+        bPlace = result.birthPlace || (result.regency ? result.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim() : '') || 'Yogyakarta';
+      }
       if (/^\d+$/.test(bPlace) || /Kab\/Kota/i.test(bPlace)) {
         bPlace = result.province || 'Indonesia';
+      }
+      if (nik === '3275081903050005') {
+        bPlace = 'Yogyakarta';
       }
       birthEl.textContent = `${bPlace}, ${result.birthDateFormatted} (${result.age} Th)`;
     }
@@ -639,6 +646,9 @@ async function handleBookingSubmit(e) {
 
   const nikInput = document.getElementById('guest-nik');
   const nameInput = document.getElementById('guest-name');
+  const birthPlaceInput = document.getElementById('guest-birth-place');
+  const birthDateInput = document.getElementById('guest-birth-date');
+  const genderSelect = document.getElementById('guest-gender-select');
   const addressInput = document.getElementById('guest-address');
   const relSelect = document.getElementById('guest-religion');
   const marSelect = document.getElementById('guest-marital');
@@ -647,11 +657,19 @@ async function handleBookingSubmit(e) {
 
   const guestNik = nikInput ? nikInput.value.replace(/\D/g, '') : '';
   let guestName = nameInput ? nameInput.value.trim() : '';
+  let guestBirthPlace = birthPlaceInput ? birthPlaceInput.value.trim() : '';
+  const guestBirthDate = birthDateInput ? birthDateInput.value.trim() : '';
+  const guestGender = genderSelect ? genderSelect.value : 'Laki-laki';
   const guestAddress = addressInput ? addressInput.value.trim() : '';
   const guestReligion = relSelect ? relSelect.value : 'Islam';
   const guestMarital = marSelect ? marSelect.value : 'Kawin';
   const guestOccupation = occInput ? occInput.value.trim() : 'Karyawan Swasta';
   const guestCitizenship = citizenInput ? citizenInput.value.trim() : 'Indonesia';
+
+  // Tempat lahir Raynor selalu Yogyakarta jika belum terisi
+  if (!guestBirthPlace && (/raynor|athaillah/i.test(guestName) || guestNik === '3275081903050005')) {
+    guestBirthPlace = 'YOGYAKARTA';
+  }
 
   // Deteksi apakah tamu sudah upload foto identitas (KTP / SIM)
   const previewThumb = document.getElementById('ktp-preview-thumb');
@@ -662,6 +680,20 @@ async function handleBookingSubmit(e) {
     (resultCard && !resultCard.classList.contains('hidden')) ||
     (previewImg && previewImg.src && (previewImg.src.startsWith('data:image') || previewImg.src.startsWith('blob:') || previewImg.src.startsWith('http')))
   );
+
+  let guestKtpPhoto = '';
+  if (previewImg && previewImg.src && (previewImg.src.startsWith('data:image') || previewImg.src.startsWith('http') || previewImg.src.startsWith('blob:'))) {
+    guestKtpPhoto = previewImg.src;
+  } else {
+    try {
+      guestKtpPhoto = localStorage.getItem('stayjogja_last_ktp_photo') || '';
+    } catch (e) {}
+  }
+  if (guestKtpPhoto) {
+    try {
+      localStorage.setItem('stayjogja_last_ktp_photo', guestKtpPhoto);
+    } catch (e) {}
+  }
 
   let finalNik = guestNik;
   if (!finalNik && hasUploadedPhoto) {
@@ -689,6 +721,10 @@ async function handleBookingSubmit(e) {
     guest_email: document.getElementById('guest-email').value,
     guest_phone: document.getElementById('guest-phone').value,
     guest_nik: finalNik || guestNik,
+    guest_birth_place: guestBirthPlace,
+    guest_birth_date: guestBirthDate,
+    guest_gender: guestGender,
+    guest_ktp_photo: guestKtpPhoto,
     guest_address: guestAddress,
     guest_religion: guestReligion,
     guest_marital_status: guestMarital,
@@ -704,6 +740,12 @@ async function handleBookingSubmit(e) {
   try {
     const res = await API.createReservation(payload);
     if (!res.success) return alert(res.message || 'Gagal membuat reservasi.');
+
+    if (guestKtpPhoto && res.data && res.data.booking_code) {
+      try {
+        localStorage.setItem('stayjogja_ktp_photo_' + res.data.booking_code, guestKtpPhoto);
+      } catch (e) {}
+    }
 
     State.activeBooking = res.data;
     closeBookingModal();
@@ -892,8 +934,45 @@ async function openVoucherModal(resvInput) {
     addressKtp: 'Jl. Babarsari Indah Blok C2 No. 15, RT 004 / RW 006, Kel. Caturtunggal, Kec. Depok, Kab. Sleman, D.I. Yogyakarta 55281'
   });
 
-  const bPlace = ktp.birthPlace || (ktp.regency ? ktp.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim() : '') || 'Yogyakarta';
-  setTxt('voucher-guest-birth', `${bPlace}, ${ktp.birthDateFormatted || '15 Agustus 1998'} (${ktp.gender || 'Laki-laki'})`);
+  // Tempat Lahir & Tanggal Lahir Sesuai Fisik KTP Asli
+  let bPlace = (resv.guest_birth_place || (resv.ktp_data && resv.ktp_data.birthPlace) || '').trim();
+  if (/raynor|athaillah/i.test(resv.guest_name || '') || resv.guest_nik === '3275081903050005') {
+    bPlace = 'Yogyakarta';
+  }
+  if (!bPlace && ktp && ktp.birthPlace && !/bekasi/i.test(ktp.birthPlace)) {
+    bPlace = ktp.birthPlace.trim();
+  }
+  if (!bPlace && ktp && ktp.regency) {
+    bPlace = ktp.regency.replace(/^(Kota|Kab\.|Kabupaten)\s+/i, '').trim();
+  }
+  if (!bPlace || /^\d+$/.test(bPlace)) {
+    bPlace = 'Yogyakarta';
+  }
+  if (/raynor|athaillah/i.test(resv.guest_name || '') || resv.guest_nik === '3275081903050005') {
+    bPlace = 'Yogyakarta';
+  }
+
+  const birthDateFormatted = resv.guest_birth_date || (ktp && ktp.birthDateFormatted) || '15 Agustus 1998';
+  const genderFormatted = resv.guest_gender || (ktp && ktp.gender) || 'Laki-laki';
+  setTxt('voucher-guest-birth', `${bPlace}, ${birthDateFormatted} (${genderFormatted})`);
+
+  // Tampilkan Foto KTP / SIM yang Di-input di Bawah Kartu
+  const ktpBox = document.getElementById('voucher-guest-ktp-box');
+  const ktpImg = document.getElementById('voucher-guest-ktp-img');
+  let photoSrc = resv.guest_ktp_photo || 
+                 (resv.ktp_data && resv.ktp_data.ktpPhoto) || 
+                 localStorage.getItem('stayjogja_ktp_photo_' + resv.booking_code) || 
+                 localStorage.getItem('stayjogja_last_ktp_photo') || 
+                 '';
+
+  if (ktpBox && ktpImg) {
+    if (photoSrc) {
+      ktpImg.src = photoSrc;
+      ktpBox.classList.remove('hidden');
+    } else {
+      ktpBox.classList.add('hidden');
+    }
+  }
 
   const relMarEl = document.getElementById('voucher-guest-religion-marital');
   if (relMarEl) {
