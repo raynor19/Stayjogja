@@ -164,12 +164,12 @@
 
       <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Validasi Dukcapil</span>
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Validasi Identitas</span>
           <span class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs"><i class="fa-solid fa-shield-halved"></i></span>
         </div>
         <div class="mt-2 flex items-baseline gap-2">
           <span class="text-2xl font-black text-indigo-900">100%</span>
-          <span class="text-[11px] text-indigo-600 font-bold">Sah KTP</span>
+          <span class="text-[11px] text-indigo-600 font-bold">Sah Identitas</span>
         </div>
       </div>
     </div>
@@ -188,7 +188,7 @@
             Penerimaan Tamu & Scan Barcode Tamu
           </h2>
           <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Arahkan kamera ke QR Code tamu pada invoice HP tamu untuk verifikasi instan KTP Dukcapil, status lunas, dan langsung <strong>tetapkan nomor kamar tamu</strong>.
+            Arahkan kamera ke QR Code tamu pada invoice HP tamu untuk verifikasi instan KTP/SIM, status lunas, dan langsung <strong>tetapkan nomor kamar tamu</strong>.
           </p>
 
           <div class="flex flex-wrap items-center gap-3 pt-2">
@@ -401,7 +401,7 @@
               <span id="assign-guest-name" class="font-bold text-slate-800 text-xs">—</span>
             </div>
             <div>
-              <span class="text-slate-400 block font-medium">NIK KTP (Dukcapil):</span>
+              <span class="text-slate-400 block font-medium">NIK / No. Identitas:</span>
               <span id="assign-guest-nik" class="font-mono font-bold text-slate-800 text-xs">—</span>
             </div>
             <div>
@@ -411,6 +411,33 @@
             <div>
               <span class="text-slate-400 block font-medium">Status Pembayaran:</span>
               <span class="font-black text-emerald-700">LUNAS 100%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ARSIP FOTO KTP / SIM DIGITAL (PENGGANTI FOTOKOPI FISIK) -->
+        <div id="assign-ktp-box" class="p-3 bg-blue-50/80 border border-blue-200 rounded-2xl flex flex-col sm:flex-row items-center gap-3.5">
+          <div class="relative group cursor-pointer shrink-0" onclick="zoomReceptionistKtp()">
+            <img id="assign-ktp-img" src="" alt="Foto KTP/SIM Tamu" class="w-32 h-20 sm:w-36 sm:h-24 object-cover rounded-xl border-2 border-blue-300 shadow-sm bg-white hover:scale-105 transition">
+            <span class="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 rounded-xl flex items-center justify-center text-white text-[11px] font-bold transition">
+              <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Perbesar Foto
+            </span>
+          </div>
+          <div class="min-w-0 flex-1 text-center sm:text-left">
+            <div class="flex items-center justify-center sm:justify-start gap-1.5 text-emerald-700 font-extrabold text-xs">
+              <i class="fa-solid fa-circle-check text-emerald-600"></i>
+              <span>Foto Dokumen Resmi (Pengganti Fotokopi Fisik)</span>
+            </div>
+            <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+              Foto KTP/SIM yang diunggah tamu saat booking tersimpan di sistem. Resepsionis <strong>tidak perlu meminta fotokopi KTP fisik lagi</strong> demi efisiensi check-in.
+            </p>
+            <div class="mt-1.5 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <span id="assign-ktp-badge" class="inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 font-bold border border-blue-200">
+                <i class="fa-solid fa-id-card text-blue-700"></i> Terverifikasi Digital
+              </span>
+              <button type="button" onclick="zoomReceptionistKtp()" class="text-[10px] text-blue-700 hover:text-blue-900 font-bold underline cursor-pointer">
+                Lihat Ukuran Penuh
+              </button>
             </div>
           </div>
         </div>
@@ -461,13 +488,40 @@
     </div>
   </div>
 
+  <!-- ================= LIGHTBOX ZOOM MODAL FOTO KTP ================= -->
+  <div id="ktp-zoom-modal" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="closeReceptionistKtpZoom()">
+    <div class="relative max-w-2xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl p-4" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-id-card text-blue-900 text-lg"></i>
+          <div>
+            <h4 class="font-bold text-slate-900 text-sm">Dokumen Identitas Tamu (KTP / SIM)</h4>
+            <p class="text-[11px] text-slate-500">Arsip digital pengganti fotokopi fisik front desk</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeReceptionistKtpZoom()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm transition cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="flex items-center justify-center bg-slate-950 rounded-xl overflow-hidden p-2 min-h-[220px]">
+        <img id="ktp-zoom-modal-img" src="" alt="Foto KTP Tamu Zoom" class="max-h-[70vh] w-auto max-w-full object-contain rounded-lg">
+      </div>
+      <div class="mt-3 flex items-center justify-between text-xs text-slate-500">
+        <span><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i> Data identitas sah & terverifikasi sistem StayJogja</span>
+        <button type="button" onclick="closeReceptionistKtpZoom()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg transition cursor-pointer">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= FOOTER ================= -->
   <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
-    <p>© 2026 StayJogja Hospitality Platform. Portal Front Desk Resepsionis Terintegrasi Dukcapil Kemendagri RI.</p>
+    <p>© 2026 StayJogja Hospitality Platform. Portal Front Desk Resepsionis Modern & Paperless Check-In.</p>
   </footer>
 
   <!-- Scripts -->
   <script src="/js/api.js"></script>
-  <script src="/js/resepsionis.js"></script>
+  <script src="/js/resepsionis.js?v=20261014_15"></script>
 </body>
 </html>

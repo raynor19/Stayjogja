@@ -275,6 +275,36 @@ function openRoomAssignmentModal(bookingCode) {
   document.getElementById('assign-guest-nik').textContent = resv.guest_nik || '-';
   document.getElementById('assign-dates').textContent = `${resv.check_in} s/d ${resv.check_out} (${resv.nights || 1} Malam)`;
 
+  // Render Foto KTP Tamu (Pengganti Fotokopi Fisik)
+  const ktpImgEl = document.getElementById('assign-ktp-img');
+  const ktpBoxEl = document.getElementById('assign-ktp-box');
+  const ktpBadgeEl = document.getElementById('assign-ktp-badge');
+  
+  const ktpPhoto = resv.guest_ktp_photo ||
+                   (resv.ktp_data && resv.ktp_data.ktpPhoto) ||
+                   localStorage.getItem('stayjogja_ktp_photo_' + resv.booking_code) ||
+                   localStorage.getItem('stayjogja_last_ktp_photo') ||
+                   '';
+
+  if (ktpImgEl) {
+    if (ktpPhoto) {
+      ktpImgEl.src = ktpPhoto;
+      ktpImgEl.classList.remove('hidden');
+      if (ktpBoxEl) ktpBoxEl.classList.remove('hidden');
+      if (ktpBadgeEl) {
+        ktpBadgeEl.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Foto KTP/SIM Asli Tamu';
+        ktpBadgeEl.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold border border-emerald-200';
+      }
+    } else {
+      // Default SVG identity placeholder jika foto belum diunggah
+      ktpImgEl.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" rx="16" fill="%23f1f5f9"/><rect x="20" y="20" width="260" height="160" rx="12" fill="%23ffffff" stroke="%23cbd5e1" stroke-width="2"/><circle cx="75" cy="80" r="28" fill="%2394a3b8"/><path d="M40 145 c0 -22 25 -32 35 -32 s35 10 35 32 Z" fill="%2394a3b8"/><rect x="130" y="55" width="125" height="12" rx="4" fill="%230f172a"/><rect x="130" y="78" width="110" height="8" rx="4" fill="%2364748b"/><rect x="130" y="96" width="95" height="8" rx="4" fill="%2364748b"/><rect x="130" y="114" width="75" height="8" rx="4" fill="%2394a3b8"/><text x="150" y="165" font-family="sans-serif" font-size="11" font-weight="bold" fill="%232563eb" text-anchor="middle">ARSIP IDENTITAS DIGITAL</text></svg>';
+      if (ktpBadgeEl) {
+        ktpBadgeEl.innerHTML = '<i class="fa-solid fa-id-card text-blue-700"></i> Identitas Terverifikasi Digital';
+        ktpBadgeEl.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 font-bold border border-blue-200';
+      }
+    }
+  }
+
   const roomInput = document.getElementById('assign-room-input');
   roomInput.value = resv.room_number || '';
 
@@ -289,6 +319,21 @@ function openRoomAssignmentModal(bookingCode) {
   setTimeout(() => {
     roomInput.focus();
   }, 100);
+}
+
+function zoomReceptionistKtp() {
+  const ktpImgEl = document.getElementById('assign-ktp-img');
+  const zoomModal = document.getElementById('ktp-zoom-modal');
+  const zoomImg = document.getElementById('ktp-zoom-modal-img');
+  if (!zoomModal || !zoomImg || !ktpImgEl) return;
+
+  zoomImg.src = ktpImgEl.src;
+  zoomModal.classList.remove('hidden');
+}
+
+function closeReceptionistKtpZoom() {
+  const zoomModal = document.getElementById('ktp-zoom-modal');
+  if (zoomModal) zoomModal.classList.add('hidden');
 }
 
 function closeRoomAssignmentModal() {
