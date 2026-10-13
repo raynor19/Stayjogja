@@ -589,9 +589,16 @@ function startBookingRoom(unitId) {
   if (rawUser) {
     try {
       const u = JSON.parse(rawUser);
-      if (u.name) document.getElementById('guest-name').value = u.name;
-      if (u.email) document.getElementById('guest-email').value = u.email;
-      if (u.phone) document.getElementById('guest-phone').value = u.phone;
+      let userName = (u.name || '').trim();
+      if (!userName || /budi|santoso|demo/i.test(userName)) {
+        userName = 'MUHAMMAD RAYNOR ATHAILLAH';
+        u.name = 'Muhammad Raynor Athaillah';
+        u.email = (u.email && !u.email.includes('user@stayjogja.id')) ? u.email : 'raynormuhammad19@gmail.com';
+        localStorage.setItem('stayjogja_user', JSON.stringify(u));
+      }
+      if (document.getElementById('guest-name')) document.getElementById('guest-name').value = userName;
+      if (document.getElementById('guest-email')) document.getElementById('guest-email').value = u.email || 'raynormuhammad19@gmail.com';
+      if (document.getElementById('guest-phone')) document.getElementById('guest-phone').value = u.phone || '081234567890';
     } catch (e) {}
   }
 

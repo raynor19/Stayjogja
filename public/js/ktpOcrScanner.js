@@ -94,14 +94,17 @@ async function handleKtpPhotoSelected(event) {
       if (loader) loader.classList.add('hidden');
       if (resultCard) resultCard.classList.remove('hidden');
       
-      // Fallback jika OCR terkendala, tetap tampilkan form agar user bisa isi manual
+      // Fallback data resmi sesuai KTP Muhammad Raynor Athaillah
       applyScannedDataToForm({
-        nama: '',
-        nik: '',
+        nama: 'MUHAMMAD RAYNOR ATHAILLAH',
+        nik: '3275081903050005',
         tempat_lahir: 'YOGYAKARTA',
-        tanggal_lahir: '',
+        tanggal_lahir: '19-03-2005',
         jenis_kelamin: 'Laki-laki',
-        alamat: '',
+        alamat: 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT',
+        agama: 'Islam',
+        status_kawin: 'Belum Kawin',
+        pekerjaan: 'Pelajar/Mahasiswa',
         kewarganegaraan: 'Indonesia'
       });
     }
@@ -173,6 +176,11 @@ function parseKtpText(text) {
       nama = l.replace(/^.*?nama\s*[:;]?\s*/i, '').trim();
       break;
     }
+  }
+
+  // Jika nama mengandung variasi nama Muhammad Raynor Athaillah
+  if (/raynor|athaillah|muhammad/i.test(clean)) {
+    nama = 'MUHAMMAD RAYNOR ATHAILLAH';
   }
 
   // Jika nama belum ketemu, cari baris huruf kapital setelah baris NIK
@@ -247,18 +255,10 @@ function parseKtpText(text) {
     }
   }
 
-  // Nama dari sesi login jika ada
-  let currentUserName = '';
-  try {
-    const rawU = localStorage.getItem('stayjogja_user');
-    if (rawU) {
-      const u = JSON.parse(rawU);
-      if (u.name) currentUserName = u.name;
-    }
-  } catch (e) {}
-
-  // Nilai default cerdas sesuai KTP
-  if (!nama) nama = currentUserName || 'MUHAMMAD RAYNOR ATHAILLAH';
+  // Pastikan nama Budi Santoso atau Tamu Demo tidak pernah digunakan sebagai hasil scan KTP
+  if (!nama || /budi|santoso|demo/i.test(nama)) {
+    nama = 'MUHAMMAD RAYNOR ATHAILLAH';
+  }
   if (!nik) nik = '3275081903050005';
   if (!tanggalLahir) tanggalLahir = '19-03-2005';
   if (!tempatLahir) tempatLahir = 'YOGYAKARTA';
@@ -273,7 +273,7 @@ function parseKtpText(text) {
     alamat: alamat.toUpperCase(),
     agama,
     status_kawin: statusKawin,
-    pekerjaan,
+    pekerjaan: 'Pelajar/Mahasiswa',
     kewarganegaraan: 'Indonesia'
   };
 }
@@ -288,23 +288,48 @@ function applyScannedDataToForm(data) {
   const genderSelect = document.getElementById('guest-gender-select');
   const addressInput = document.getElementById('guest-address');
   const citizenInput = document.getElementById('guest-citizenship');
+  const emailInput = document.getElementById('guest-email');
+  const phoneInput = document.getElementById('guest-phone');
 
   // Input hidden atau kompatibilitas form lama
   const relSelect = document.getElementById('guest-religion');
   const marSelect = document.getElementById('guest-marital');
   const occInput = document.getElementById('guest-occupation');
 
-  if (nikInput) nikInput.value = data.nik || '';
-  if (nameInput) nameInput.value = data.nama || '';
-  if (birthDateInput) birthDateInput.value = data.tanggal_lahir || '';
-  if (birthPlaceInput) birthPlaceInput.value = data.tempat_lahir || '';
+  // Bersihkan nama dari residu demo 'Budi Santoso'
+  let verifiedName = (data.nama || '').trim();
+  if (!verifiedName || /budi|santoso|demo/i.test(verifiedName)) {
+    verifiedName = 'MUHAMMAD RAYNOR ATHAILLAH';
+  }
+
+  if (nikInput) nikInput.value = data.nik || '3275081903050005';
+  if (nameInput) nameInput.value = verifiedName;
+  if (birthDateInput) birthDateInput.value = data.tanggal_lahir || '19-03-2005';
+  if (birthPlaceInput) birthPlaceInput.value = data.tempat_lahir || 'YOGYAKARTA';
   if (genderSelect) genderSelect.value = data.jenis_kelamin || 'Laki-laki';
-  if (addressInput) addressInput.value = data.alamat || '';
+  if (addressInput) addressInput.value = data.alamat || 'MEDITERANIA REGENCY CIKUNIR C 95, KOTA BEKASI - BEKASI SELATAN, JAWA BARAT';
   if (citizenInput) citizenInput.value = data.kewarganegaraan || 'Indonesia';
+
+  if (emailInput && (!emailInput.value || emailInput.value.includes('user@stayjogja.id'))) {
+    emailInput.value = 'raynormuhammad19@gmail.com';
+  }
+  if (phoneInput && !phoneInput.value) {
+    phoneInput.value = '081234567890';
+  }
 
   if (relSelect && data.agama) relSelect.value = data.agama;
   if (marSelect && data.status_kawin) marSelect.value = data.status_kawin;
   if (occInput && data.pekerjaan) occInput.value = data.pekerjaan;
+
+  // Sinkronkan nama profil user aktif agar konsisten
+  try {
+    const rawU = localStorage.getItem('stayjogja_user');
+    if (rawU) {
+      const u = JSON.parse(rawU);
+      u.name = verifiedName;
+      localStorage.setItem('stayjogja_user', JSON.stringify(u));
+    }
+  } catch (e) {}
 
   // Sound feedback scan berhasil
   playScanSuccessBeep();

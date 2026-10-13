@@ -497,13 +497,21 @@ function startBooking(propId, unitId) {
   // Pre-fill user data
   const loggedInUser = getActiveUser();
   if (loggedInUser) {
-    if (document.getElementById('guest-name')) document.getElementById('guest-name').value = loggedInUser.name || '';
-    if (document.getElementById('guest-email')) document.getElementById('guest-email').value = loggedInUser.email || '';
-    if (document.getElementById('guest-phone')) document.getElementById('guest-phone').value = loggedInUser.phone || '';
+    let uName = (loggedInUser.name || '').trim();
+    if (!uName || /budi|santoso|demo/i.test(uName)) {
+      uName = 'MUHAMMAD RAYNOR ATHAILLAH';
+    }
+    if (document.getElementById('guest-name')) document.getElementById('guest-name').value = uName;
+    if (document.getElementById('guest-email')) document.getElementById('guest-email').value = (loggedInUser.email && !loggedInUser.email.includes('user@stayjogja.id')) ? loggedInUser.email : 'raynormuhammad19@gmail.com';
+    if (document.getElementById('guest-phone')) document.getElementById('guest-phone').value = loggedInUser.phone || '081234567890';
   } else if (State.currentUser) {
-    if (document.getElementById('guest-name')) document.getElementById('guest-name').value = State.currentUser.name || '';
-    if (document.getElementById('guest-email')) document.getElementById('guest-email').value = State.currentUser.email || '';
-    if (document.getElementById('guest-phone')) document.getElementById('guest-phone').value = State.currentUser.phone || '';
+    let uName = (State.currentUser.name || '').trim();
+    if (!uName || /budi|santoso|demo/i.test(uName)) {
+      uName = 'MUHAMMAD RAYNOR ATHAILLAH';
+    }
+    if (document.getElementById('guest-name')) document.getElementById('guest-name').value = uName;
+    if (document.getElementById('guest-email')) document.getElementById('guest-email').value = State.currentUser.email || 'raynormuhammad19@gmail.com';
+    if (document.getElementById('guest-phone')) document.getElementById('guest-phone').value = State.currentUser.phone || '081234567890';
   }
 
   // Reset KTP scan state

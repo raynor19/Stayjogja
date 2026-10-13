@@ -48,7 +48,7 @@ function quickFillDemo(role) {
   if (role === 'user') {
     emailInput.value = 'user@stayjogja.id';
     passwordInput.value = 'password123';
-    showAlert('Akun Tamu (Budi Santoso) terisi otomatis. Klik tombol Masuk.', 'info');
+    showAlert('Akun Tamu (Muhammad Raynor Athaillah) terisi otomatis. Klik tombol Masuk.', 'info');
   } else if (role === 'owner') {
     emailInput.value = 'owner@stayjogja.id';
     passwordInput.value = 'password123';
