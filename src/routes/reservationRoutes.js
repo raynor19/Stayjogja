@@ -425,9 +425,28 @@ router.put('/:id/assign-room', async (req, res) => {
     });
   } catch (err) {
     console.error('Error assigning room:', err);
+// POST /api/reservations/:code/ktp-photo - Update atau simpan foto KTP tamu
+router.post('/:code/ktp-photo', async (req, res) => {
+  try {
+    const { code } = req.params;
+    const { photo } = req.body;
+    if (!photo) return res.status(400).json({ success: false, message: 'Foto tidak boleh kosong.' });
+
+    const resv = db.reservations.find(r => (r.booking_code && r.booking_code.toUpperCase() === code.toUpperCase()) || r.id === code);
+    if (!resv) return res.status(404).json({ success: false, message: 'Reservasi tidak ditemukan.' });
+
+    resv.guest_ktp_photo = photo;
+    if (!resv.ktp_data) resv.ktp_data = {};
+    resv.ktp_data.ktpPhoto = photo;
+    await db.saveReservations();
+
+    res.json({ success: true, message: 'Foto KTP/SIM berhasil disimpan ke sistem.', data: resv });
+  } catch (err) {
+    console.error('Error updating KTP photo:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
 
 router.delete('/:id', async (req, res) => {
   try {

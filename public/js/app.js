@@ -675,23 +675,29 @@ async function handleBookingSubmit(e) {
   const previewThumb = document.getElementById('ktp-preview-thumb');
   const previewImg = document.getElementById('ktp-preview-img');
   const resultCard = document.getElementById('ktp-scanned-result-card');
+
+  let guestKtpPhoto = window.currentUploadedKtpPhoto || '';
+  if (!guestKtpPhoto && previewImg && previewImg.src && (previewImg.src.startsWith('data:image') || previewImg.src.startsWith('http') || previewImg.src.startsWith('blob:'))) {
+    guestKtpPhoto = previewImg.src;
+  }
+  if (!guestKtpPhoto) {
+    try {
+      guestKtpPhoto = localStorage.getItem('stayjogja_last_ktp_photo') || sessionStorage.getItem('stayjogja_last_ktp_photo') || '';
+    } catch (e) {}
+  }
+
   const hasUploadedPhoto = Boolean(
+    guestKtpPhoto ||
     (previewThumb && !previewThumb.classList.contains('hidden')) ||
     (resultCard && !resultCard.classList.contains('hidden')) ||
     (previewImg && previewImg.src && (previewImg.src.startsWith('data:image') || previewImg.src.startsWith('blob:') || previewImg.src.startsWith('http')))
   );
 
-  let guestKtpPhoto = '';
-  if (previewImg && previewImg.src && (previewImg.src.startsWith('data:image') || previewImg.src.startsWith('http') || previewImg.src.startsWith('blob:'))) {
-    guestKtpPhoto = previewImg.src;
-  } else {
-    try {
-      guestKtpPhoto = localStorage.getItem('stayjogja_last_ktp_photo') || '';
-    } catch (e) {}
-  }
   if (guestKtpPhoto) {
+    window.currentUploadedKtpPhoto = guestKtpPhoto;
     try {
       localStorage.setItem('stayjogja_last_ktp_photo', guestKtpPhoto);
+      sessionStorage.setItem('stayjogja_last_ktp_photo', guestKtpPhoto);
     } catch (e) {}
   }
 
@@ -744,6 +750,7 @@ async function handleBookingSubmit(e) {
     if (guestKtpPhoto && res.data && res.data.booking_code) {
       try {
         localStorage.setItem('stayjogja_ktp_photo_' + res.data.booking_code, guestKtpPhoto);
+        sessionStorage.setItem('stayjogja_ktp_photo_' + res.data.booking_code, guestKtpPhoto);
       } catch (e) {}
     }
 

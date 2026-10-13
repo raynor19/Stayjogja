@@ -62,37 +62,49 @@ function switchDocType(type) {
   }
 }
 
-// Kompresi & penyesuaian resolusi gambar KTP untuk OCR optimal (< 300KB)
-function resizeImageForOcr(dataUrl, maxDimension = 1280) {
+// Kompresi gambar KTP/SIM ke format web ringan (~70KB - 100KB) agar aman disimpan di localStorage & Vercel
+function compressKtpImage(fileOrDataUrl, maxDimension = 1000, quality = 0.82) {
   return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      let w = img.width;
-      let h = img.height;
-      if (w <= maxDimension && h <= maxDimension) {
-        return resolve(dataUrl);
-      }
-      if (w > h) {
-        if (w > maxDimension) {
-          h = Math.round((h * maxDimension) / w);
-          w = maxDimension;
+    const processImage = (srcUrl) => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width;
+        let h = img.height;
+        if (w > maxDimension || h > maxDimension) {
+          if (w > h) {
+            h = Math.round((h * maxDimension) / w);
+            w = maxDimension;
+          } else {
+            w = Math.round((w * maxDimension) / h);
+            h = maxDimension;
+          }
         }
-      } else {
-        if (h > maxDimension) {
-          w = Math.round((w * maxDimension) / h);
-          h = maxDimension;
-        }
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.88));
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve(srcUrl);
+      img.src = srcUrl;
     };
-    img.onerror = () => resolve(dataUrl);
-    img.src = dataUrl;
+
+    if (typeof fileOrDataUrl === 'string') {
+      processImage(fileOrDataUrl);
+    } else if (fileOrDataUrl instanceof Blob || fileOrDataUrl instanceof File) {
+      const reader = new FileReader();
+      reader.onload = (e) => processImage(e.target.result);
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(fileOrDataUrl);
+    } else {
+      resolve('');
+    }
   });
+}
+
+function resizeImageForOcr(dataUrl, maxDimension = 1280) {
+  return compressKtpImage(dataUrl, maxDimension, 0.85);
 }
 
 // Handler saat foto dipilih dari kamera / file
@@ -106,43 +118,43 @@ async function handleKtpPhotoSelected(event) {
   const previewThumb = document.getElementById('ktp-preview-thumb');
   const previewImg = document.getElementById('ktp-preview-img');
 
-  // Baca file gambar sebagai Data URL
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const rawDataUrl = e.target.result;
-    if (previewImg) previewImg.src = rawDataUrl;
+  // Tampilkan loading scanning
+  if (uploadBox) uploadBox.classList.add('hidden');
+  if (resultCard) resultCard.classList.add('hidden');
+  if (loader) loader.classList.remove('hidden');
+
+  try {
+    // 1. Kompresi gambar langsung ke format ringan (~70KB - 100KB)
+    const compressedUrl = await compressKtpImage(file, 1000, 0.82);
+
+    // 2. Simpan di global window & preview thumbnail
+    window.currentUploadedKtpPhoto = compressedUrl;
+    if (previewImg) previewImg.src = compressedUrl;
+
+    // 3. Simpan di storage tanpa risiko batas kuota 5MB (hanya memakan <2% kuota)
     try {
-      localStorage.setItem('stayjogja_last_ktp_photo', rawDataUrl);
-    } catch (err) {}
-
-    // Tampilkan loading scanning
-    if (uploadBox) uploadBox.classList.add('hidden');
-    if (resultCard) resultCard.classList.add('hidden');
-    if (loader) loader.classList.remove('hidden');
-
-    try {
-      // Optimasi resolusi agar pemrosesan instan & tidak timeout
-      const optimizedUrl = await resizeImageForOcr(rawDataUrl, 1280);
-
-      // Jalankan OCR & Ekstraksi Data (AI Vision + Tesseract)
-      const extracted = await scanKtpOrSimImage(optimizedUrl);
-      
-      // Selesai memindai -> Tampilkan hasil formulir Shopee SPinjam style
-      if (loader) loader.classList.add('hidden');
-      if (resultCard) resultCard.classList.remove('hidden');
-      if (previewThumb) previewThumb.classList.remove('hidden');
-
-      applyScannedDataToForm(extracted);
-
+      localStorage.setItem('stayjogja_last_ktp_photo', compressedUrl);
+      sessionStorage.setItem('stayjogja_last_ktp_photo', compressedUrl);
     } catch (err) {
-      console.error('OCR Error:', err);
-      if (loader) loader.classList.add('hidden');
-      if (resultCard) resultCard.classList.remove('hidden');
-      if (previewThumb) previewThumb.classList.remove('hidden');
+      console.warn('Storage save warning:', err);
     }
-  };
 
-  reader.readAsDataURL(file);
+    // 4. Jalankan AI OCR & ekstraksi
+    const extracted = await scanKtpOrSimImage(compressedUrl);
+
+    // 5. Selesai memindai -> Tampilkan hasil formulir
+    if (loader) loader.classList.add('hidden');
+    if (resultCard) resultCard.classList.remove('hidden');
+    if (previewThumb) previewThumb.classList.remove('hidden');
+
+    applyScannedDataToForm(extracted);
+
+  } catch (err) {
+    console.error('OCR Processing error:', err);
+    if (loader) loader.classList.add('hidden');
+    if (resultCard) resultCard.classList.remove('hidden');
+    if (previewThumb) previewThumb.classList.remove('hidden');
+  }
 }
 
 // Core OCR Scanner (AI Vision Primary + Tesseract Fallback)

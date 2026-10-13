@@ -438,6 +438,10 @@
               <button type="button" onclick="zoomReceptionistKtp()" class="text-[10px] text-blue-700 hover:text-blue-900 font-bold underline cursor-pointer">
                 Lihat Ukuran Penuh
               </button>
+              <label class="text-[10px] text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer inline-flex items-center gap-1">
+                <i class="fa-solid fa-camera"></i> Ganti / Upload Ulang
+                <input type="file" accept="image/*" class="hidden" onchange="uploadReceptionistKtp(event)">
+              </label>
             </div>
           </div>
         </div>
@@ -522,6 +526,6 @@
 
   <!-- Scripts -->
   <script src="/js/api.js"></script>
-  <script src="/js/resepsionis.js?v=20261014_15"></script>
+  <script src="/js/resepsionis.js?v=20261014_17"></script>
 </body>
 </html>

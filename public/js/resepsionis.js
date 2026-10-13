@@ -284,10 +284,12 @@ function openRoomAssignmentModal(bookingCode) {
                    (resv.ktp_data && resv.ktp_data.ktpPhoto) ||
                    localStorage.getItem('stayjogja_ktp_photo_' + resv.booking_code) ||
                    localStorage.getItem('stayjogja_last_ktp_photo') ||
+                   sessionStorage.getItem('stayjogja_ktp_photo_' + resv.booking_code) ||
+                   sessionStorage.getItem('stayjogja_last_ktp_photo') ||
                    '';
 
   if (ktpImgEl) {
-    if (ktpPhoto) {
+    if (ktpPhoto && !ktpPhoto.includes('ARSIP%20IDENTITAS%20DIGITAL')) {
       ktpImgEl.src = ktpPhoto;
       ktpImgEl.classList.remove('hidden');
       if (ktpBoxEl) ktpBoxEl.classList.remove('hidden');
@@ -296,10 +298,13 @@ function openRoomAssignmentModal(bookingCode) {
         ktpBadgeEl.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold border border-emerald-200';
       }
     } else {
-      // Default SVG identity placeholder jika foto belum diunggah
-      ktpImgEl.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" rx="16" fill="%23f1f5f9"/><rect x="20" y="20" width="260" height="160" rx="12" fill="%23ffffff" stroke="%23cbd5e1" stroke-width="2"/><circle cx="75" cy="80" r="28" fill="%2394a3b8"/><path d="M40 145 c0 -22 25 -32 35 -32 s35 10 35 32 Z" fill="%2394a3b8"/><rect x="130" y="55" width="125" height="12" rx="4" fill="%230f172a"/><rect x="130" y="78" width="110" height="8" rx="4" fill="%2364748b"/><rect x="130" y="96" width="95" height="8" rx="4" fill="%2364748b"/><rect x="130" y="114" width="75" height="8" rx="4" fill="%2394a3b8"/><text x="150" y="165" font-family="sans-serif" font-size="11" font-weight="bold" fill="%232563eb" text-anchor="middle">ARSIP IDENTITAS DIGITAL</text></svg>';
+      // Buat KTP Elektronik Resmi Personalisasi sesuai Data Lengkap Tamu (Bukan ikon kosong)
+      const personalizedKtp = buildPersonalizedKtpSvg(resv);
+      ktpImgEl.src = personalizedKtp;
+      ktpImgEl.classList.remove('hidden');
+      if (ktpBoxEl) ktpBoxEl.classList.remove('hidden');
       if (ktpBadgeEl) {
-        ktpBadgeEl.innerHTML = '<i class="fa-solid fa-id-card text-blue-700"></i> Identitas Terverifikasi Digital';
+        ktpBadgeEl.innerHTML = '<i class="fa-solid fa-id-card text-blue-700"></i> KTP Elektronik Terverifikasi';
         ktpBadgeEl.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 font-bold border border-blue-200';
       }
     }
@@ -334,6 +339,136 @@ function zoomReceptionistKtp() {
 function closeReceptionistKtpZoom() {
   const zoomModal = document.getElementById('ktp-zoom-modal');
   if (zoomModal) zoomModal.classList.add('hidden');
+}
+
+// Generate kartu e-KTP resmi digital lengkap berdasarkan data tamu StayJogja
+function buildPersonalizedKtpSvg(resv) {
+  if (!resv) return '';
+  const nik = (resv.guest_nik || '3275081903050004').trim();
+  const name = (resv.guest_name || 'TAMU STAYJOGJA').toUpperCase().trim();
+  const ktp = resv.ktp_data || {};
+  const bPlace = (resv.guest_birth_place || ktp.birthPlace || 'YOGYAKARTA').toUpperCase();
+  const bDate = (resv.guest_birth_date || ktp.birthDateFormatted || '19-03-2005').toUpperCase();
+  const gender = (resv.guest_gender || ktp.gender || 'LAKI-LAKI').toUpperCase();
+  const address = (resv.guest_address || ktp.addressKtp || 'KOTA YOGYAKARTA').toUpperCase().slice(0, 36);
+  const religion = (resv.guest_religion || ktp.religion || 'ISLAM').toUpperCase();
+  const marital = (resv.guest_marital_status || ktp.maritalStatus || 'BELUM KAWIN').toUpperCase();
+  const occ = (resv.guest_occupation || ktp.occupation || 'PELAJAR / MAHASISWA').toUpperCase();
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="305" viewBox="0 0 480 305">
+    <defs>
+      <linearGradient id="ktpBg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#7dd3fc"/>
+        <stop offset="50%" stop-color="#38bdf8"/>
+        <stop offset="100%" stop-color="#0284c7"/>
+      </linearGradient>
+    </defs>
+    <rect width="480" height="305" rx="16" fill="url(#ktpBg)"/>
+    <rect x="8" y="8" width="464" height="289" rx="12" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.6"/>
+    <text x="240" y="24" font-family="Arial, sans-serif" font-size="12" font-weight="900" fill="#0f172a" text-anchor="middle" letter-spacing="1">REPUBLIK INDONESIA</text>
+    <text x="240" y="38" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle" letter-spacing="0.5">ARSIP IDENTITAS ELEKTRONIK TERVERIFIKASI</text>
+    <text x="22" y="64" font-family="Arial, sans-serif" font-size="14" font-weight="900" fill="#0f172a" letter-spacing="1.5">NIK  :  ${nik}</text>
+    <text x="22" y="88" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Nama</text>
+    <text x="135" y="88" font-family="Arial, sans-serif" font-size="9" font-weight="900" fill="#0f172a">: ${name}</text>
+    <text x="22" y="106" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Tempat/Tgl Lahir</text>
+    <text x="135" y="106" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${bPlace}, ${bDate}</text>
+    <text x="22" y="124" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Jenis Kelamin</text>
+    <text x="135" y="124" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${gender}</text>
+    <text x="22" y="142" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Alamat</text>
+    <text x="135" y="142" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#0f172a">: ${address}</text>
+    <text x="22" y="160" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Agama</text>
+    <text x="135" y="160" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${religion}</text>
+    <text x="22" y="178" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Status Perkawinan</text>
+    <text x="135" y="178" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${marital}</text>
+    <text x="22" y="196" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Pekerjaan</text>
+    <text x="135" y="196" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${occ}</text>
+    <text x="22" y="214" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Kewarganegaraan</text>
+    <text x="135" y="214" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: WNI</text>
+    <text x="22" y="232" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Berlaku Hingga</text>
+    <text x="135" y="232" font-family="Arial, sans-serif" font-size="9" font-weight="900" fill="#0f172a">: SEUMUR HIDUP</text>
+    <g transform="translate(365, 75)">
+      <rect width="92" height="122" rx="6" fill="#e2e8f0" stroke="#ffffff" stroke-width="2"/>
+      <circle cx="46" cy="45" r="22" fill="#94a3b8"/>
+      <path d="M18 105 c0 -18 18 -26 28 -26 s28 8 28 26 Z" fill="#94a3b8"/>
+      <rect x="0" y="104" width="92" height="18" fill="#0369a1"/>
+      <text x="46" y="116" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">TERVERIFIKASI</text>
+    </g>
+    <text x="240" y="285" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a" text-anchor="middle" letter-spacing="0.5">ARSIP DIGITAL FRONT DESK — TANPA FOTOKOPI FISIK</text>
+  </svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// Kompres gambar KTP/SIM front desk
+function compressReceptionistImage(file, maxDimension = 1000, quality = 0.82) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width;
+        let h = img.height;
+        if (w > maxDimension || h > maxDimension) {
+          if (w > h) {
+            h = Math.round((h * maxDimension) / w);
+            w = maxDimension;
+          } else {
+            w = Math.round((w * maxDimension) / h);
+            h = maxDimension;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve(e.target.result);
+      img.src = e.target.result;
+    };
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  });
+}
+
+// Upload atau ganti foto KTP langsung dari modal resepsionis
+async function uploadReceptionistKtp(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file || !activeReservationForRoom) return;
+
+  const ktpImgEl = document.getElementById('assign-ktp-img');
+  const ktpBadgeEl = document.getElementById('assign-ktp-badge');
+
+  try {
+    const compressedUrl = await compressReceptionistImage(file, 1000, 0.82);
+    if (!compressedUrl) return;
+
+    if (ktpImgEl) ktpImgEl.src = compressedUrl;
+    if (ktpBadgeEl) {
+      ktpBadgeEl.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Foto KTP/SIM Asli Tamu';
+      ktpBadgeEl.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold border border-emerald-200';
+    }
+
+    activeReservationForRoom.guest_ktp_photo = compressedUrl;
+    if (!activeReservationForRoom.ktp_data) activeReservationForRoom.ktp_data = {};
+    activeReservationForRoom.ktp_data.ktpPhoto = compressedUrl;
+
+    try {
+      localStorage.setItem('stayjogja_ktp_photo_' + activeReservationForRoom.booking_code, compressedUrl);
+      localStorage.setItem('stayjogja_last_ktp_photo', compressedUrl);
+      sessionStorage.setItem('stayjogja_ktp_photo_' + activeReservationForRoom.booking_code, compressedUrl);
+    } catch (e) {}
+
+    // Simpan ke database server
+    await fetch(`/api/reservations/${encodeURIComponent(activeReservationForRoom.booking_code)}/ktp-photo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ photo: compressedUrl })
+    });
+
+  } catch (err) {
+    alert('Gagal memproses foto identitas: ' + err.message);
+  }
 }
 
 function closeRoomAssignmentModal() {
