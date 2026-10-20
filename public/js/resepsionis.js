@@ -252,21 +252,41 @@ function renderReservationsTable() {
 }
 
 // 4. Modal Alokasi Kamar
-function openRoomAssignmentModal(bookingCode) {
-  const resv = allReservations.find(r => r.booking_code.toUpperCase() === bookingCode.toUpperCase());
+async function openRoomAssignmentModal(bookingCode) {
+  let resv = allReservations.find(r => r.booking_code && r.booking_code.toUpperCase() === bookingCode.toUpperCase());
+
+  // Jika belum ada di list cache browser, fetch langsung ke server/Firestore
   if (!resv) {
-    alert(`Data reservasi dengan kode ${bookingCode} tidak ditemukan.`);
+    try {
+      const resp = await fetch(`/api/reservations/code/${encodeURIComponent(bookingCode)}`);
+      const json = await resp.json();
+      if (json.success && json.data) {
+        resv = json.data;
+        allReservations.unshift(resv);
+        updateStatsKPIs(allReservations);
+        renderReservationsTable();
+      }
+    } catch (e) {
+      console.warn('Fallback fetch error:', e);
+    }
+  }
+
+  if (!resv) {
+    alert(`Data reservasi dengan kode "${bookingCode}" tidak ditemukan di database Cloud Firestore.`);
     return;
   }
 
   activeReservationForRoom = resv;
 
-  document.getElementById('assign-hotel-name').textContent = resv.property_name;
-  document.getElementById('assign-unit-name').textContent = resv.unit_name;
+  const propName = resv.property_name || resv.hotel_name || 'Hotel Yogyakarta';
+  const unitName = resv.unit_name || resv.room_name || 'Deluxe Room';
+
+  document.getElementById('assign-hotel-name').textContent = propName;
+  document.getElementById('assign-unit-name').textContent = unitName;
   document.getElementById('assign-code-badge').textContent = resv.booking_code;
   document.getElementById('assign-guest-name').textContent = resv.guest_name;
   document.getElementById('assign-guest-nik').textContent = resv.guest_nik || '-';
-  document.getElementById('assign-dates').textContent = `${resv.check_in} s/d ${resv.check_out} (${resv.nights || 1} Malam)`;
+  document.getElementById('assign-dates').textContent = `${resv.check_in_date || resv.check_in} s/d ${resv.check_out_date || resv.check_out} (${resv.nights || resv.total_nights || 1} Malam)`;
 
   // Render Foto KTP Tamu (Pengganti Fotokopi Fisik)
   const ktpImgEl = document.getElementById('assign-ktp-img');

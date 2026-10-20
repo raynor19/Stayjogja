@@ -643,16 +643,26 @@ router.post('/verify-qr/:bookingCode', async (req, res) => {
 });
 
 // GET /api/reservations/checkin-ready - Semua booking yang siap atau sudah check-in (untuk panel resepsionis/hotel)
-router.get('/checkin-ready', (req, res) => {
+router.get('/checkin-ready', async (req, res) => {
   try {
+    await db.ensureInitialized();
+    await db.refreshReservations();
+
     const { property_id } = req.query;
-    let list = db.reservations.filter(r =>
-      r.status === 'terkonfirmasi' || r.status === 'selesai_checkin' || r.status === 'checked_in'
-    );
+    let list = db.reservations.filter(r => {
+      const st = (r.status || '').toLowerCase();
+      return st === 'terkonfirmasi' || st === 'selesai_checkin' || st === 'checked_in' || st === 'waitingcheckin';
+    });
+
     if (property_id && property_id !== 'all') {
-      list = list.filter(r => r.property_id === property_id);
+      const cleanPid = property_id.toLowerCase().trim();
+      list = list.filter(r => {
+        const pId = (r.property_id || r.hotel_id || '').toLowerCase().trim();
+        return pId === cleanPid;
+      });
     }
-    list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
     res.json({ success: true, data: list });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Internal server error' });
