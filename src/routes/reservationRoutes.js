@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const firestore = require('../config/firestoreClient');
 const QRCode = require('qrcode');
 const { parseNik } = require('../utils/nikParser');
 const tunnel = require('../utils/tunnel');
@@ -260,15 +261,37 @@ router.get('/user/:userId', async (req, res) => {
   }
 });
 
-// GET /api/reservations/code/:bookingCode - Get Booking Detail / Invoice Resmi
+// GET /api/reservations/code/:bookingCode - Get Booking Detail / Invoice Resmi (Mendukung Web & Mobile Firestore)
 router.get('/code/:bookingCode', async (req, res) => {
   try {
+    const rawCode = String(req.params.bookingCode || '').trim();
+    const cleanCode = rawCode.toUpperCase();
+
     await db.ensureInitialized();
     await db.refreshReservations();
-    const resv = db.reservations.find(r => r.booking_code.toUpperCase() === req.params.bookingCode.toUpperCase());
+
+    let resv = db.reservations.find(r => 
+      (r.booking_code && r.booking_code.toUpperCase() === cleanCode) ||
+      (r.id && r.id.toUpperCase() === cleanCode)
+    );
+
+    // Jika belum ada di memori web, query langsung ke Cloud Firestore stayjogja-9b705
     if (!resv) {
-      return res.status(404).json({ success: false, message: 'Kode reservasi tidak ditemukan.' });
+      const allFirestoreBookings = await firestore.fetchCollection('bookings');
+      resv = allFirestoreBookings.find(r => 
+        (r.booking_code && r.booking_code.toUpperCase() === cleanCode) ||
+        (r.id && r.id.toUpperCase() === cleanCode)
+      );
+
+      if (resv) {
+        db.reservations.unshift(resv);
+      }
     }
+
+    if (!resv) {
+      return res.status(404).json({ success: false, message: `Kode reservasi "${rawCode}" tidak ditemukan di database Cloud Firestore.` });
+    }
+
     res.json({ success: true, data: resv });
   } catch (err) {
     console.error('Error fetching reservation by code:', err);
