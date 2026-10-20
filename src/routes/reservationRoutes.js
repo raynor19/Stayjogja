@@ -265,23 +265,37 @@ router.get('/user/:userId', async (req, res) => {
 router.get('/code/:bookingCode', async (req, res) => {
   try {
     const rawCode = String(req.params.bookingCode || '').trim();
-    const cleanCode = rawCode.toUpperCase();
+    const cleanCode = rawCode.toUpperCase().replace(/\s+/g, '');
+    const cleanCodeNoDash = cleanCode.replace(/^SJ-?/, '');
 
     await db.ensureInitialized();
     await db.refreshReservations();
 
-    let resv = db.reservations.find(r => 
-      (r.booking_code && r.booking_code.toUpperCase() === cleanCode) ||
-      (r.id && r.id.toUpperCase() === cleanCode)
-    );
+    // 1. Cari di memori lokal
+    let resv = db.reservations.find(r => {
+      const bCode = (r.booking_code || '').toUpperCase().replace(/\s+/g, '');
+      const bId = (r.id || '').toUpperCase().replace(/\s+/g, '');
+      const bCodeNoDash = bCode.replace(/^SJ-?/, '');
 
-    // Jika belum ada di memori web, query langsung ke Cloud Firestore stayjogja-9b705
+      return bCode === cleanCode || 
+             bId === cleanCode || 
+             bCodeNoDash === cleanCodeNoDash ||
+             (cleanCodeNoDash.length >= 5 && (bCode.includes(cleanCodeNoDash) || bId.includes(cleanCodeNoDash)));
+    });
+
+    // 2. Jika belum ada di memori web, query langsung ke Cloud Firestore stayjogja-9b705
     if (!resv) {
       const allFirestoreBookings = await firestore.fetchCollection('bookings');
-      resv = allFirestoreBookings.find(r => 
-        (r.booking_code && r.booking_code.toUpperCase() === cleanCode) ||
-        (r.id && r.id.toUpperCase() === cleanCode)
-      );
+      resv = allFirestoreBookings.find(r => {
+        const bCode = (r.booking_code || '').toUpperCase().replace(/\s+/g, '');
+        const bId = (r.id || '').toUpperCase().replace(/\s+/g, '');
+        const bCodeNoDash = bCode.replace(/^SJ-?/, '');
+
+        return bCode === cleanCode || 
+               bId === cleanCode || 
+               bCodeNoDash === cleanCodeNoDash ||
+               (cleanCodeNoDash.length >= 5 && (bCode.includes(cleanCodeNoDash) || bId.includes(cleanCodeNoDash)));
+      });
 
       if (resv) {
         db.reservations.unshift(resv);
@@ -289,7 +303,7 @@ router.get('/code/:bookingCode', async (req, res) => {
     }
 
     if (!resv) {
-      return res.status(404).json({ success: false, message: `Kode reservasi "${rawCode}" tidak ditemukan di database Cloud Firestore.` });
+      return res.status(404).json({ success: false, message: `Data reservasi dengan kode ${rawCode} tidak ditemukan di Cloud Firestore.` });
     }
 
     res.json({ success: true, data: resv });
