@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadReservationsList();
 });
 
-// 1. Inisialisasi Autentikasi Resepsionis
+// 1. Inisialisasi Autentikasi Resepsionis & Kunci Hotel Penugasan
 function initReceptionistAuth() {
   const userJson = localStorage.getItem('stayjogja_user');
   if (!userJson) {
@@ -28,7 +28,17 @@ function initReceptionistAuth() {
     const nameEl = document.getElementById('receptionist-name');
     if (nameEl) nameEl.textContent = user.name || 'Resepsionis';
 
-    // Jika bukan resepsionis atau admin, tetapi user ingin akses resepsionis, beri izin jika role owner/admin/resepsionis
+    // Kunci penugasan hotel
+    currentPropertyFilter = user.assigned_hotel_id || 'htl-tentrem';
+    const hotelName = user.assigned_hotel_name || 'Hotel Tentrem Yogyakarta';
+
+    const badgeDesktop = document.getElementById('assigned-hotel-badge');
+    const badgeMobile = document.getElementById('select-property-filter-mobile');
+
+    if (badgeDesktop) badgeDesktop.textContent = hotelName;
+    if (badgeMobile) badgeMobile.textContent = hotelName;
+
+    document.title = `Portal Resepsionis • ${hotelName} — StayJogja`;
   } catch (e) {
     localStorage.removeItem('stayjogja_user');
     window.location.href = '/login';
@@ -39,30 +49,13 @@ function handleLogout() {
   if (confirm('Apakah Anda yakin ingin keluar dari Portal Resepsionis?')) {
     localStorage.removeItem('stayjogja_user');
     sessionStorage.clear();
-    window.location.href = '/login';
+    window.location.href = '/';
   }
 }
 
-// 2. Load Properties untuk Dropdown Filter Hotel Tugas
+// 2. Load Properties untuk Konfirmasi Data Hotel
 async function loadPropertiesFilter() {
-  const selectDesktop = document.getElementById('select-property-filter');
-  const selectMobile = document.getElementById('select-property-filter-mobile');
-
-  try {
-    const res = await fetch('/api/properties');
-    const data = await res.json();
-    const props = data.data || [];
-
-    let optionsHtml = '<option value="all" class="bg-slate-900 text-white">Semua Hotel / Akomodasi</option>';
-    props.forEach(p => {
-      optionsHtml += `<option value="${p.id}" class="bg-slate-900 text-white">${p.name}</option>`;
-    });
-
-    if (selectDesktop) selectDesktop.innerHTML = optionsHtml;
-    if (selectMobile) selectMobile.innerHTML = optionsHtml;
-  } catch (err) {
-    console.warn('Gagal memuat daftar properti untuk filter:', err);
-  }
+  // Resepsionis terkunci pada hotel tugasnya
 }
 
 function handlePropertyFilterChange(val) {

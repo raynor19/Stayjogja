@@ -30,6 +30,7 @@ app.use(async (req, res, next) => {
 // API Routes
 app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api/properties', require('./src/routes/propertyRoutes'));
+app.use('/api/owner/staff', require('./src/routes/ownerStaffRoutes'));
 app.use('/api/reservations', require('./src/routes/reservationRoutes'));
 app.use('/api/payments', require('./src/routes/paymentRoutes'));
 app.use('/api/admin', require('./src/routes/adminRoutes'));

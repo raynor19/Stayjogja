@@ -40,7 +40,9 @@ router.post('/login', async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      phone: user.phone || ''
+      phone: user.phone || '',
+      assigned_hotel_id: user.assigned_hotel_id || 'htl-tentrem',
+      assigned_hotel_name: user.assigned_hotel_name || 'Hotel Tentrem Yogyakarta'
     };
 
     res.json({

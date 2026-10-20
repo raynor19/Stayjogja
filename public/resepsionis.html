@@ -82,13 +82,11 @@
         <!-- Filter Hotel & Resepsionis Profile -->
         <div class="flex items-center gap-2.5 sm:gap-4">
           
-          <!-- Dropdown Pemilihan Hotel Tempat Resepsionis Bertugas -->
-          <div class="hidden md:flex items-center gap-2 bg-slate-800/90 border border-slate-700 rounded-xl px-3 py-1.5">
+          <!-- Badge Hotel Resmi Tempat Resepsionis Bertugas (Terkunci) -->
+          <div class="flex items-center gap-2 bg-slate-800/90 border border-slate-700 rounded-xl px-3 py-1.5 shadow-xs">
             <i class="fa-solid fa-hotel text-amber-400 text-xs"></i>
-            <span class="text-[11px] text-slate-400 font-medium">Hotel Tugas:</span>
-            <select id="select-property-filter" onchange="handlePropertyFilterChange(this.value)" class="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer max-w-[200px]">
-              <option value="all" class="bg-slate-900 text-white">Semua Hotel / Akomodasi</option>
-            </select>
+            <span class="text-[11px] text-slate-400 font-medium hidden md:inline">Hotel Tugas:</span>
+            <span id="assigned-hotel-badge" class="text-xs font-bold text-amber-300">Memuat Hotel Tugas...</span>
           </div>
 
           <!-- User Resepsionis Info -->
@@ -117,14 +115,14 @@
   <!-- ================= MAIN FRONT DESK WORKSPACE ================= -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full flex-1 space-y-6 sm:space-y-8">
 
-    <!-- Mobile Dropdown Hotel Selector -->
+    <!-- Mobile Hotel Badge -->
     <div class="md:hidden bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-2">
       <span class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
         <i class="fa-solid fa-hotel text-amber-500"></i> Hotel Tugas:
       </span>
-      <select id="select-property-filter-mobile" onchange="handlePropertyFilterChange(this.value)" class="bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 px-3 py-1.5 focus:outline-none flex-1 max-w-[230px]">
-        <option value="all">Semua Hotel / Akomodasi</option>
-      </select>
+      <span id="select-property-filter-mobile" class="px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold truncate max-w-[220px]">
+        Memuat...
+      </span>
     </div>
 
     <!-- Quick Stats Cards -->

@@ -14,7 +14,7 @@ function formatRupiah(num) {
 
 // Switch Tabs
 function switchOwnerTab(tab) {
-  const tabs = ['acc', 'checkin', 'rooms', 'properties', 'finance'];
+  const tabs = ['acc', 'checkin', 'rooms', 'properties', 'staff', 'finance'];
   tabs.forEach(t => {
     const btn = document.getElementById(`tab-btn-${t}`);
     const sec = document.getElementById(`owner-section-${t}`);
@@ -29,6 +29,7 @@ function switchOwnerTab(tab) {
       if (t === tab) {
         sec.classList.remove('hidden');
         if (t === 'finance') loadOwnerFinance();
+        if (t === 'staff') loadOwnerStaff();
       } else {
         sec.classList.add('hidden');
       }
@@ -39,12 +40,14 @@ function switchOwnerTab(tab) {
   if (tab === 'rooms') loadOwnerRooms();
   if (tab === 'properties') loadOwnerProperties();
   if (tab === 'checkin') loadCheckinList();
+  if (tab === 'staff') loadOwnerStaff();
 }
 
 async function loadOwnerData() {
   await loadOwnerReservations();
   await loadOwnerRooms();
   await loadOwnerProperties();
+  await loadOwnerStaff();
   await loadOwnerNotifications();
 }
 
@@ -1427,6 +1430,172 @@ function testOwnerGmapsUrl() {
 function handleOwnerLogout() {
   localStorage.removeItem('stayjogja_user');
   window.location.href = '/';
+}
+
+// ================= STAF RESEPSIONIS CONTROLLER =================
+let ownerStaffList = [];
+
+async function loadOwnerStaff() {
+  const table = document.getElementById('owner-staff-table');
+  if (!table) return;
+
+  const rawUser = localStorage.getItem('stayjogja_user');
+  const user = rawUser ? JSON.parse(rawUser) : { id: 'own-001' };
+
+  try {
+    const res = await fetch(`/api/owner/staff?owner_id=${user.id}`);
+    const json = await res.json();
+    if (json.success) {
+      ownerStaffList = json.data || [];
+      renderOwnerStaffTable();
+    }
+  } catch (err) {
+    console.error('Error loading owner staff:', err);
+    table.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-red-500">Gagal memuat staf resepsionis.</td></tr>';
+  }
+}
+
+function renderOwnerStaffTable() {
+  const table = document.getElementById('owner-staff-table');
+  if (!table) return;
+
+  if (ownerStaffList.length === 0) {
+    table.innerHTML = `
+      <tr>
+        <td colspan="5" class="p-10 text-center space-y-2">
+          <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xl mx-auto mb-2">
+            <i class="fa-solid fa-users-slash"></i>
+          </div>
+          <h4 class="font-bold text-slate-800 text-sm">Belum Ada Staf Resepsionis</h4>
+          <p class="text-xs text-slate-400 max-w-sm mx-auto">
+            Daftarkan akun front desk untuk hotel Anda agar staf dapat memproses check-in tamu langsung.
+          </p>
+          <div class="pt-2">
+            <button onclick="openAddStaffModal()" class="px-4 py-2 bg-[#16181B] hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition shadow-xs">
+              <i class="fa-solid fa-plus mr-1"></i> Daftarkan Resepsionis Baru
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  table.innerHTML = ownerStaffList.map((s, idx) => `
+    <tr class="hover:bg-slate-50/80 transition">
+      <td class="p-4 font-bold text-slate-900 flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs shrink-0">
+          ${(s.name || 'R')[0].toUpperCase()}
+        </div>
+        <div>
+          <span>${s.name}</span>
+          <span class="block text-[10px] text-slate-400 font-normal">ID: ${s.id}</span>
+        </div>
+      </td>
+      <td class="p-4 font-mono text-slate-600 font-medium">${s.email}</td>
+      <td class="p-4 font-semibold text-slate-800">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200">
+          <i class="fa-solid fa-hotel text-emerald-600"></i> ${s.assigned_hotel_name || 'Hotel Tugas'}
+        </span>
+      </td>
+      <td class="p-4">
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">Aktif</span>
+      </td>
+      <td class="p-4 text-right">
+        <button onclick="deleteStaff('${s.id}', '${s.name.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs rounded-lg transition border border-red-200 cursor-pointer">
+          <i class="fa-solid fa-trash-can mr-1"></i> Hapus
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openAddStaffModal() {
+  const select = document.getElementById('staff-hotel-id');
+  if (select) {
+    select.innerHTML = '<option value="">-- Pilih Hotel Tugas --</option>';
+    // Isi dropdown dengan hotel milik owner
+    ownerLoadedProperties.forEach(p => {
+      select.innerHTML += `<option value="${p.id}">${p.name} (${p.area || 'Yogyakarta'})</option>`;
+    });
+  }
+  document.getElementById('add-staff-modal').classList.remove('hidden');
+}
+
+function closeAddStaffModal() {
+  document.getElementById('add-staff-modal').classList.add('hidden');
+  document.getElementById('add-staff-form').reset();
+}
+
+async function handleCreateStaff(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-save-staff');
+  const hotelId = document.getElementById('staff-hotel-id').value;
+  const name = document.getElementById('staff-name').value.trim();
+  const email = document.getElementById('staff-email').value.trim();
+  const password = document.getElementById('staff-password').value.trim();
+  const phone = document.getElementById('staff-phone').value.trim();
+
+  if (!hotelId) {
+    alert('Silakan pilih hotel penugasan untuk staf ini.');
+    return;
+  }
+
+  const rawUser = localStorage.getItem('stayjogja_user');
+  const user = rawUser ? JSON.parse(rawUser) : { id: 'own-001' };
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+
+  try {
+    const res = await fetch('/api/owner/staff', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        owner_id: user.id,
+        hotel_id: hotelId,
+        name,
+        email,
+        password,
+        phone
+      })
+    });
+
+    const json = await res.json();
+    if (json.success) {
+      alert(`✅ ${json.message}\n\nResepsionis ${name} sekarang bisa login menggunakan email: ${email} dan password yang telah dibuat.`);
+      closeAddStaffModal();
+      await loadOwnerStaff();
+    } else {
+      alert(json.message || 'Gagal mendaftarkan staf.');
+    }
+  } catch (err) {
+    console.error('Error creating staff:', err);
+    alert('Terjadi kesalahan jaringan.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> <span>Simpan & Aktifkan Staf</span>';
+  }
+}
+
+async function deleteStaff(staffId, staffName) {
+  if (!confirm(`Apakah Anda yakin ingin menonaktifkan dan menghapus akun resepsionis "${staffName}"?`)) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/owner/staff/${staffId}`, { method: 'DELETE' });
+    const json = await res.json();
+    if (json.success) {
+      alert(`Akun resepsionis "${staffName}" berhasil dihapus.`);
+      await loadOwnerStaff();
+    } else {
+      alert(json.message || 'Gagal menghapus staf.');
+    }
+  } catch (err) {
+    console.error('Error deleting staff:', err);
+    alert('Terjadi kesalahan jaringan.');
+  }
 }
 
 

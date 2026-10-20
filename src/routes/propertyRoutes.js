@@ -56,6 +56,11 @@ router.get('/', (req, res) => {
       results = results.filter(p => p.status_approval === 'approved');
     }
 
+    // Filter by Owner ID (Khusus Dashboard Owner)
+    if (req.query.owner_id && req.query.owner_id !== 'all') {
+      results = results.filter(p => p.owner_id === req.query.owner_id || !p.owner_id);
+    }
+
     // Filter by Type: hotel, homestay, apartemen
     if (req.query.type && req.query.type !== 'all') {
       const types = req.query.type.split(',').map(t => t.trim().toLowerCase());

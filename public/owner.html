@@ -175,6 +175,9 @@
       <button onclick="switchOwnerTab('properties')" id="tab-btn-properties" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
         <i class="fa-solid fa-list-check"></i> Properti Saya
       </button>
+      <button onclick="switchOwnerTab('staff')" id="tab-btn-staff" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+        <i class="fa-solid fa-users-gear text-blue-600"></i> Staf Resepsionis
+      </button>
       <button onclick="switchOwnerTab('finance')" id="tab-btn-finance" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
         <i class="fa-solid fa-file-invoice-dollar text-amber-500"></i> Komisi
       </button>
@@ -332,7 +335,40 @@
       </div>
     </div>
 
-    <!-- TAB 4: TAGIHAN KOMISI -->
+    <!-- TAB 4: STAF RESEPSIONIS (KELOLA AKUN RESEPSIONIS TERIKAT HOTEL) -->
+    <div id="owner-section-staff" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 font-display">Manajemen Staf Resepsionis</h2>
+          <p class="text-xs text-slate-500">Daftarkan akun staf front desk yang terikat ke salah satu hotel Anda untuk memproses check-in tamu.</p>
+        </div>
+        <button onclick="openAddStaffModal()" class="px-4 py-2 bg-[#16181B] hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition shadow-md flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-user-plus text-xs"></i>
+          <span>Daftarkan Resepsionis Baru</span>
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-600 uppercase font-semibold text-[10px] border-b border-slate-200 tracking-wider">
+              <tr>
+                <th class="p-4">Nama Staf</th>
+                <th class="p-4">Email Login</th>
+                <th class="p-4">Hotel Penugasan</th>
+                <th class="p-4">Status</th>
+                <th class="p-4 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="owner-staff-table" class="divide-y divide-slate-100">
+              <tr><td colspan="5" class="p-8 text-center text-slate-400">Memuat data staf resepsionis...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: TAGIHAN KOMISI -->
     <div id="owner-section-finance" class="hidden space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
         <div>
@@ -693,6 +729,69 @@
           Tutup
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL TAMBAH STAF RESEPSIONIS ================= -->
+  <div id="add-staff-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="px-6 py-4 bg-[#16181B] text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center text-slate-900 text-sm font-bold">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold font-display">Daftarkan Resepsionis Baru</h3>
+            <p class="text-[10px] text-slate-300">Akun front desk yang terikat ke salah satu hotel Anda</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAddStaffModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <form id="add-staff-form" onsubmit="handleCreateStaff(event)" class="p-6 space-y-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Tugaskan ke Hotel / Properti Milik Anda *</label>
+          <select id="staff-hotel-id" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-amber-500">
+            <option value="">-- Pilih Hotel Tugas --</option>
+          </select>
+          <p class="text-[10px] text-slate-400 mt-1">Resepsionis hanya akan bisa mengakses dan memproses check-in untuk hotel yang dipilih ini.</p>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nama Lengkap Resepsionis *</label>
+          <input type="text" id="staff-name" placeholder="Contoh: Rian Pratama (Front Desk)" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Email Login Staf *</label>
+          <input type="email" id="staff-email" placeholder="resepsionis.hotel@stayjogja.id" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Kata Sandi Awal *</label>
+            <input type="password" id="staff-password" placeholder="Minimal 6 karakter" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nomor WhatsApp Staf</label>
+            <input type="tel" id="staff-phone" placeholder="08xxxxxxxxxx" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+          <button type="button" onclick="closeAddStaffModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition">
+            Batal
+          </button>
+          <button type="submit" id="btn-save-staff" class="px-5 py-2 bg-[#16181B] hover:bg-slate-800 text-white font-bold rounded-xl shadow-md transition flex items-center gap-1.5">
+            <i class="fa-solid fa-check text-xs"></i>
+            <span>Simpan & Aktifkan Staf</span>
+          </button>
+        </div>
+      </form>
+
     </div>
   </div>
 
