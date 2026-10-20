@@ -1,4 +1,5 @@
 const supabase = require('./supabaseClient');
+const firestoreClient = require('./firestoreClient');
 
 class Database {
   constructor() {
@@ -166,8 +167,42 @@ class Database {
         // Storage itinerary optional on cold start
       }
 
+      // 8. Sync & Merge with Cloud Firestore stayjogja-9b705 (Single Source of Truth)
+      try {
+        const firestoreHotels = await firestoreClient.fetchCollection('hotels');
+        if (Array.isArray(firestoreHotels) && firestoreHotels.length > 0) {
+          console.log(`[Firestore] 🌐 Terhubung ke Cloud Firestore (${firestoreHotels.length} hotel terverifikasi).`);
+          // Extract units from embedded rooms in firestore
+          const fsUnits = [];
+          for (const h of firestoreHotels) {
+            if (Array.isArray(h.rooms)) {
+              for (const r of h.rooms) {
+                fsUnits.push({
+                  id: r.id || `unit-${h.id}`,
+                  property_id: h.id,
+                  name: r.name,
+                  price: r.price_per_night,
+                  available_stock: r.stock,
+                  capacity: r.capacity,
+                  bed_type: r.bed_type || '1 King Bed',
+                  room_size: r.room_size || 28,
+                  facilities: r.facilities || [],
+                  photos: r.images || []
+                });
+              }
+            }
+          }
+          if (this.properties.length < firestoreHotels.length) {
+            this.properties = firestoreHotels;
+            this.units = fsUnits;
+          }
+        }
+      } catch (fsErr) {
+        console.warn('[Firestore] Sync warning:', fsErr.message);
+      }
+
       this.supabaseConnected = true;
-      console.log(`[Supabase] ✅ Data cloud Supabase aktif sepenuhnya: ${this.properties.length} properti, ${this.units.length} unit, ${this.reservations.length} reservasi, ${this.users.length} user, ${this.notifications.length} notifikasi, ${this.itineraries.length} itinerary.`);
+      console.log(`[Database] ✅ Data aktif sepenuhnya: ${this.properties.length} properti/hotel, ${this.units.length} unit kamar, ${this.reservations.length} reservasi, ${this.users.length} user, ${this.tourist_spots.length} atraksi.`);
     } catch (err) {
       console.error('[Supabase] Init error:', err.message);
     }
