@@ -73,9 +73,13 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email sudah terdaftar. Silakan login.' });
     }
 
-    let validRole = 'user';
-    if (role === 'owner') validRole = 'owner';
-    else if (role === 'resepsionis' || role === 'receptionist') validRole = 'resepsionis';
+    // Proteksi: Hanya boleh mendaftar sebagai Owner (Pemilik) atau Resepsionis
+    let validRole = 'owner';
+    if (role === 'resepsionis' || role === 'receptionist') {
+      validRole = 'resepsionis';
+    } else {
+      validRole = 'owner'; // Default role pengelola baru
+    }
 
     const newUser = {
       id: `usr-${Date.now()}`,
@@ -89,15 +93,13 @@ router.post('/register', async (req, res) => {
     };
 
     db.users.push(newUser);
-    db.saveUsers(); // Simpan ke Supabase
+    await db.saveUsers(); // Simpan ke Cloud Firestore
 
-    let redirectTo = '/tamu';
-    if (validRole === 'owner') redirectTo = '/owner';
-    else if (validRole === 'resepsionis') redirectTo = '/resepsionis';
+    let redirectTo = validRole === 'owner' ? '/owner' : '/resepsionis';
 
     res.status(201).json({
       success: true,
-      message: `Registrasi berhasil! Akun Anda aktif sebagai ${validRole === 'owner' ? 'Pemilik Akomodasi' : (validRole === 'resepsionis' ? 'Resepsionis' : 'Tamu')}.`,
+      message: `Registrasi pengelola berhasil! Akun Anda aktif sebagai ${validRole === 'owner' ? 'Pemilik Akomodasi (Owner)' : 'Resepsionis (Front Desk)'}.`,
       user: {
         id: newUser.id,
         name: newUser.name,

@@ -77,21 +77,9 @@
           <span>Download App Tamu</span>
         </a>
 
-        <div class="h-6 w-[1px] bg-slate-300 hidden sm:block"></div>
-
-        <a href="/resepsionis" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-white/80 transition">
-          <i class="fa-solid fa-bell-concierge text-amber-600"></i>
-          <span class="hidden md:inline">Resepsionis</span>
-        </a>
-
-        <a href="/owner" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-white/80 transition">
-          <i class="fa-solid fa-hotel text-blue-700"></i>
-          <span class="hidden md:inline">Owner Properti</span>
-        </a>
-
-        <a href="/login" class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold bg-[#16181B] text-white hover:bg-slate-800 shadow-md transition hover:scale-105 active:scale-95">
+        <a href="/login" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold bg-[#16181B] text-white hover:bg-slate-800 shadow-md transition hover:scale-105 active:scale-95">
           <i class="fa-solid fa-lock text-[10px]"></i>
-          <span>Masuk Staf</span>
+          <span>Masuk Pengelola</span>
         </a>
       </div>
 
@@ -233,67 +221,27 @@
     </div>
   </section>
 
-  <!-- ================= SECTION: 3 ROLE PORTAL PENGELOLA WEB ================= -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 space-y-8">
-    <div class="text-center max-w-2xl mx-auto space-y-2">
-      <span class="text-xs font-bold text-[#E8701A] uppercase tracking-widest">Akses Manajemen Web</span>
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-[#1A2E4A] font-display">
-        Kelola Operasional Akomodasi
-      </h2>
-      <p class="text-xs sm:text-sm text-slate-600 font-light">
-        Platform web ini dirancang khusus untuk mendukung staf dan mitra bisnis perhotelan di Yogyakarta.
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <!-- ================= SECTION: 1 PORTAL PENGELOLA TERPADU ================= -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+    <div class="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
       
-      <!-- Card 1: Resepsionis -->
-      <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-sm hover:border-emerald-500 transition-all space-y-4 flex flex-col justify-between">
-        <div class="space-y-3">
-          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-[#E8701A] flex items-center justify-center text-xl">
-            <i class="fa-solid fa-bell-concierge"></i>
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 font-display">Portal Resepsionis</h3>
-          <p class="text-xs text-slate-600 leading-relaxed font-light">
-            Fast check-in tamu paperless. Cukup scan barcode e-voucher dari smartphone tamu, verifikasi KTP/SIM digital tanpa fotokopi, dan alokasikan nomor kamar.
-          </p>
-        </div>
-        <a href="/resepsionis" class="w-full py-3 rounded-2xl bg-slate-100 hover:bg-[#1A2E4A] hover:text-white text-slate-800 text-xs font-bold text-center transition flex items-center justify-center gap-2">
-          <span>Buka Front Desk</span>
-          <i class="fa-solid fa-arrow-right text-[10px]"></i>
-        </a>
+      <div class="space-y-3 max-w-2xl">
+        <span class="text-xs font-bold text-[#E8701A] uppercase tracking-widest flex items-center gap-1.5">
+          <i class="fa-solid fa-hotel"></i>
+          <span>Portal Mitra & Pengelola</span>
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#1A2E4A] font-display">
+          Kelola Operasional Akomodasi Yogyakarta
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 font-light leading-relaxed">
+          Satu portal web terpadu untuk <strong>Resepsionis</strong> (fast check-in paperless & scan barcode e-voucher) serta <strong>Pemilik Properti / Owner</strong> (pendaftaran akomodasi baru, atur tarif kamar, dan bagi hasil 95%:5%).
+        </p>
       </div>
 
-      <!-- Card 2: Owner Properti -->
-      <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-sm hover:border-blue-500 transition-all space-y-4 flex flex-col justify-between">
-        <div class="space-y-3">
-          <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center text-xl">
-            <i class="fa-solid fa-hotel"></i>
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 font-display">Portal Pemilik (Owner)</h3>
-          <p class="text-xs text-slate-600 leading-relaxed font-light">
-            Daftarkan hotel atau homestay baru (TERA Registration), atur tarif kamar real-time, kelola ketersediaan stok, dan pantau bagi hasil komisi 95%:5%.
-          </p>
-        </div>
-        <a href="/owner" class="w-full py-3 rounded-2xl bg-slate-100 hover:bg-[#1A2E4A] hover:text-white text-slate-800 text-xs font-bold text-center transition flex items-center justify-center gap-2">
-          <span>Buka Dashboard Owner</span>
-          <i class="fa-solid fa-arrow-right text-[10px]"></i>
-        </a>
-      </div>
-
-      <!-- Card 3: Administrator -->
-      <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-sm hover:border-purple-500 transition-all space-y-4 flex flex-col justify-between">
-        <div class="space-y-3">
-          <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl">
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 font-display">Panel Administrator</h3>
-          <p class="text-xs text-slate-600 leading-relaxed font-light">
-            Audit reservasi global seluruh DIY, moderasi dan verifikasi properti mitra baru, serta kelola kurasi database destinasi wisata untuk AI Trip Planner.
-          </p>
-        </div>
-        <a href="/admin" class="w-full py-3 rounded-2xl bg-slate-100 hover:bg-[#1A2E4A] hover:text-white text-slate-800 text-xs font-bold text-center transition flex items-center justify-center gap-2">
-          <span>Buka Panel Admin</span>
+      <div class="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
+        <a href="/login" class="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#16181B] hover:bg-slate-800 text-white text-xs font-bold text-center shadow-md transition flex items-center justify-center gap-2 hover:scale-105 active:scale-95">
+          <i class="fa-solid fa-lock text-[10px]"></i>
+          <span>Masuk Portal Pengelola</span>
           <i class="fa-solid fa-arrow-right text-[10px]"></i>
         </a>
       </div>
