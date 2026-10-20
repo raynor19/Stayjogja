@@ -136,7 +136,22 @@ router.get('/:id', (req, res) => {
       return res.status(404).json({ success: false, message: 'Properti tidak ditemukan' });
     }
 
-    const units = db.units.filter(u => u.property_id === prop.id);
+    let units = db.units.filter(u => u.property_id === prop.id);
+    if (units.length === 0 && Array.isArray(prop.rooms) && prop.rooms.length > 0) {
+      units = prop.rooms.map((r, idx) => ({
+        id: r.id || `unit-${prop.id}-${idx}`,
+        property_id: prop.id,
+        name: r.name || 'Standard Room',
+        price: r.price_per_night || prop.starting_price || 350000,
+        available_stock: r.stock || 3,
+        capacity: r.capacity || 2,
+        bed_type: r.bed_type || '1 King Bed',
+        room_size: r.room_size || 32,
+        facilities: parseArrayField(r.facilities || ['AC', 'WiFi Gratis', 'Kamar Mandi Dalam']),
+        photos: parseArrayField(r.images || prop.images || prop.photos)
+      }));
+    }
+
     const photos = parseArrayField(prop.photos || prop.images);
     if (photos.length === 0) {
       photos.push('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80');

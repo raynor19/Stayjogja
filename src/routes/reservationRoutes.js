@@ -116,7 +116,20 @@ router.post('/', async (req, res) => {
     }
 
     const prop = db.properties.find(p => p.id === property_id);
-    const unit = db.units.find(u => u.id === unit_id);
+    let unit = db.units.find(u => u.id === unit_id);
+
+    // Fallback: periksa juga kamar di dalam prop.rooms
+    if (!unit && prop && Array.isArray(prop.rooms)) {
+      const foundRoom = prop.rooms.find(r => r.id === unit_id) || prop.rooms[0];
+      if (foundRoom) {
+        unit = {
+          id: foundRoom.id || unit_id,
+          name: foundRoom.name || 'Standard Room',
+          price: foundRoom.price_per_night || prop.starting_price || 350000,
+          capacity: foundRoom.capacity || 2
+        };
+      }
+    }
 
     if (!prop || !unit) {
       return res.status(404).json({ success: false, message: 'Properti atau tipe kamar tidak ditemukan.' });
