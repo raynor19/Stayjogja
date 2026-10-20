@@ -360,7 +360,7 @@ function handleBookNowClick(propId = null) {
     if (listEl) {
       listEl.scrollIntoView({ behavior: 'smooth' });
     } else {
-      window.location.href = '/tamu#property-list';
+      window.location.href = '/#koleksi';
     }
   }
 }

@@ -118,7 +118,7 @@ async function handleLoginSubmit(e) {
         sessionStorage.removeItem('redirect_after_login');
         window.location.href = redirectTarget;
       } else {
-        window.location.href = data.redirectTo || '/tamu';
+        window.location.href = data.redirectTo || '/';
       }
     }, 600);
 

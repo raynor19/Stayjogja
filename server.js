@@ -75,8 +75,13 @@ app.get(['/', '/home', '/beranda', '/landing'], (req, res) => {
 });
 
 // Katalog Lengkap & Pencarian Penginapan
-app.get(['/katalog', '/explore', '/tamu', '/search'], (req, res) => {
+app.get(['/katalog', '/explore', '/search'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Redirect /tamu ke Landing Page Utama
+app.get('/tamu', (req, res) => {
+  res.redirect('/');
 });
 
 // Portal Masuk / Login

@@ -169,8 +169,8 @@ async function loadPropertyDetail(propId) {
     }
 
     if (!p) {
-      alert('Data akomodasi tidak dapat dimuat. Mengalihkan ke katalog...');
-      window.location.href = '/tamu';
+      alert('Data akomodasi tidak dapat dimuat. Mengalihkan ke beranda...');
+      window.location.href = '/';
       return;
     }
 

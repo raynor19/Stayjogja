@@ -30,7 +30,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Determine redirect URL based on role
-    let redirectTo = '/tamu';
+    let redirectTo = '/';
     if (user.role === 'owner') redirectTo = '/owner';
     else if (user.role === 'admin') redirectTo = '/admin';
     else if (user.role === 'resepsionis' || user.role === 'receptionist') redirectTo = '/resepsionis';
@@ -207,7 +207,7 @@ router.post('/google', async (req, res) => {
         phone: user.phone || '',
         provider: 'google'
       },
-      redirectTo: '/tamu'
+      redirectTo: '/'
     });
   } catch (err) {
     console.error('Google auth error:', err);
