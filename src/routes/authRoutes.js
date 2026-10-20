@@ -154,12 +154,12 @@ router.get('/demo-accounts', (req, res) => {
   });
 });
 
-// GET /api/auth/config (Client Supabase configuration)
+// GET /api/auth/config (Client Firebase / Backend configuration)
 router.get('/config', (req, res) => {
   res.json({
     success: true,
-    supabaseUrl: process.env.SUPABASE_URL || 'https://dbhvkxoooxwmssrhfwhh.supabase.co',
-    supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || ''
+    firebaseProjectId: process.env.FIREBASE_PROJECT_ID || 'stayjogja-9b705',
+    databaseType: 'Cloud Firestore'
   });
 });
 
