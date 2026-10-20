@@ -85,7 +85,7 @@ class Database {
       } else {
         // Default users jika koleksi baru
         this.users = [
-          { id: 'usr-001', name: 'Budiarti (Tamu Demo)', email: 'budiarti@gmail.com', role: 'user', phone: '081234567890', status: 'active' },
+          { id: 'usr-001', name: 'Raynor (Tamu Demo)', email: 'raynormuhammad19@gmail.com', role: 'user', phone: '081234567890', status: 'active' },
           { id: 'own-001', name: 'Ibu Kartika (Pemilik Hotel)', email: 'owner@stayjogja.id', role: 'owner', phone: '081987654321', status: 'active' },
           { id: 'adm-001', name: 'Administrator StayJogja', email: 'admin@stayjogja.id', role: 'admin', phone: '0813921207', status: 'active' }
         ];
