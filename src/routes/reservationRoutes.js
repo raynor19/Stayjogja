@@ -363,7 +363,7 @@ router.post('/:id/acc', async (req, res) => {
   }
 });
 
-// POST /api/reservations/notify-booking - Notifikasi Otomatis Kirim Invoice & Voucher ke Email Tamu
+// POST /api/reservations/notify-booking - Notifikasi Otomatis Kirim Invoice & Voucher ke Email & WhatsApp Tamu
 router.post('/notify-booking', async (req, res) => {
   try {
     const booking = req.body || {};
@@ -372,18 +372,22 @@ router.post('/notify-booking', async (req, res) => {
     }
 
     const { sendInvoiceEmail } = require('../utils/mailer');
-    console.log(`[Mailer Route] 🚀 Memicu pengiriman email invoice untuk #${booking.booking_code} ke ${booking.guest_email}...`);
+    const { sendWhatsAppNotification } = require('../utils/whatsappService');
+
+    console.log(`[Notification Route] 🚀 Memicu pengiriman Email & WhatsApp untuk #${booking.booking_code}...`);
     
-    // Kirim asinkron
+    // Kirim asinkron ganda (Email & WhatsApp)
     const emailResult = await sendInvoiceEmail(booking);
+    const waResult = await sendWhatsAppNotification(booking);
 
     res.json({
       success: true,
-      message: `Invoice E-Voucher berhasil diproses untuk dikirim ke ${booking.guest_email || 'email tamu'}`,
-      emailResult
+      message: `Invoice E-Voucher diproses ke Email (${booking.guest_email}) dan WhatsApp (${booking.guest_phone || 'tamu'})`,
+      emailResult,
+      whatsappResult: waResult
     });
   } catch (err) {
-    console.error('[Mailer Route] Error in notify-booking:', err);
+    console.error('[Notification Route] Error in notify-booking:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
