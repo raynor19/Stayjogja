@@ -363,6 +363,31 @@ router.post('/:id/acc', async (req, res) => {
   }
 });
 
+// POST /api/reservations/notify-booking - Notifikasi Otomatis Kirim Invoice & Voucher ke Email Tamu
+router.post('/notify-booking', async (req, res) => {
+  try {
+    const booking = req.body || {};
+    if (!booking.booking_code && !booking.id) {
+      return res.status(400).json({ success: false, message: 'Data reservasi tidak lengkap.' });
+    }
+
+    const { sendInvoiceEmail } = require('../utils/mailer');
+    console.log(`[Mailer Route] 🚀 Memicu pengiriman email invoice untuk #${booking.booking_code} ke ${booking.guest_email}...`);
+    
+    // Kirim asinkron
+    const emailResult = await sendInvoiceEmail(booking);
+
+    res.json({
+      success: true,
+      message: `Invoice E-Voucher berhasil diproses untuk dikirim ke ${booking.guest_email || 'email tamu'}`,
+      emailResult
+    });
+  } catch (err) {
+    console.error('[Mailer Route] Error in notify-booking:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // POST /api/reservations/:id/send-email - Kirim Ulang / Kirim Invoice ke Email Tamu Terdaftar
 router.post('/:id/send-email', async (req, res) => {
   try {
