@@ -413,34 +413,65 @@
           </div>
         </div>
 
-        <!-- ARSIP FOTO KTP / SIM DIGITAL (PENGGANTI FOTOKOPI FISIK) -->
-        <div id="assign-ktp-box" class="p-3 bg-blue-50/80 border border-blue-200 rounded-2xl flex flex-col sm:flex-row items-center gap-3.5">
-          <div class="relative group cursor-pointer shrink-0" onclick="zoomReceptionistKtp()">
-            <img id="assign-ktp-img" src="" alt="Foto KTP/SIM Tamu" class="w-32 h-20 sm:w-36 sm:h-24 object-cover rounded-xl border-2 border-blue-300 shadow-sm bg-white hover:scale-105 transition">
-            <span class="absolute inset-0 bg-slate-900/50 opacity-0 group-hover:opacity-100 rounded-xl flex items-center justify-center text-white text-[11px] font-bold transition">
-              <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Perbesar Foto
+        <!-- ARSIP FOTO KTP / SIM DIGITAL (PENGGANTI FOTOKOPI FISIK DENGAN PRIVACY MASKING) -->
+        <div id="assign-ktp-box" class="p-3.5 bg-slate-50 border-2 border-emerald-500/30 rounded-2xl flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-black">✓</span>
+              <div>
+                <h5 class="font-bold text-xs text-slate-900 leading-tight">Verifikasi Identitas Tamu (Mode Privasi UU PDP)</h5>
+                <span class="text-[10px] text-slate-500">Pasfoto wajah & nama tampil jernih, data sensitif lainnya disamarkan</span>
+              </div>
+            </div>
+            <span id="assign-ktp-badge" class="inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-extrabold border border-emerald-200">
+              <i class="fa-solid fa-shield-halved text-emerald-700"></i> Terverifikasi Digital
             </span>
           </div>
-          <div class="min-w-0 flex-1 text-center sm:text-left">
-            <div class="flex items-center justify-center sm:justify-start gap-1.5 text-emerald-700 font-extrabold text-xs">
-              <i class="fa-solid fa-circle-check text-emerald-600"></i>
-              <span>Foto Dokumen Resmi (Pengganti Fotokopi Fisik)</span>
+
+          <!-- KTP Card Display Container with Frosted Blur Masking -->
+          <div class="relative w-full rounded-xl overflow-hidden border border-slate-200 shadow-xs bg-slate-900 flex flex-col sm:flex-row items-center justify-between p-3 gap-3">
+            
+            <!-- Sisi Kiri: Nama & NIK Sebagian (Jernih) + Detail Lain (Frosted Blur) -->
+            <div class="w-full sm:w-3/5 space-y-2 text-left">
+              <div>
+                <span class="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Nama Lengkap Sesuai KTP:</span>
+                <span id="ktp-masked-name" class="text-sm font-black text-amber-300 block font-display tracking-wide">TAMU STAYJOGJA</span>
+              </div>
+              <div>
+                <span class="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">NIK (Nomor Induk Kependudukan):</span>
+                <span id="ktp-masked-nik" class="text-xs font-mono font-bold text-white tracking-widest">327508******0004</span>
+              </div>
+              
+              <!-- Frosted Privacy Masking Glass Bar -->
+              <div class="p-2 rounded-lg bg-white/10 backdrop-blur-md border border-white/15 text-[10px] text-slate-300 flex items-center gap-2">
+                <i class="fa-solid fa-lock text-emerald-400 text-xs"></i>
+                <div>
+                  <span class="font-bold text-slate-200 block">Detail Sensitif Disamarkan (UU PDP)</span>
+                  <span class="text-[9px] text-slate-400">Alamat, RT/RW, Agama, dan Status dilindungi sistem privasi.</span>
+                </div>
+              </div>
             </div>
-            <p class="text-[11px] text-slate-600 mt-1 leading-snug">
-              Foto KTP/SIM yang diunggah tamu saat booking tersimpan di sistem. Resepsionis <strong>tidak perlu meminta fotokopi KTP fisik lagi</strong> demi efisiensi check-in.
-            </p>
-            <div class="mt-1.5 flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <span id="assign-ktp-badge" class="inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 font-bold border border-blue-200">
-                <i class="fa-solid fa-id-card text-blue-700"></i> Terverifikasi Digital
+
+            <!-- Sisi Kanan: Pasfoto Wajah KTP (100% Jernih untuk Pencocokan Wajah Fisik Tamu) -->
+            <div class="relative group cursor-pointer shrink-0" onclick="zoomReceptionistKtp()">
+              <div class="w-28 h-36 sm:w-32 sm:h-40 bg-slate-800 rounded-lg overflow-hidden border-2 border-emerald-400 shadow-md relative">
+                <img id="assign-ktp-img" src="" alt="Pasfoto KTP Tamu" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-[10px] font-bold">
+                  <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Perbesar
+                </div>
+              </div>
+              <span class="mt-1 block text-center text-[9px] font-extrabold text-emerald-400 uppercase tracking-wide">
+                <i class="fa-solid fa-face-smile mr-0.5"></i> Foto Wajah Jernih
               </span>
-              <button type="button" onclick="zoomReceptionistKtp()" class="text-[10px] text-blue-700 hover:text-blue-900 font-bold underline cursor-pointer">
-                Lihat Ukuran Penuh
-              </button>
-              <label class="text-[10px] text-emerald-700 hover:text-emerald-900 font-bold underline cursor-pointer inline-flex items-center gap-1">
-                <i class="fa-solid fa-camera"></i> Ganti / Upload Ulang
-                <input type="file" accept="image/*" class="hidden" onchange="uploadReceptionistKtp(event)">
-              </label>
             </div>
+
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] text-slate-500 px-1">
+            <span><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Cocokkan foto wajah di atas dengan tamu fisik di front desk.</span>
+            <button type="button" onclick="zoomReceptionistKtp()" class="text-blue-700 hover:text-blue-900 font-bold underline cursor-pointer text-[10px]">
+              Lihat Detail Lengkap
+            </button>
           </div>
         </div>
 

@@ -288,7 +288,20 @@ async function openRoomAssignmentModal(bookingCode) {
   document.getElementById('assign-guest-nik').textContent = resv.guest_nik || '-';
   document.getElementById('assign-dates').textContent = `${resv.check_in_date || resv.check_in} s/d ${resv.check_out_date || resv.check_out} (${resv.nights || resv.total_nights || 1} Malam)`;
 
-  // Render Foto KTP Tamu (Pengganti Fotokopi Fisik)
+  // Render Info Nama dan NIK Masked
+  const maskedNameEl = document.getElementById('ktp-masked-name');
+  const maskedNikEl = document.getElementById('ktp-masked-nik');
+  if (maskedNameEl) maskedNameEl.textContent = (resv.guest_name || 'TAMU STAYJOGJA').toUpperCase();
+  if (maskedNikEl) {
+    const rawNik = (resv.guest_nik || '3275081903050004').trim();
+    if (rawNik.length === 16) {
+      maskedNikEl.textContent = `${rawNik.substring(0, 6)}******${rawNik.substring(12)}`;
+    } else {
+      maskedNikEl.textContent = rawNik;
+    }
+  }
+
+  // Render Foto KTP Tamu (Pengganti Fotokopi Fisik dengan Privacy Masking)
   const ktpImgEl = document.getElementById('assign-ktp-img');
   const ktpBoxEl = document.getElementById('assign-ktp-box');
   const ktpBadgeEl = document.getElementById('assign-ktp-badge');
@@ -307,7 +320,7 @@ async function openRoomAssignmentModal(bookingCode) {
       ktpImgEl.classList.remove('hidden');
       if (ktpBoxEl) ktpBoxEl.classList.remove('hidden');
       if (ktpBadgeEl) {
-        ktpBadgeEl.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Foto KTP/SIM Asli Tamu';
+        ktpBadgeEl.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Pasfoto KTP Tamu Asli';
         ktpBadgeEl.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold border border-emerald-200';
       }
     } else {
@@ -317,7 +330,7 @@ async function openRoomAssignmentModal(bookingCode) {
       ktpImgEl.classList.remove('hidden');
       if (ktpBoxEl) ktpBoxEl.classList.remove('hidden');
       if (ktpBadgeEl) {
-        ktpBadgeEl.innerHTML = '<i class="fa-solid fa-id-card text-blue-700"></i> KTP Elektronik Terverifikasi';
+        ktpBadgeEl.innerHTML = '<i class="fa-solid fa-shield-halved text-emerald-700"></i> KTP Digital Terverifikasi';
         ktpBadgeEl.className = 'inline-flex items-center gap-1 text-[10px] px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 font-bold border border-blue-200';
       }
     }
@@ -354,59 +367,62 @@ function closeReceptionistKtpZoom() {
   if (zoomModal) zoomModal.classList.add('hidden');
 }
 
-// Generate kartu e-KTP resmi digital lengkap berdasarkan data tamu StayJogja
+// Generate kartu e-KTP resmi digital lengkap berdasarkan data tamu StayJogja dengan Privacy Masking
 function buildPersonalizedKtpSvg(resv) {
   if (!resv) return '';
-  const nik = (resv.guest_nik || '3275081903050004').trim();
+  const rawNik = (resv.guest_nik || '3275081903050004').trim();
+  const nikMasked = rawNik.length === 16 ? `${rawNik.substring(0, 6)}******${rawNik.substring(12)}` : rawNik;
   const name = (resv.guest_name || 'TAMU STAYJOGJA').toUpperCase().trim();
-  const ktp = resv.ktp_data || {};
-  const bPlace = (resv.guest_birth_place || ktp.birthPlace || 'YOGYAKARTA').toUpperCase();
-  const bDate = (resv.guest_birth_date || ktp.birthDateFormatted || '19-03-2005').toUpperCase();
-  const gender = (resv.guest_gender || ktp.gender || 'LAKI-LAKI').toUpperCase();
-  const address = (resv.guest_address || ktp.addressKtp || 'KOTA YOGYAKARTA').toUpperCase().slice(0, 36);
-  const religion = (resv.guest_religion || ktp.religion || 'ISLAM').toUpperCase();
-  const marital = (resv.guest_marital_status || ktp.maritalStatus || 'BELUM KAWIN').toUpperCase();
-  const occ = (resv.guest_occupation || ktp.occupation || 'PELAJAR / MAHASISWA').toUpperCase();
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="305" viewBox="0 0 480 305">
     <defs>
       <linearGradient id="ktpBg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#7dd3fc"/>
-        <stop offset="50%" stop-color="#38bdf8"/>
+        <stop offset="0%" stop-color="#0f172a"/>
+        <stop offset="50%" stop-color="#1e293b"/>
         <stop offset="100%" stop-color="#0284c7"/>
       </linearGradient>
+      <filter id="privacyBlur" x="0" y="0">
+        <feGaussianBlur stdDeviation="4"/>
+      </filter>
     </defs>
     <rect width="480" height="305" rx="16" fill="url(#ktpBg)"/>
-    <rect x="8" y="8" width="464" height="289" rx="12" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.6"/>
-    <text x="240" y="24" font-family="Arial, sans-serif" font-size="12" font-weight="900" fill="#0f172a" text-anchor="middle" letter-spacing="1">REPUBLIK INDONESIA</text>
-    <text x="240" y="38" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle" letter-spacing="0.5">ARSIP IDENTITAS ELEKTRONIK TERVERIFIKASI</text>
-    <text x="22" y="64" font-family="Arial, sans-serif" font-size="14" font-weight="900" fill="#0f172a" letter-spacing="1.5">NIK  :  ${nik}</text>
-    <text x="22" y="88" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Nama</text>
-    <text x="135" y="88" font-family="Arial, sans-serif" font-size="9" font-weight="900" fill="#0f172a">: ${name}</text>
-    <text x="22" y="106" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Tempat/Tgl Lahir</text>
-    <text x="135" y="106" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${bPlace}, ${bDate}</text>
-    <text x="22" y="124" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Jenis Kelamin</text>
-    <text x="135" y="124" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${gender}</text>
-    <text x="22" y="142" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Alamat</text>
-    <text x="135" y="142" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#0f172a">: ${address}</text>
-    <text x="22" y="160" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Agama</text>
-    <text x="135" y="160" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${religion}</text>
-    <text x="22" y="178" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Status Perkawinan</text>
-    <text x="135" y="178" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${marital}</text>
-    <text x="22" y="196" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Pekerjaan</text>
-    <text x="135" y="196" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: ${occ}</text>
-    <text x="22" y="214" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Kewarganegaraan</text>
-    <text x="135" y="214" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">: WNI</text>
-    <text x="22" y="232" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#1e293b">Berlaku Hingga</text>
-    <text x="135" y="232" font-family="Arial, sans-serif" font-size="9" font-weight="900" fill="#0f172a">: SEUMUR HIDUP</text>
-    <g transform="translate(365, 75)">
-      <rect width="92" height="122" rx="6" fill="#e2e8f0" stroke="#ffffff" stroke-width="2"/>
-      <circle cx="46" cy="45" r="22" fill="#94a3b8"/>
-      <path d="M18 105 c0 -18 18 -26 28 -26 s28 8 28 26 Z" fill="#94a3b8"/>
-      <rect x="0" y="104" width="92" height="18" fill="#0369a1"/>
-      <text x="46" y="116" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">TERVERIFIKASI</text>
+    <rect x="8" y="8" width="464" height="289" rx="12" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.6"/>
+    
+    <!-- Header -->
+    <text x="240" y="24" font-family="Arial, sans-serif" font-size="12" font-weight="900" fill="#f8fafc" text-anchor="middle" letter-spacing="1">REPUBLIK INDONESIA</text>
+    <text x="240" y="38" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#38bdf8" text-anchor="middle" letter-spacing="0.5">ARSIP IDENTITAS DIGITAL — MODE PRIVASI UU PDP</text>
+    
+    <!-- NIK & Nama (100% Jelas) -->
+    <text x="22" y="66" font-family="Arial, sans-serif" font-size="13" font-weight="900" fill="#f1f5f9" letter-spacing="1.5">NIK  :  ${nikMasked}</text>
+    <text x="22" y="92" font-family="Arial, sans-serif" font-size="9.5" font-weight="bold" fill="#94a3b8">Nama Lengkap</text>
+    <text x="110" y="92" font-family="Arial, sans-serif" font-size="10" font-weight="900" fill="#fde047">: ${name}</text>
+    
+    <!-- Area Data Sensitif Tertutup Masking Privacy Glass -->
+    <g transform="translate(20, 110)">
+      <rect width="320" height="120" rx="10" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15"/>
+      <rect x="15" y="15" width="220" height="8" rx="4" fill="#64748b" opacity="0.6" filter="url(#privacyBlur)"/>
+      <rect x="15" y="35" width="180" height="8" rx="4" fill="#64748b" opacity="0.6" filter="url(#privacyBlur)"/>
+      <rect x="15" y="55" width="250" height="8" rx="4" fill="#64748b" opacity="0.6" filter="url(#privacyBlur)"/>
+      <rect x="15" y="75" width="160" height="8" rx="4" fill="#64748b" opacity="0.6" filter="url(#privacyBlur)"/>
+      <rect x="15" y="95" width="200" height="8" rx="4" fill="#64748b" opacity="0.6" filter="url(#privacyBlur)"/>
+      
+      <!-- Watermark Protection -->
+      <g transform="translate(160, 60)">
+        <rect x="-110" y="-14" width="220" height="28" rx="14" fill="#047857" fill-opacity="0.9" stroke="#34d399" stroke-width="1"/>
+        <text x="0" y="4" font-family="Arial, sans-serif" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">🔒 DILINDUNGI PRIVASI TAMU (UU PDP)</text>
+      </g>
     </g>
-    <text x="240" y="285" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a" text-anchor="middle" letter-spacing="0.5">ARSIP DIGITAL FRONT DESK — TANPA FOTOKOPI FISIK</text>
+
+    <!-- Pasfoto Wajah (Sisi Kanan - 100% Tajam & Jernih) -->
+    <g transform="translate(360, 65)">
+      <rect width="98" height="135" rx="8" fill="#1e293b" stroke="#34d399" stroke-width="2.5"/>
+      <circle cx="49" cy="50" r="26" fill="#38bdf8"/>
+      <path d="M16 118 c0 -22 22 -32 33 -32 s33 10 33 32 Z" fill="#38bdf8"/>
+      <rect x="0" y="115" width="98" height="20" rx="4" fill="#059669"/>
+      <text x="49" y="129" font-family="Arial, sans-serif" font-size="8.5" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">FOTO WAJAH 100%</text>
+    </g>
+
+    <text x="240" y="280" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#94a3b8" text-anchor="middle" letter-spacing="0.5">STAYJOGJA PAPERLESS FRONT DESK — TANPA FOTOKOPI FISIK</text>
   </svg>`;
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
