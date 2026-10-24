@@ -34,11 +34,25 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/reservations/owner - List Reservations for Owner (All incoming guest bookings)
+// GET /api/reservations/owner - List Reservations for Owner (Khusus hotel milik owner ini)
 router.get('/owner', async (req, res) => {
   try {
     await db.ensureInitialized();
     await db.refreshReservations();
+
+    const ownerId = req.query.owner_id;
+    if (ownerId && ownerId !== 'all') {
+      // Ambil daftar properti milik owner ini
+      const ownerPropIds = db.properties
+        .filter(p => p.owner_id === ownerId)
+        .map(p => p.id);
+
+      const filtered = db.reservations.filter(r => 
+        ownerPropIds.includes(r.property_id) || ownerPropIds.includes(r.hotel_id)
+      );
+      return res.json({ success: true, data: filtered });
+    }
+
     res.json({ success: true, data: db.reservations });
   } catch (err) {
     console.error('Error fetching owner reservations:', err);

@@ -71,9 +71,10 @@ const API = {
     return await res.json();
   },
 
-  // Fetch owner reservations (all incoming reservations from all guests)
-  async getOwnerReservations() {
-    const res = await fetch('/api/reservations/owner');
+  // Fetch owner reservations (khusus hotel milik owner ini)
+  async getOwnerReservations(ownerId = null) {
+    const query = ownerId ? `?owner_id=${encodeURIComponent(ownerId)}` : '';
+    const res = await fetch(`/api/reservations/owner${query}`);
     return await res.json();
   },
 

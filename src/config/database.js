@@ -212,6 +212,23 @@ class Database {
     }
   }
 
+  async addNotification(notif) {
+    if (!this.notifications) this.notifications = [];
+    const newNotif = {
+      id: notif.id || `notif-${Date.now()}`,
+      created_at: new Date().toISOString(),
+      read: false,
+      ...notif
+    };
+    this.notifications.unshift(newNotif);
+    try {
+      await firestore.setDocument('notifications', newNotif.id, newNotif);
+    } catch (e) {
+      console.warn('[Firestore] addNotification error:', e.message);
+    }
+    return newNotif;
+  }
+
   async saveNotifications() {
     if (!this.notifications) return;
     try {

@@ -8,9 +8,9 @@ router.get('/', async (req, res) => {
   try {
     const ownerId = req.query.owner_id || 'own-001';
 
-    // Filter resepsionis yang dibuat oleh owner ini
+    // Filter resepsionis yang dibuat khusus oleh owner ini (isolasi ketat)
     const staffList = db.users.filter(u => 
-      u.role === 'resepsionis' && (u.created_by_owner_id === ownerId || !u.created_by_owner_id)
+      u.role === 'resepsionis' && u.created_by_owner_id === ownerId
     ).map(u => ({
       id: u.id,
       name: u.name,

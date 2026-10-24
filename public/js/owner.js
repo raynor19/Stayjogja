@@ -57,7 +57,8 @@ async function loadOwnerReservations() {
   container.innerHTML = '<div class="text-center py-8 text-xs text-slate-400">Memuat data reservasi...</div>';
 
   try {
-    const res = await API.getOwnerReservations(); // fetch all incoming guest bookings across all accounts
+    const ownerId = (currentUser && currentUser.id) || 'own-001';
+    const res = await API.getOwnerReservations(ownerId); // fetch incoming bookings khusus hotel milik owner ini
     if (!res.success) return;
 
     const bookings = res.data;
@@ -300,7 +301,8 @@ async function loadOwnerProperties() {
   container.innerHTML = '<div class="col-span-full text-center py-8 text-xs text-slate-400">Memuat properti terdaftar...</div>';
 
   try {
-    const res = await API.getProperties({ status: 'all' });
+    const ownerId = (currentUser && currentUser.id) || 'own-001';
+    const res = await API.getProperties({ status: 'all', owner_id: ownerId });
     if (!res.success) return;
 
     ownerLoadedProperties = res.data || [];
